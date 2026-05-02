@@ -1,42 +1,45 @@
 import { Router } from "express";
-import { z } from "zod";
 
 const router = Router();
 
-const FetchRequestSchema = z.object({
-  url: z.string().url(),
-});
-
 function injectApiKey(rawUrl: string, apiKey: string): string {
-  let url = rawUrl.trim();
+  const url = rawUrl.trim();
 
-  // Replace literal placeholder "WebAPI_KEY" in path or query
   if (url.includes("WebAPI_KEY")) {
     return url.replace(/WebAPI_KEY/g, apiKey);
   }
 
-  // Replace key= query param value
-  const urlObj = new URL(url);
+  let urlObj: URL;
+  try {
+    urlObj = new URL(url);
+  } catch {
+    return url;
+  }
+
   if (urlObj.searchParams.has("key")) {
     urlObj.searchParams.set("key", apiKey);
     return urlObj.toString();
   }
 
-  // Replace /key/SOMEVALUE at the end of path
   const keyPathMatch = url.match(/^(.*\/key\/)([^/?#]+)(.*)?$/);
   if (keyPathMatch) {
     return `${keyPathMatch[1]}${apiKey}${keyPathMatch[3] ?? ""}`;
   }
 
-  // Append key as query parameter
   urlObj.searchParams.set("key", apiKey);
   return urlObj.toString();
 }
 
 router.post("/bps/fetch", async (req, res) => {
-  const parse = FetchRequestSchema.safeParse(req.body);
-  if (!parse.success) {
-    return res.status(400).json({ error: "URL tidak valid", details: parse.error.flatten() });
+  const rawUrl: unknown = req.body?.url;
+  if (!rawUrl || typeof rawUrl !== "string") {
+    return res.status(400).json({ error: "Field 'url' harus berupa string yang valid" });
+  }
+
+  try {
+    new URL(rawUrl.trim());
+  } catch {
+    return res.status(400).json({ error: "URL tidak valid" });
   }
 
   const apiKey = process.env.BPS_API_KEY;
@@ -44,7 +47,7 @@ router.post("/bps/fetch", async (req, res) => {
     return res.status(500).json({ error: "BPS_API_KEY tidak dikonfigurasi di server" });
   }
 
-  const targetUrl = injectApiKey(parse.data.url, apiKey);
+  const targetUrl = injectApiKey(rawUrl, apiKey);
 
   try {
     const response = await fetch(targetUrl, {

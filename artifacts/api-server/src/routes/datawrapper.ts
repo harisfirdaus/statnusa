@@ -1,47 +1,44 @@
 import { Router } from "express";
-import { z } from "zod";
 
 const router = Router();
-
-const CreateChartSchema = z.object({
-  title: z.string().min(1),
-  chartType: z.string().default("d3-bars"),
-  csvData: z.string().min(1),
-  description: z.string().optional(),
-});
 
 const DW_API = "https://api.datawrapper.de/v3";
 
 router.post("/datawrapper/create", async (req, res) => {
-  const parse = CreateChartSchema.safeParse(req.body);
-  if (!parse.success) {
-    return res.status(400).json({ error: "Data tidak valid", details: parse.error.flatten() });
+  const { title, chartType, csvData, description } = req.body ?? {};
+
+  if (!title || typeof title !== "string") {
+    return res.status(400).json({ error: "Field 'title' harus diisi" });
   }
+  if (!csvData || typeof csvData !== "string") {
+    return res.status(400).json({ error: "Field 'csvData' harus diisi" });
+  }
+
+  const resolvedChartType = typeof chartType === "string" ? chartType : "d3-bars";
+  const resolvedDesc = typeof description === "string" ? description : "";
 
   const apiKey = process.env.DATAWRAPPER_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: "DATAWRAPPER_API_KEY tidak dikonfigurasi di server" });
   }
 
-  const headers = {
+  const jsonHeaders = {
     Authorization: `Bearer ${apiKey}`,
     "Content-Type": "application/json",
     Accept: "application/json",
   };
 
-  const { title, chartType, csvData, description } = parse.data;
-
   try {
     // Step 1: Create chart
     const createRes = await fetch(`${DW_API}/charts`, {
       method: "POST",
-      headers,
+      headers: jsonHeaders,
       body: JSON.stringify({
         title,
-        type: chartType,
+        type: resolvedChartType,
         metadata: {
           describe: {
-            intro: description ?? "",
+            intro: resolvedDesc,
             "source-name": "Badan Pusat Statistik (BPS)",
             "source-url": "https://www.bps.go.id",
           },
@@ -58,7 +55,7 @@ router.post("/datawrapper/create", async (req, res) => {
       });
     }
 
-    const chart = await createRes.json() as { id: string; publicUrl?: string; [k: string]: unknown };
+    const chart = (await createRes.json()) as { id: string; publicUrl?: string; [k: string]: unknown };
     const chartId = chart.id;
 
     // Step 2: Upload CSV data
@@ -83,14 +80,16 @@ router.post("/datawrapper/create", async (req, res) => {
     // Step 3: Publish the chart
     const publishRes = await fetch(`${DW_API}/charts/${chartId}/publish`, {
       method: "POST",
-      headers,
+      headers: jsonHeaders,
       signal: AbortSignal.timeout(15_000),
     });
 
     const publishData = publishRes.ok ? await publishRes.json().catch(() => ({})) : {};
-
     const editUrl = `https://app.datawrapper.de/chart/${chartId}/edit`;
-    const publicUrl = (publishData as any)?.data?.publicUrl ?? chart.publicUrl ?? `https://datawrapper.de/render/${chartId}/`;
+    const publicUrl =
+      (publishData as any)?.data?.publicUrl ??
+      chart.publicUrl ??
+      `https://datawrapper.de/render/${chartId}/`;
 
     return res.json({
       success: true,

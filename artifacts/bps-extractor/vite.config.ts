@@ -29,6 +29,24 @@ if (!basePath) {
 export default defineConfig({
   base: basePath,
   plugins: [
+    {
+      name: "private-network-access",
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          res.setHeader("Access-Control-Allow-Private-Network", "true");
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          // Handle PNA preflight before Vite's CORS middleware can intercept it
+          if (req.method === "OPTIONS") {
+            res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            res.statusCode = 204;
+            res.end();
+            return;
+          }
+          next();
+        });
+      },
+    },
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
@@ -63,6 +81,11 @@ export default defineConfig({
     strictPort: true,
     host: "0.0.0.0",
     allowedHosts: true,
+    cors: false,
+    headers: {
+      "Access-Control-Allow-Private-Network": "true",
+      "Access-Control-Allow-Origin": "*",
+    },
     fs: {
       strict: true,
     },
