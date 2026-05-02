@@ -1,0 +1,1441 @@
+{
+  "status": "OK",
+  "data-availability": "available",
+  "data": [
+    {
+      "page": 1,
+      "pages": 1,
+      "per_page": 1,
+      "count": 1,
+      "total": 1
+    },
+    {
+      "change_log": [],
+      "judul_tabel": "Jumlah Perceraian Menurut Provinsi&lt;sup&gt;1&lt;/sup&gt; dan Faktor Penyebab Perceraian (perkara), 2025",
+      "judul_tabel_en": "Number of Divorces by Province&lt;sup&gt;1&lt;/sup&gt; and Factors Causing Divorce (cases), 2025",
+      "lingkup": "Provinsi&lt;br&gt;&lt;i&gt;Province&lt;/i&gt;",
+      "lingkup_id": "Provinsi",
+      "lingkup_en": "Province",
+      "tahun_data": 2025,
+      "wilayah": "Indonesia",
+      "penanggung_jawab": "Kementerian Agama",
+      "show_satuan": false,
+      "id_subject": "aVNwM3JTd21SUFZYTUpLOFJXSEphdz09",
+      "bab": "Penduduk dan Ketenagakerjaan",
+      "bab_en": "Population and Employment",
+      "subject": "Penduduk",
+      "subject_en": "Population",
+      "mms_id": 519,
+      "mms_subject": "Kependudukan dan Migrasi",
+      "keterangan_data": {
+        "...": "Data tidak tersedia",
+        "–": "Tidak ada atau nol",
+        "NA": "Data tidak dapat ditampilkan",
+        "e": "Angka estimasi",
+        "r": "Angka diperbaiki",
+        "~0": "Data dapat diabaikan",
+        "*": "Angka sementara",
+        "**": "Angka sangat sementara",
+        "***": "Angka sangat sangat sementara",
+        "a": "25% &#60; RSE &#8804; 50%",
+        "b": "RSE &#60; 50%",
+        "c": "Penjumlahan tidak sama dengan wilayah diatasnya"
+      },
+      "kolom": {
+        "uelzja5qjq": {
+          "nama_variabel": "Fakor Perceraian - Zina",
+          "nama_variabel_en": "Divorce by Adultery",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "gobkfr39py": {
+          "nama_variabel": "Fakor Perceraian - Mabuk",
+          "nama_variabel_en": "Divorce by Alcohol Abuse",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "jfayz9jmgr": {
+          "nama_variabel": "Fakor Perceraian - Madat",
+          "nama_variabel_en": "Divorce by Drug Abuse",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "1u7zj79krr": {
+          "nama_variabel": "Fakor Perceraian - Judi",
+          "nama_variabel_en": "Divorce by Gambling",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "913nn5gezp": {
+          "nama_variabel": "Fakor Perceraian - Meninggalkan Salah satu Pihak",
+          "nama_variabel_en": "Divorce by Spousal\r\nAbandonment",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "vzsxhlnvdh": {
+          "nama_variabel": "Fakor Perceraian - Dihukum Penjara",
+          "nama_variabel_en": "Divorce by Incarceration",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "tkwmv1ikhh": {
+          "nama_variabel": "Fakor Perceraian - Poligami",
+          "nama_variabel_en": "Divorce by Polygamy",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "vtcl4qza9r": {
+          "nama_variabel": "Fakor Perceraian - Kekerasan Dalam Rumah Tangga",
+          "nama_variabel_en": "Divorce by Domestic Violence",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "kzukudw3jc": {
+          "nama_variabel": "Fakor Perceraian - Cacat Badan",
+          "nama_variabel_en": "Divorce by Disability",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "qnllesa1vk": {
+          "nama_variabel": "Fakor Perceraian - Perselisihan dan Pertengkaran Terus Menerus",
+          "nama_variabel_en": "Divorce by Constant Arguing",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "kgbvjpwzyp": {
+          "nama_variabel": "Fakor Perceraian - Kawin Paksa",
+          "nama_variabel_en": "Divorce by Forced Marriage",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "yrabw71enw": {
+          "nama_variabel": "Fakor Perceraian - Murtad",
+          "nama_variabel_en": "Divorce by Apostate",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "9q9pxt2bye": {
+          "nama_variabel": "Fakor Perceraian - Ekonomi",
+          "nama_variabel_en": "Divorce by Financial Problems",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        },
+        "8qgqth5n35": {
+          "nama_variabel": "Fakor Perceraian - Jumlah",
+          "nama_variabel_en": "Number of Divorce",
+          "tipe": "Numerik",
+          "angka_desimal_dibelakang_koma": 0,
+          "metadata_indikator": null,
+          "metadata_konsep_definisi": null,
+          "metadata_kegunaan": null,
+          "metadata_keterangan_tambahan": null,
+          "metadata_interpretasi": null,
+          "metadata_rumusan": [],
+          "metadata_rumus_html": null,
+          "metadata_dihasilkan_oleh": [],
+          "tanggal_cut_off": null
+        }
+      },
+      "data": [
+        {
+          "label": "Aceh",
+          "label_raw": "Aceh",
+          "satuan": null,
+          "kode_wilayah": 1100000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "9",
+              "value_raw": "9",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "7",
+              "value_raw": "7",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "9",
+              "value_raw": "9",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "46",
+              "value_raw": "46",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "439",
+              "value_raw": "439",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "80",
+              "value_raw": "80",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "30",
+              "value_raw": "30",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "138",
+              "value_raw": "138",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "15",
+              "value_raw": "15",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "5.487",
+              "value_raw": "5.487",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "7",
+              "value_raw": "7",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "203",
+              "value_raw": "203",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "6.471",
+              "value_raw": "6.471",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Sumatera Utara",
+          "label_raw": "Sumatera Utara",
+          "satuan": null,
+          "kode_wilayah": 1200000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "2",
+              "value_raw": "2",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "10",
+              "value_raw": "10",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "21",
+              "value_raw": "21",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "74",
+              "value_raw": "74",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "1.027",
+              "value_raw": "1.027",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "50",
+              "value_raw": "50",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "16",
+              "value_raw": "16",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "115",
+              "value_raw": "115",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "4",
+              "value_raw": "4",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "17.183",
+              "value_raw": "17.183",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "–",
+              "value_raw": null,
+              "value_code": "–"
+            },
+            "yrabw71enw": {
+              "value": "74",
+              "value_raw": "74",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "268",
+              "value_raw": "268",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "18.844",
+              "value_raw": "18.844",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Sumatera Barat",
+          "label_raw": "Sumatera Barat",
+          "satuan": null,
+          "kode_wilayah": 1300000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "3",
+              "value_raw": "3",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "8",
+              "value_raw": "8",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "6",
+              "value_raw": "6",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "30",
+              "value_raw": "30",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "787",
+              "value_raw": "787",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "43",
+              "value_raw": "43",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "16",
+              "value_raw": "16",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "102",
+              "value_raw": "102",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "6",
+              "value_raw": "6",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "7.751",
+              "value_raw": "7.751",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "11",
+              "value_raw": "11",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "199",
+              "value_raw": "199",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "8.963",
+              "value_raw": "8.963",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Riau",
+          "label_raw": "Riau",
+          "satuan": null,
+          "kode_wilayah": 1400000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "11",
+              "value_raw": "11",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "27",
+              "value_raw": "27",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "68",
+              "value_raw": "68",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "889",
+              "value_raw": "889",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "127",
+              "value_raw": "127",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "8",
+              "value_raw": "8",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "132",
+              "value_raw": "132",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "11",
+              "value_raw": "11",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "7.646",
+              "value_raw": "7.646",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "4",
+              "value_raw": "4",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "12",
+              "value_raw": "12",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "341",
+              "value_raw": "341",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "9.277",
+              "value_raw": "9.277",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Jambi",
+          "label_raw": "Jambi",
+          "satuan": null,
+          "kode_wilayah": 1500000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "5",
+              "value_raw": "5",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "26",
+              "value_raw": "26",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "43",
+              "value_raw": "43",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "124",
+              "value_raw": "124",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "546",
+              "value_raw": "546",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "42",
+              "value_raw": "42",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "22",
+              "value_raw": "22",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "114",
+              "value_raw": "114",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "5",
+              "value_raw": "5",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "4.123",
+              "value_raw": "4.123",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "8",
+              "value_raw": "8",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "345",
+              "value_raw": "345",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "5.404",
+              "value_raw": "5.404",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Sumatera Selatan",
+          "label_raw": "Sumatera Selatan",
+          "satuan": null,
+          "kode_wilayah": 1600000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "24",
+              "value_raw": "24",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "35",
+              "value_raw": "35",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "54",
+              "value_raw": "54",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "228",
+              "value_raw": "228",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "711",
+              "value_raw": "711",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "66",
+              "value_raw": "66",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "50",
+              "value_raw": "50",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "295",
+              "value_raw": "295",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "8",
+              "value_raw": "8",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "9.604",
+              "value_raw": "9.604",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "5",
+              "value_raw": "5",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "18",
+              "value_raw": "18",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "960",
+              "value_raw": "960",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "12.058",
+              "value_raw": "12.058",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Bengkulu",
+          "label_raw": "Bengkulu",
+          "satuan": null,
+          "kode_wilayah": 1700000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "18",
+              "value_raw": "18",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "17",
+              "value_raw": "17",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "3",
+              "value_raw": "3",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "64",
+              "value_raw": "64",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "265",
+              "value_raw": "265",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "26",
+              "value_raw": "26",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "5",
+              "value_raw": "5",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "132",
+              "value_raw": "132",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "2",
+              "value_raw": "2",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "3.373",
+              "value_raw": "3.373",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "–",
+              "value_raw": null,
+              "value_code": "–"
+            },
+            "yrabw71enw": {
+              "value": "3",
+              "value_raw": "3",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "256",
+              "value_raw": "256",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "4.164",
+              "value_raw": "4.164",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Lampung",
+          "label_raw": "Lampung",
+          "satuan": null,
+          "kode_wilayah": 1800000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "10",
+              "value_raw": "10",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "48",
+              "value_raw": "48",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "10",
+              "value_raw": "10",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "184",
+              "value_raw": "184",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "905",
+              "value_raw": "905",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "33",
+              "value_raw": "33",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "27",
+              "value_raw": "27",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "184",
+              "value_raw": "184",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "11",
+              "value_raw": "11",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "13.081",
+              "value_raw": "13.081",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "–",
+              "value_raw": null,
+              "value_code": "–"
+            },
+            "yrabw71enw": {
+              "value": "25",
+              "value_raw": "25",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "2.106",
+              "value_raw": "2.106",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "16.624",
+              "value_raw": "16.624",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Kepulauan Bangka Belitung",
+          "label_raw": "Kepulauan Bangka Belitung",
+          "satuan": null,
+          "kode_wilayah": 1900000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "3",
+              "value_raw": "3",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "20",
+              "value_raw": "20",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "34",
+              "value_raw": "34",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "136",
+              "value_raw": "136",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "17",
+              "value_raw": "17",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "4",
+              "value_raw": "4",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "86",
+              "value_raw": "86",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "–",
+              "value_raw": null,
+              "value_code": "–"
+            },
+            "qnllesa1vk": {
+              "value": "1.853",
+              "value_raw": "1.853",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "3",
+              "value_raw": "3",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "189",
+              "value_raw": "189",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "2.347",
+              "value_raw": "2.347",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Kepulauan Riau",
+          "label_raw": "Kepulauan Riau",
+          "satuan": null,
+          "kode_wilayah": 2100000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "33",
+              "value_raw": "33",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "5",
+              "value_raw": "5",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "26",
+              "value_raw": "26",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "267",
+              "value_raw": "267",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "35",
+              "value_raw": "35",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "3",
+              "value_raw": "3",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "93",
+              "value_raw": "93",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "2.817",
+              "value_raw": "2.817",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "12",
+              "value_raw": "12",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "176",
+              "value_raw": "176",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "3.470",
+              "value_raw": "3.470",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "DKI Jakarta",
+          "label_raw": "DKI Jakarta",
+          "satuan": null,
+          "kode_wilayah": 3100000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "33",
+              "value_raw": "33",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "22",
+              "value_raw": "22",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "10",
+              "value_raw": "10",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "103",
+              "value_raw": "103",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "981",
+              "value_raw": "981",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "12",
+              "value_raw": "12",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "18",
+              "value_raw": "18",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "222",
+              "value_raw": "222",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "5",
+              "value_raw": "5",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "10.790",
+              "value_raw": "10.790",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "–",
+              "value_raw": null,
+              "value_code": "–"
+            },
+            "yrabw71enw": {
+              "value": "45",
+              "value_raw": "45",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "1.821",
+              "value_raw": "1.821",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "14.062",
+              "value_raw": "14.062",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Jawa Barat",
+          "label_raw": "Jawa Barat",
+          "satuan": null,
+          "kode_wilayah": 3200000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "34",
+              "value_raw": "34",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "180",
+              "value_raw": "180",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "32",
+              "value_raw": "32",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "870",
+              "value_raw": "870",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "3.270",
+              "value_raw": "3.270",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "162",
+              "value_raw": "162",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "183",
+              "value_raw": "183",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "605",
+              "value_raw": "605",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "28",
+              "value_raw": "28",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "57.845",
+              "value_raw": "57.845",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "17",
+              "value_raw": "17",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "113",
+              "value_raw": "113",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "35.564",
+              "value_raw": "35.564",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "98.903",
+              "value_raw": "98.903",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Jawa Tengah",
+          "label_raw": "Jawa Tengah",
+          "satuan": null,
+          "kode_wilayah": 3300000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "28",
+              "value_raw": "28",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "262",
+              "value_raw": "262",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "17",
+              "value_raw": "17",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "587",
+              "value_raw": "587",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "6.627",
+              "value_raw": "6.627",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "121",
+              "value_raw": "121",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "40",
+              "value_raw": "40",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "424",
+              "value_raw": "424",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "41",
+              "value_raw": "41",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "36.842",
+              "value_raw": "36.842",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "22",
+              "value_raw": "22",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "90",
+              "value_raw": "90",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "22.399",
+              "value_raw": "22.399",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "67.500",
+              "value_raw": "67.500",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "DI Yogyakarta",
+          "label_raw": "DI Yogyakarta",
+          "satuan": null,
+          "kode_wilayah": 3400000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "5",
+              "value_raw": "5",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "9",
+              "value_raw": "9",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "31",
+              "value_raw": "31",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "438",
+              "value_raw": "438",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "10",
+              "value_raw": "10",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "4",
+              "value_raw": "4",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "90",
+              "value_raw": "90",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "4",
+              "value_raw": "4",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "3.913",
+              "value_raw": "3.913",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "1",
+              "value_raw": "1",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "17",
+              "value_raw": "17",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "679",
+              "value_raw": "679",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "5.202",
+              "value_raw": "5.202",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Jawa Timur",
+          "label_raw": "Jawa Timur",
+          "satuan": null,
+          "kode_wilayah": 3500000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "833",
+              "value_raw": "833",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "608",
+              "value_raw": "608",
+              "value_code": null
+            },
+            "jfayz9jmgr": {
+              "value": "48",
+              "value_raw": "48",
+              "value_code": null
+            },
+            "1u7zj79krr": {
+              "value": "1.211",
+              "value_raw": "1.211",
+              "value_code": null
+            },
+            "913nn5gezp": {
+              "value": "4.533",
+              "value_raw": "4.533",
+              "value_code": null
+            },
+            "vzsxhlnvdh": {
+              "value": "169",
+              "value_raw": "169",
+              "value_code": null
+            },
+            "tkwmv1ikhh": {
+              "value": "264",
+              "value_raw": "264",
+              "value_code": null
+            },
+            "vtcl4qza9r": {
+              "value": "2.053",
+              "value_raw": "2.053",
+              "value_code": null
+            },
+            "kzukudw3jc": {
+              "value": "34",
+              "value_raw": "34",
+              "value_code": null
+            },
+            "qnllesa1vk": {
+              "value": "37.708",
+              "value_raw": "37.708",
+              "value_code": null
+            },
+            "kgbvjpwzyp": {
+              "value": "136",
+              "value_raw": "136",
+              "value_code": null
+            },
+            "yrabw71enw": {
+              "value": "96",
+              "value_raw": "96",
+              "value_code": null
+            },
+            "9q9pxt2bye": {
+              "value": "35.515",
+              "value_raw": "35.515",
+              "value_code": null
+            },
+            "8qgqth5n35": {
+              "value": "83.208",
+              "value_raw": "83.208",
+              "value_code": null
+            }
+          }
+        },
+        {
+          "label": "Banten",
+          "label_raw": "Banten",
+          "satuan": null,
+          "kode_wilayah": 3600000,
+          "variables": {
+            "uelzja5qjq": {
+              "value": "4",
+              "value_raw": "4",
+              "value_code": null
+            },
+            "gobkfr39py": {
+              "value": "29",
+              "value_raw": "29",
+              "value_code": null
