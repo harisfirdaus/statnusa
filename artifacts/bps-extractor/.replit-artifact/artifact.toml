@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "BPS Data Extractor"
+version = "1.0.0"
+id = "artifacts/bps-extractor"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20758
+
+[services.development]
+run = "pnpm --filter @workspace/bps-extractor run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bps-extractor", "run", "build" ]
+publicDir = "artifacts/bps-extractor/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20758"
+BASE_PATH = "/"
