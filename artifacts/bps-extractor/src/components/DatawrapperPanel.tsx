@@ -9,15 +9,14 @@ import type { ParsedTable } from "@/lib/parsers";
 
 const CHART_TYPES = [
   { group: "Bar (Horizontal)", items: [
-    { value: "d3-bars",         label: "Bar Chart" },
-    { value: "d3-bars-stacked", label: "Stacked Bars" },
-    { value: "d3-bars-grouped", label: "Grouped Bars" },
+    { value: "d3-bars",         label: "Bar Chart (1 seri)" },
+    { value: "d3-bars-grouped", label: "Grouped Bars (multi-seri)" },
+    { value: "d3-bars-stacked", label: "Stacked Bars (multi-seri)" },
     { value: "d3-bars-split",   label: "Split Bars" },
   ]},
   { group: "Column (Vertikal)", items: [
-    { value: "column-chart",         label: "Grouped Columns" },
-    { value: "stacked-column-chart", label: "Stacked Columns" },
-    { value: "grouped-column-chart", label: "Multiple Columns" },
+    { value: "column-chart",         label: "Grouped Columns (multi-seri)" },
+    { value: "stacked-column-chart", label: "Stacked Columns (multi-seri)" },
   ]},
   { group: "Garis & Area", items: [
     { value: "d3-lines",   label: "Multiple Lines" },
