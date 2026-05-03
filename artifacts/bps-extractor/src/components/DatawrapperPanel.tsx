@@ -1,11 +1,17 @@
 import { useState, useMemo } from "react";
-import {
-  ExternalLink, BarChart2, Loader2, CheckCircle,
-  ChevronDown, ChevronUp, Search,
-} from "lucide-react";
+import { ExternalLink, BarChart2, Loader2, CheckCircle, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { createDatawrapperChart } from "@/lib/api";
 import { tableToCSV } from "@/lib/csv";
 import type { ParsedTable } from "@/lib/parsers";
+
+const MONO   = "'JetBrains Mono', 'Fira Code', 'Courier New', monospace";
+const PANEL  = "#0d130d";
+const INPUT  = "#060c06";
+const GREEN  = "#22c55e";
+const BRIGHT = "#4ade80";
+const LIGHT  = "#86efac";
+const DIM    = "#166534";
+const BORDER = "#14532d";
 
 const CHART_TYPES = [
   { group: "Bar (Horizontal)", items: [
@@ -29,56 +35,57 @@ const CHART_TYPES = [
   ]},
 ];
 
-interface Palette {
-  name: string;
-  colors: string[];
-}
+interface Palette { name: string; colors: string[]; }
 
 const PALETTES: Palette[] = [
-  { name: "Default", colors: [] },
-  { name: "Biru BPS",       colors: ["#1a4f8a","#2e6eb5","#4a8ecf","#6fb0e8","#9acef5","#c6e4fa"] },
-  { name: "Merah–Oranye",   colors: ["#9b2226","#c0392b","#e74c3c","#e67e22","#f39c12","#f5cba7"] },
-  { name: "Hijau Alam",     colors: ["#145a32","#1e8449","#27ae60","#52be80","#a9dfbf","#d5f5e3"] },
-  { name: "Ungu Elegan",    colors: ["#4a235a","#6c3483","#9b59b6","#bb8fce","#d7bde2","#f5eef8"] },
-  { name: "Biru–Merah",     colors: ["#1a5276","#2471a3","#3498db","#c0392b","#e74c3c","#f1948a"] },
-  { name: "Monokrom",       colors: ["#1a1a1a","#404040","#666666","#999999","#cccccc","#eeeeee"] },
-  { name: "Hangat",         colors: ["#922b21","#d35400","#e67e22","#f1c40f","#f9e79f","#fdfefe"] },
+  { name: "Default",      colors: [] },
+  { name: "Biru BPS",     colors: ["#1a4f8a","#2e6eb5","#4a8ecf","#6fb0e8","#9acef5","#c6e4fa"] },
+  { name: "Merah-Oranye", colors: ["#9b2226","#c0392b","#e74c3c","#e67e22","#f39c12","#f5cba7"] },
+  { name: "Hijau Alam",   colors: ["#145a32","#1e8449","#27ae60","#52be80","#a9dfbf","#d5f5e3"] },
+  { name: "Ungu Elegan",  colors: ["#4a235a","#6c3483","#9b59b6","#bb8fce","#d7bde2","#f5eef8"] },
+  { name: "Biru-Merah",   colors: ["#1a5276","#2471a3","#3498db","#c0392b","#e74c3c","#f1948a"] },
+  { name: "Monokrom",     colors: ["#1a1a1a","#404040","#666666","#999999","#cccccc","#eeeeee"] },
+  { name: "Hangat",       colors: ["#922b21","#d35400","#e67e22","#f1c40f","#f9e79f","#fdfefe"] },
 ];
 
 function PaletteDots({ colors }: { colors: string[] }) {
   if (colors.length === 0)
-    return <span className="text-xs text-gray-400 italic">Warna default Datawrapper</span>;
+    return <span className="text-xs italic" style={{ color: DIM }}>default Datawrapper</span>;
   return (
     <span className="flex gap-1">
       {colors.map((c) => (
-        <span key={c} className="w-4 h-4 rounded-sm border border-gray-200 inline-block" style={{ background: c }} />
+        <span key={c} className="w-4 h-4 inline-block flex-shrink-0"
+          style={{ background: c, border: `1px solid ${BORDER}` }} />
       ))}
     </span>
   );
 }
 
 interface SectionProps {
-  label: string;
-  badge?: string;
-  open: boolean;
-  onToggle: () => void;
+  label: string; badge?: string;
+  open: boolean; onToggle: () => void;
   children: React.ReactNode;
 }
 
 function Section({ label, badge, open, onToggle, children }: SectionProps) {
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
+    <div style={{ border: `1px solid ${BORDER}`, overflow: "hidden" }}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-xs transition-colors"
+        style={{ background: PANEL, color: GREEN }}
       >
         <span>
-          {label}
-          {badge && <span className="ml-1.5 text-gray-400 font-normal">{badge}</span>}
+          {open ? "[-]" : "[+]"}{" "}{label}
+          {badge && <span className="ml-1.5" style={{ color: DIM }}>{badge}</span>}
         </span>
-        {open ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+        {open ? <ChevronUp className="w-3 h-3" style={{ color: DIM }} /> : <ChevronDown className="w-3 h-3" style={{ color: DIM }} />}
       </button>
-      {open && <div className="border-t border-gray-200 p-3 bg-gray-50">{children}</div>}
+      {open && (
+        <div className="p-3" style={{ borderTop: `1px solid ${BORDER}`, background: "#0b100b" }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 }
@@ -89,21 +96,21 @@ interface DatawrapperPanelProps {
 }
 
 export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
-  const [chartType, setChartType]   = useState("d3-bars");
-  const [chartTitle, setChartTitle] = useState(table.title.slice(0, 120));
+  const [chartType, setChartType]     = useState("d3-bars");
+  const [chartTitle, setChartTitle]   = useState(table.title.slice(0, 120));
   const [description, setDescription] = useState("");
-  const [notes, setNotes]           = useState(table.note?.slice(0, 300) ?? "");
-  const [paletteIdx, setPaletteIdx] = useState(0);
-  const [sortBars, setSortBars]     = useState(false);
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState<string | null>(null);
-  const [result, setResult]         = useState<{
+  const [notes, setNotes]             = useState(table.note?.slice(0, 300) ?? "");
+  const [paletteIdx, setPaletteIdx]   = useState(0);
+  const [sortBars, setSortBars]       = useState(false);
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState<string | null>(null);
+  const [result, setResult]           = useState<{
     chartId: string; editUrl: string; publicUrl: string; published: boolean;
   } | null>(null);
 
-  const [showCols, setShowCols]   = useState(false);
-  const [showRows, setShowRows]   = useState(false);
-  const [showColor, setShowColor] = useState(false);
+  const [showCols, setShowCols]     = useState(false);
+  const [showRows, setShowRows]     = useState(false);
+  const [showColor, setShowColor]   = useState(false);
 
   const [selectedCols, setSelectedCols] = useState<Set<number>>(
     () => new Set(columns.map((_, i) => i))
@@ -138,7 +145,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   }, [table.rows, rowSearch]);
 
   const filteredCSV = useMemo(() => {
-    const colIdxs = Array.from(validCols).sort((a, b) => a - b);
+    const colIdxs    = Array.from(validCols).sort((a, b) => a - b);
     const filteredCols = colIdxs.map((i) => columns[i]);
     const filteredRows = table.rows
       .filter((_, i) => selectedRows.has(i))
@@ -147,7 +154,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   }, [validCols, columns, table.rows, selectedRows]);
 
   const dataColsSelected = validCols.size - 1;
-  const rowsSelected = selectedRows.size;
+  const rowsSelected     = selectedRows.size;
 
   async function handleCreate() {
     if (dataColsSelected === 0) { setError("Pilih minimal satu kolom data."); return; }
@@ -156,13 +163,13 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
     try {
       const palette = PALETTES[paletteIdx].colors;
       const res = await createDatawrapperChart({
-        title: chartTitle || table.title,
+        title:       chartTitle || table.title,
         chartType,
-        csvData: filteredCSV,
+        csvData:     filteredCSV,
         description: description.trim() || undefined,
-        notes: notes.trim() || undefined,
-        palette: palette.length > 0 ? palette : undefined,
-        sortBars: sortBars || undefined,
+        notes:       notes.trim() || undefined,
+        palette:     palette.length > 0 ? palette : undefined,
+        sortBars:    sortBars || undefined,
       });
       setResult(res);
     } catch (err: any) {
@@ -172,186 +179,200 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
     }
   }
 
+  const inputStyle = {
+    background: INPUT, border: `1px solid ${BORDER}`,
+    color: LIGHT, fontFamily: MONO, fontSize: "12px",
+  };
+  const inputClass = "w-full px-3 py-2 text-xs focus:outline-none";
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
-      <div className="flex items-center gap-2">
-        <BarChart2 className="w-5 h-5 text-neutral-500" />
-        <h3 className="font-semibold text-gray-800">Buat Visualisasi di Datawrapper</h3>
+    <div className="space-y-3" style={{ fontFamily: MONO }}>
+      {/* Header */}
+      <div className="px-4 py-2.5 flex items-center gap-2 text-xs"
+        style={{ background: PANEL, border: `1px solid ${BORDER}`, color: BRIGHT }}>
+        <BarChart2 className="w-3 h-3" />
+        DATAWRAPPER EXPORT
       </div>
 
       {result ? (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm">
+        <div className="p-4 space-y-3 text-xs" style={{ background: PANEL, border: `1px solid ${BORDER}` }}>
+          <div className="flex items-center gap-2" style={{ color: "#4ade80" }}>
             <CheckCircle className="w-4 h-4 flex-shrink-0" />
-            <span>Chart berhasil dibuat dan dipublikasikan!</span>
+            <span>[OK] Chart berhasil dibuat dan dipublikasikan!</span>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <a href={result.editUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-4 py-2 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-700 transition-colors">
-              <ExternalLink className="w-4 h-4" /> Edit di Datawrapper
+              className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold"
+              style={{ background: DIM, color: "#dcfce7" }}>
+              <ExternalLink className="w-3 h-3" /> [EDIT_DATAWRAPPER]
             </a>
             <a href={result.publicUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              <ExternalLink className="w-4 h-4" /> Lihat Chart Publik
+              className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs"
+              style={{ border: `1px solid ${BORDER}`, color: GREEN }}>
+              <ExternalLink className="w-3 h-3" /> [PUBLIC_URL]
             </a>
           </div>
-          <p className="text-xs text-gray-400">Chart ID: {result.chartId}</p>
-          <button onClick={() => setResult(null)} className="text-xs text-neutral-600 hover:text-neutral-900 hover:underline">
-            Buat chart baru dengan data yang sama
+          <p style={{ color: DIM }}>chart_id={result.chartId}</p>
+          <button onClick={() => setResult(null)} className="text-xs underline" style={{ color: DIM }}>
+            [RESET] buat chart baru dengan data yang sama
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
-          <div className="grid grid-cols-1 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Judul Chart</label>
+        <div className="space-y-3" style={{ border: `1px solid ${BORDER}`, padding: "1rem", background: PANEL }}>
+          {/* Title */}
+          <div className="text-xs space-y-1">
+            <div style={{ color: DIM }}>
+              title=
               <input type="text" value={chartTitle} onChange={(e) => setChartTitle(e.target.value)}
                 maxLength={120} placeholder="Judul chart Datawrapper"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Deskripsi <span className="text-gray-400 font-normal">(opsional)</span>
-              </label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)}
-                rows={2} maxLength={500} placeholder="Teks pendek di bawah judul chart"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Catatan / Footnote <span className="text-gray-400 font-normal">(opsional)</span>
-              </label>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
-                rows={2} maxLength={500} placeholder="Catatan yang muncul di bawah chart, misalnya keterangan simbol"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none" />
+                className="focus:outline-none px-2 py-1 ml-1 w-72"
+                style={inputStyle} />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipe Chart</label>
-            <select value={chartType} onChange={(e) => setChartType(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 bg-white">
-              {CHART_TYPES.map((group) => (
-                <optgroup key={group.group} label={group.group}>
-                  {group.items.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+          {/* Description */}
+          <div className="text-xs">
+            <div style={{ color: DIM }} className="mb-1">desc= <span style={{ color: DIM, opacity: 0.6 }}>(opsional)</span></div>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)}
+              rows={2} maxLength={500} placeholder="Teks pendek di bawah judul chart"
+              className={`${inputClass} resize-none`} style={inputStyle} />
+          </div>
+
+          {/* Notes */}
+          <div className="text-xs">
+            <div style={{ color: DIM }} className="mb-1">notes= <span style={{ color: DIM, opacity: 0.6 }}>(opsional)</span></div>
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
+              rows={2} maxLength={500} placeholder="Catatan/footnote di bawah chart"
+              className={`${inputClass} resize-none`} style={inputStyle} />
+          </div>
+
+          {/* Chart type */}
+          <div className="text-xs">
+            <div className="flex items-center gap-2" style={{ color: DIM }}>
+              type=
+              <select value={chartType} onChange={(e) => setChartType(e.target.value)}
+                className="px-2 py-1 focus:outline-none"
+                style={{ ...inputStyle, width: "auto" }}>
+                {CHART_TYPES.map((group) => (
+                  <optgroup key={group.group} label={group.group}>
+                    {group.items.map((t) => (
+                      <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
             {(chartType === "column-chart" || chartType === "grouped-column-chart" || chartType === "stacked-column-chart") && (
-              <p className="mt-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-                Untuk Column Chart, pilih <strong>5–10 baris</strong> saja di pemilih baris agar chart tidak terlalu padat.
-                Untuk semua provinsi, gunakan <strong>Grouped/Stacked Bars</strong> (horizontal).
+              <p className="mt-1.5 text-xs px-2 py-1.5"
+                style={{ background: "#1a1200", border: "1px solid #713f12", color: "#fcd34d" }}>
+                [TIP] Column Chart: pilih 5–10 baris agar tidak terlalu padat.
+                Untuk semua provinsi, gunakan Grouped/Stacked Bars (horizontal).
               </p>
             )}
             {["d3-bars","d3-bars-grouped","d3-bars-stacked","d3-bars-split"].includes(chartType) && (
-              <label className="mt-2 flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={sortBars}
-                  onChange={(e) => setSortBars(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 accent-neutral-900 focus:ring-neutral-900"
-                />
-                <span className="text-sm text-gray-700">Urutkan dari nilai terbesar ke terkecil</span>
+              <label className="mt-2 flex items-center gap-2 cursor-pointer select-none text-xs" style={{ color: GREEN }}>
+                <input type="checkbox" checked={sortBars} onChange={(e) => setSortBars(e.target.checked)}
+                  className="w-3.5 h-3.5" style={{ accentColor: BRIGHT }} />
+                sort_desc=true
               </label>
             )}
           </div>
 
-          <Section
-            label="Warna Chart"
-            badge={`— ${PALETTES[paletteIdx].name}`}
-            open={showColor}
-            onToggle={() => setShowColor((s) => !s)}
-          >
+          {/* Accordion sections */}
+          <Section label="palette" badge={`— ${PALETTES[paletteIdx].name}`}
+            open={showColor} onToggle={() => setShowColor((s) => !s)}>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {PALETTES.map((p, i) => (
                 <button key={i} onClick={() => setPaletteIdx(i)}
-                  className={`flex flex-col gap-1.5 p-2 rounded-lg border text-left transition-all ${
-                    paletteIdx === i
-                      ? "border-neutral-900 bg-neutral-50 ring-1 ring-neutral-700"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  }`}>
-                  <span className="text-xs font-medium text-gray-700 truncate">{p.name}</span>
+                  className="flex flex-col gap-1.5 p-2 text-left transition-all text-xs"
+                  style={{
+                    border: `1px solid ${paletteIdx === i ? BRIGHT : BORDER}`,
+                    background: paletteIdx === i ? "#0d1f0d" : "transparent",
+                    color: paletteIdx === i ? BRIGHT : DIM,
+                  }}>
+                  <span className="truncate">{p.name}</span>
                   <PaletteDots colors={p.colors} />
                 </button>
               ))}
             </div>
           </Section>
 
-          <Section
-            label="Kolom yang divisualisasikan"
-            badge={`(${dataColsSelected} dari ${columns.length - 1} dipilih)`}
-            open={showCols}
-            onToggle={() => setShowCols((s) => !s)}
-          >
+          <Section label="cols"
+            badge={`(${dataColsSelected}/${columns.length - 1} dipilih)`}
+            open={showCols} onToggle={() => setShowCols((s) => !s)}>
             <div className="flex gap-3 text-xs mb-2">
-              <button onClick={() => setSelectedCols(new Set(columns.map((_, i) => i)))} className="text-neutral-700 hover:underline font-medium">Pilih semua</button>
-              <button onClick={() => setSelectedCols(new Set([0]))} className="text-gray-500 hover:underline">Hapus semua</button>
+              <button onClick={() => setSelectedCols(new Set(columns.map((_, i) => i)))}
+                className="underline" style={{ color: GREEN }}>all</button>
+              <button onClick={() => setSelectedCols(new Set([0]))}
+                className="underline" style={{ color: DIM }}>none</button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-48 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-48 overflow-y-auto">
               {columns.map((col, i) => (
-                <label key={i} className={`flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-white transition-colors ${i === 0 ? "opacity-60 cursor-not-allowed" : ""}`}>
-                  <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)} disabled={i === 0} className="rounded accent-neutral-900" />
-                  <span className="truncate" title={col}>
-                    {i === 0 ? <>{col} <span className="text-xs text-gray-400">(label)</span></> : col}
+                <label key={i} className={`flex items-center gap-2 px-2 py-1 text-xs cursor-pointer ${i === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                  style={{ color: validCols.has(i) ? LIGHT : DIM }}>
+                  <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)}
+                    disabled={i === 0} style={{ accentColor: BRIGHT }} />
+                  <span className="truncate">
+                    {i === 0 ? <>{col} <span style={{ color: DIM }}>(label)</span></> : col}
                   </span>
                 </label>
               ))}
             </div>
           </Section>
 
-          <Section
-            label="Baris yang divisualisasikan"
-            badge={`(${rowsSelected} dari ${table.rows.length} dipilih)`}
-            open={showRows}
-            onToggle={() => setShowRows((s) => !s)}
-          >
+          <Section label="rows"
+            badge={`(${rowsSelected}/${table.rows.length} dipilih)`}
+            open={showRows} onToggle={() => setShowRows((s) => !s)}>
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-                  <input type="search" placeholder="Cari baris…" value={rowSearch}
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none" style={{ color: DIM }} />
+                  <input type="search" placeholder="search rows..." value={rowSearch}
                     onChange={(e) => setRowSearch(e.target.value)}
-                    className="w-full pl-7 pr-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900" />
+                    className="w-full pl-7 pr-2 py-1 text-xs focus:outline-none"
+                    style={inputStyle} />
                 </div>
                 <div className="flex gap-2 text-xs flex-shrink-0">
-                  <button onClick={selectAllRows} className="text-neutral-700 hover:underline font-medium">Semua</button>
-                  <button onClick={selectNoRows} className="text-gray-500 hover:underline">Hapus</button>
+                  <button onClick={selectAllRows} className="underline" style={{ color: GREEN }}>all</button>
+                  <button onClick={selectNoRows} className="underline" style={{ color: DIM }}>none</button>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-56 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-56 overflow-y-auto">
                 {filteredRowIndices.map(({ i, label }) => (
-                  <label key={i} className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-white transition-colors">
-                    <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)} className="rounded accent-neutral-900" />
-                    <span className="truncate" title={label}>{label || `Baris ${i + 1}`}</span>
+                  <label key={i} className="flex items-center gap-2 px-2 py-1 text-xs cursor-pointer"
+                    style={{ color: selectedRows.has(i) ? LIGHT : DIM }}>
+                    <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)}
+                      style={{ accentColor: BRIGHT }} />
+                    <span className="truncate">{label || `row_${i + 1}`}</span>
                   </label>
                 ))}
                 {filteredRowIndices.length === 0 && (
-                  <p className="col-span-2 text-xs text-gray-400 py-2 text-center">Tidak ada baris yang cocok</p>
+                  <p className="col-span-2 text-xs py-2 text-center" style={{ color: DIM }}>
+                    [EMPTY] tidak ada baris yang cocok
+                  </p>
                 )}
               </div>
             </div>
           </Section>
 
-          <p className="text-xs text-gray-500">
-            {rowsSelected} baris × {dataColsSelected + 1} kolom akan dikirim ke Datawrapper.
+          <p className="text-xs" style={{ color: DIM }}>
+            payload: {rowsSelected}_rows × {dataColsSelected + 1}_cols → Datawrapper
           </p>
 
           {error && (
-            <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>
+            <div className="text-xs px-3 py-2"
+              style={{ background: "#1a0000", border: "1px solid #7f1d1d", color: "#fca5a5" }}>
+              [ERROR] {error}
+            </div>
           )}
 
           <button onClick={handleCreate}
             disabled={loading || rowsSelected === 0 || dataColsSelected === 0}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" />Membuat chart…</>
-            ) : (
-              <><BarChart2 className="w-4 h-4" />Buat Visualisasi</>
-            )}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold transition-colors disabled:opacity-50"
+            style={{ background: DIM, color: "#dcfce7", border: "none", cursor: loading || rowsSelected === 0 || dataColsSelected === 0 ? "not-allowed" : "pointer" }}>
+            {loading
+              ? <><Loader2 className="w-3 h-3 animate-spin" />[PUSHING_TO_DATAWRAPPER]</>
+              : <><BarChart2 className="w-3 h-3" />[PUSH_TO_DATAWRAPPER]</>}
           </button>
         </div>
       )}

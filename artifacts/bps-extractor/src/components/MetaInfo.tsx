@@ -1,10 +1,18 @@
 import type { ParsedTable } from "@/lib/parsers";
 
+const MONO   = "'JetBrains Mono', 'Fira Code', 'Courier New', monospace";
+const PANEL  = "#0d130d";
+const GREEN  = "#22c55e";
+const BRIGHT = "#4ade80";
+const LIGHT  = "#86efac";
+const DIM    = "#166534";
+const BORDER = "#14532d";
+
 const FORMAT_LABELS: Record<string, string> = {
-  dynamic: "Data Dinamis (var/vervar)",
-  simdasi: "SIMDASI / Tabel Statis",
-  list: "Daftar / List Data",
-  unknown: "Format Tidak Dikenal",
+  dynamic: "dynamic",
+  simdasi: "simdasi",
+  list:    "list",
+  unknown: "unknown",
 };
 
 interface MetaInfoProps {
@@ -12,36 +20,28 @@ interface MetaInfoProps {
 }
 
 export function MetaInfo({ table }: MetaInfoProps) {
+  const fields: { key: string; value: string }[] = [
+    { key: "format", value: FORMAT_LABELS[table.format] ?? table.format },
+    ...(table.unit   ? [{ key: "unit",   value: table.unit }]   : []),
+    ...(table.source ? [{ key: "source", value: table.source }] : []),
+    ...(table.subtitle ? [{ key: "info", value: table.subtitle }] : []),
+  ];
+
   return (
-    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 space-y-2 text-sm">
-      <div className="flex flex-wrap gap-x-6 gap-y-1">
-        <div>
-          <span className="font-semibold text-neutral-600">Format terdeteksi:</span>{" "}
-          <span className="text-neutral-800">{FORMAT_LABELS[table.format] ?? table.format}</span>
+    <div className="p-3 text-xs space-y-1" style={{ background: PANEL, border: `1px solid ${BORDER}`, fontFamily: MONO }}>
+      {fields.map(({ key, value }) => (
+        <div key={key} className="flex items-baseline gap-1">
+          <span style={{ color: DIM }}>{key}=</span>
+          <span style={{ color: LIGHT }}>{value}</span>
         </div>
-        {table.unit && (
-          <div>
-            <span className="font-semibold text-neutral-600">Satuan:</span>{" "}
-            <span className="text-neutral-800">{table.unit}</span>
-          </div>
-        )}
-        {table.source && (
-          <div>
-            <span className="font-semibold text-neutral-600">Sumber:</span>{" "}
-            <span className="text-neutral-800">{table.source}</span>
-          </div>
-        )}
-        {table.subtitle && (
-          <div>
-            <span className="font-semibold text-neutral-600">Info:</span>{" "}
-            <span className="text-neutral-800">{table.subtitle}</span>
-          </div>
-        )}
-      </div>
+      ))}
       {table.note && (
-        <p className="text-xs text-neutral-600 border-t border-neutral-200 pt-2 mt-1 leading-relaxed">
-          <span className="font-semibold">Catatan:</span> {table.note.slice(0, 400)}{table.note.length > 400 ? "…" : ""}
-        </p>
+        <div className="pt-1.5 mt-1" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <span style={{ color: DIM }}>note=</span>
+          <span style={{ color: LIGHT, opacity: 0.8 }}>
+            {table.note.slice(0, 400)}{table.note.length > 400 ? "…" : ""}
+          </span>
+        </div>
       )}
     </div>
   );
