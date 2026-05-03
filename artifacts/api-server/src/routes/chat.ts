@@ -38,7 +38,7 @@ router.post("/chat", async (req, res) => {
       { role: "system", content: systemPrompt },
       ...messages,
     ],
-    max_tokens: 2048,
+    max_tokens: 4096,
     temperature: 0.7,
     top_p: 0.95,
     stream: true,
