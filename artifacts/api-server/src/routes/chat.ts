@@ -42,6 +42,7 @@ router.post("/chat", async (req, res) => {
     temperature: 0.7,
     top_p: 0.95,
     stream: true,
+    chat_template_kwargs: { enable_thinking: false },
   };
 
   try {
