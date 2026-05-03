@@ -5,6 +5,7 @@ import { parseData } from "@/lib/parsers";
 import { MetaInfo } from "@/components/MetaInfo";
 import { DataTable } from "@/components/DataTable";
 import { DatawrapperPanel } from "@/components/DatawrapperPanel";
+import { ChatPanel } from "@/components/ChatPanel";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import type { ParsedTable } from "@/lib/parsers";
 
@@ -274,6 +275,10 @@ export default function Home() {
 
             {table.columns.length > 0 && table.rows.length > 0 && (
               <DatawrapperPanel table={table} columns={editedColumns} />
+            )}
+
+            {table.columns.length > 0 && table.rows.length > 0 && (
+              <ChatPanel table={table} columns={editedColumns} />
             )}
 
             {rawData && (
