@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "BPS Data Extractor"
+title = "Statika"
 version = "1.0.0"
 id = "artifacts/bps-extractor"
 router = "path"
