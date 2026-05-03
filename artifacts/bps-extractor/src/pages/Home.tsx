@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Loader2, AlertCircle, Database, ChevronDown, ChevronUp } from "lucide-react";
 import { fetchBpsData } from "@/lib/api";
 import { parseData } from "@/lib/parsers";
@@ -9,7 +9,7 @@ import type { ParsedTable } from "@/lib/parsers";
 
 const EXAMPLE_URLS = [
   {
-    label: "Pengangguran Menurut Golongan Umur (SIMDASI)",
+    label: "Perceraian Menurut Faktor (SIMDASI)",
     url: "https://webapi.bps.go.id/v1/api/interoperabilitas/datasource/simdasi/id/25/tahun/2025/id_tabel/aWhSR0ViS3hxc1hWZlZEbExjNVpDUT09/wilayah/0000000/key/WebAPI_KEY",
   },
   {
@@ -24,7 +24,21 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [rawData, setRawData] = useState<unknown>(null);
   const [table, setTable] = useState<ParsedTable | null>(null);
+  const [editedColumns, setEditedColumns] = useState<string[]>([]);
   const [showRaw, setShowRaw] = useState(false);
+
+  // Sync editedColumns whenever a new table is loaded
+  useEffect(() => {
+    if (table) setEditedColumns([...table.columns]);
+  }, [table]);
+
+  function handleColumnRename(idx: number, name: string) {
+    setEditedColumns((prev) => {
+      const next = [...prev];
+      next[idx] = name;
+      return next;
+    });
+  }
 
   async function handleFetch(e: React.FormEvent) {
     e.preventDefault();
@@ -49,10 +63,6 @@ export default function Home() {
     }
   }
 
-  function useExample(exUrl: string) {
-    setUrl(exUrl);
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -74,8 +84,17 @@ export default function Home() {
           <div>
             <h2 className="font-semibold text-gray-800 mb-1">Masukkan URL API BPS</h2>
             <p className="text-sm text-gray-500">
-              Tempel URL dari <a href="https://webapi.bps.go.id/documentation/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">dokumentasi BPS API</a>.
-              Ganti <code className="bg-gray-100 px-1 rounded text-xs">WebAPI_KEY</code> dengan teks tersebut — API key akan diisi otomatis oleh server.
+              Tempel URL dari{" "}
+              <a
+                href="https://webapi.bps.go.id/documentation/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                dokumentasi BPS API
+              </a>
+              . Ganti <code className="bg-gray-100 px-1 rounded text-xs">WebAPI_KEY</code> dengan
+              teks tersebut — API key akan diisi otomatis oleh server.
             </p>
           </div>
 
@@ -106,9 +125,7 @@ export default function Home() {
                   </>
                 )}
               </button>
-              {loading && (
-                <span className="text-sm text-gray-500">Mengambil dari BPS API…</span>
-              )}
+              {loading && <span className="text-sm text-gray-500">Mengambil dari BPS API…</span>}
             </div>
           </form>
 
@@ -119,7 +136,7 @@ export default function Home() {
               {EXAMPLE_URLS.map((ex) => (
                 <button
                   key={ex.url}
-                  onClick={() => useExample(ex.url)}
+                  onClick={() => setUrl(ex.url)}
                   className="text-xs px-3 py-1.5 border border-blue-200 text-blue-700 bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
                 >
                   {ex.label}
@@ -141,7 +158,7 @@ export default function Home() {
         )}
 
         {/* Results */}
-        {table && (
+        {table && editedColumns.length > 0 && (
           <div className="space-y-5">
             {/* Title + Meta */}
             <div className="space-y-3">
@@ -152,18 +169,23 @@ export default function Home() {
             {/* Data Table */}
             {table.columns.length > 0 ? (
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                <DataTable table={table} />
+                <DataTable
+                  table={table}
+                  columns={editedColumns}
+                  onColumnRename={handleColumnRename}
+                />
               </div>
             ) : (
               <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500 text-sm">
-                Format data ini terdeteksi sebagai <strong>{table.format}</strong>, namun parser belum dapat mengekstrak tabel.
-                Lihat data mentah di bawah untuk memeriksa strukturnya.
+                Format data ini terdeteksi sebagai <strong>{table.format}</strong>, namun parser
+                belum dapat mengekstrak tabel. Lihat data mentah di bawah untuk memeriksa
+                strukturnya.
               </div>
             )}
 
             {/* Datawrapper */}
             {table.columns.length > 0 && table.rows.length > 0 && (
-              <DatawrapperPanel table={table} />
+              <DatawrapperPanel table={table} columns={editedColumns} />
             )}
 
             {/* Raw JSON toggle */}
@@ -174,7 +196,11 @@ export default function Home() {
                   className="w-full flex items-center justify-between px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <span>Lihat Data Mentah (JSON)</span>
-                  {showRaw ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {showRaw ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
                 </button>
                 {showRaw && (
                   <pre className="bg-gray-900 text-green-400 text-xs p-4 overflow-auto max-h-80 font-mono">
@@ -188,8 +214,25 @@ export default function Home() {
       </main>
 
       <footer className="max-w-5xl mx-auto px-4 sm:px-6 py-6 text-xs text-gray-400 text-center">
-        Data bersumber dari <a href="https://webapi.bps.go.id" target="_blank" rel="noopener noreferrer" className="hover:underline">BPS Web API</a>.
-        Visualisasi via <a href="https://www.datawrapper.de" target="_blank" rel="noopener noreferrer" className="hover:underline">Datawrapper</a>.
+        Data bersumber dari{" "}
+        <a
+          href="https://webapi.bps.go.id"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          BPS Web API
+        </a>
+        . Visualisasi via{" "}
+        <a
+          href="https://www.datawrapper.de"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          Datawrapper
+        </a>
+        .
       </footer>
     </div>
   );

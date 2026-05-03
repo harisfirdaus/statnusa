@@ -1,26 +1,42 @@
-import { useState } from "react";
-import { ExternalLink, BarChart2, Loader2, CheckCircle } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ExternalLink, BarChart2, Loader2, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { createDatawrapperChart } from "@/lib/api";
 import { tableToCSV } from "@/lib/csv";
 import type { ParsedTable } from "@/lib/parsers";
 
 const CHART_TYPES = [
-  { value: "d3-bars", label: "Bar Chart (Horizontal)" },
-  { value: "column-chart", label: "Column Chart (Vertikal)" },
-  { value: "d3-lines", label: "Line Chart" },
-  { value: "d3-pies", label: "Pie Chart" },
-  { value: "tables", label: "Tabel Interaktif" },
+  { group: "Bar (Horizontal)", items: [
+    { value: "d3-bars",         label: "Bar Chart" },
+    { value: "d3-bars-stacked", label: "Stacked Bars" },
+    { value: "d3-bars-grouped", label: "Grouped Bars" },
+    { value: "d3-bars-split",   label: "Split Bars" },
+  ]},
+  { group: "Column (Vertikal)", items: [
+    { value: "column-chart",         label: "Grouped Columns" },
+    { value: "stacked-column-chart", label: "Stacked Columns" },
+    { value: "grouped-column-chart", label: "Multiple Columns" },
+  ]},
+  { group: "Garis & Area", items: [
+    { value: "d3-lines",   label: "Multiple Lines" },
+    { value: "area-chart", label: "Area Chart" },
+  ]},
+  { group: "Lainnya", items: [
+    { value: "d3-pies", label: "Pie Chart" },
+    { value: "tables",  label: "Tabel Interaktif" },
+  ]},
 ];
 
 interface DatawrapperPanelProps {
   table: ParsedTable;
+  columns: string[];
 }
 
-export function DatawrapperPanel({ table }: DatawrapperPanelProps) {
+export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   const [chartType, setChartType] = useState("d3-bars");
   const [chartTitle, setChartTitle] = useState(table.title.slice(0, 120));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showColPicker, setShowColPicker] = useState(false);
   const [result, setResult] = useState<{
     chartId: string;
     editUrl: string;
@@ -28,20 +44,59 @@ export function DatawrapperPanel({ table }: DatawrapperPanelProps) {
     published: boolean;
   } | null>(null);
 
+  // selectedCols: indices of columns to include (column 0 = label, always included)
+  const [selectedCols, setSelectedCols] = useState<Set<number>>(
+    () => new Set(columns.map((_, i) => i))
+  );
+
+  // When columns change externally, keep valid indices
+  const validSelected = useMemo(() => {
+    const valid = new Set<number>();
+    selectedCols.forEach((i) => { if (i < columns.length) valid.add(i); });
+    return valid;
+  }, [selectedCols, columns.length]);
+
+  function toggleCol(idx: number) {
+    if (idx === 0) return; // label column always included
+    setSelectedCols((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
+  }
+
+  function selectAll() {
+    setSelectedCols(new Set(columns.map((_, i) => i)));
+  }
+
+  function selectNone() {
+    setSelectedCols(new Set([0])); // always keep label
+  }
+
+  const selectedCount = validSelected.size;
+  const dataColsSelected = selectedCount - 1; // minus label col
+
+  const filteredCSV = useMemo(() => {
+    const sortedIndices = Array.from(validSelected).sort((a, b) => a - b);
+    const filteredCols = sortedIndices.map((i) => columns[i]);
+    const filteredRows = table.rows.map((row) => sortedIndices.map((i) => row[i]));
+    return tableToCSV(filteredCols, filteredRows);
+  }, [validSelected, columns, table.rows]);
+
   async function handleCreate() {
-    if (table.columns.length === 0 || table.rows.length === 0) {
-      setError("Tidak ada data untuk divisualisasi.");
+    if (dataColsSelected === 0) {
+      setError("Pilih minimal satu kolom data untuk divisualisasi.");
       return;
     }
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const csvData = tableToCSV(table.columns, table.rows);
       const res = await createDatawrapperChart({
         title: chartTitle || table.title,
         chartType,
-        csvData,
+        csvData: filteredCSV,
         description: table.subtitle ?? table.unit ?? "",
       });
       setResult(res);
@@ -94,7 +149,8 @@ export function DatawrapperPanel({ table }: DatawrapperPanelProps) {
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
+          {/* Chart title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Judul Chart
@@ -109,6 +165,7 @@ export function DatawrapperPanel({ table }: DatawrapperPanelProps) {
             />
           </div>
 
+          {/* Chart type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Tipe Chart
@@ -118,16 +175,73 @@ export function DatawrapperPanel({ table }: DatawrapperPanelProps) {
               onChange={(e) => setChartType(e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              {CHART_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
+              {CHART_TYPES.map((group) => (
+                <optgroup key={group.group} label={group.group}>
+                  {group.items.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
 
+          {/* Column picker */}
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <button
+              onClick={() => setShowColPicker((s) => !s)}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <span>
+                Kolom yang divisualisasikan{" "}
+                <span className="text-gray-400 font-normal">
+                  ({dataColsSelected} dari {columns.length - 1} kolom data dipilih)
+                </span>
+              </span>
+              {showColPicker
+                ? <ChevronUp className="w-4 h-4 text-gray-400" />
+                : <ChevronDown className="w-4 h-4 text-gray-400" />}
+            </button>
+
+            {showColPicker && (
+              <div className="border-t border-gray-200 p-3 space-y-2 bg-gray-50">
+                <div className="flex gap-3 text-xs mb-2">
+                  <button onClick={selectAll} className="text-blue-600 hover:underline">Pilih semua</button>
+                  <button onClick={selectNone} className="text-gray-500 hover:underline">Hapus semua</button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-48 overflow-y-auto">
+                  {columns.map((col, i) => (
+                    <label
+                      key={i}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-white transition-colors ${
+                        i === 0 ? "opacity-60 cursor-not-allowed" : ""
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={validSelected.has(i)}
+                        onChange={() => toggleCol(i)}
+                        disabled={i === 0}
+                        className="rounded accent-blue-600"
+                      />
+                      <span className="truncate" title={col}>
+                        {i === 0 ? (
+                          <span>
+                            {col}{" "}
+                            <span className="text-xs text-gray-400">(label)</span>
+                          </span>
+                        ) : col}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <p className="text-xs text-gray-500">
-            Data ({table.rows.length} baris, {table.columns.length} kolom) akan dikirim ke Datawrapper menggunakan API key yang dikonfigurasi di server.
+            {table.rows.length} baris akan dikirim ke Datawrapper menggunakan API key yang dikonfigurasi di server.
           </p>
 
           {error && (
@@ -138,7 +252,7 @@ export function DatawrapperPanel({ table }: DatawrapperPanelProps) {
 
           <button
             onClick={handleCreate}
-            disabled={loading || table.rows.length === 0}
+            disabled={loading || table.rows.length === 0 || dataColsSelected === 0}
             className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (

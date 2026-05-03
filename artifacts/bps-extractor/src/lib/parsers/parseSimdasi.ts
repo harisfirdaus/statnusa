@@ -1,18 +1,17 @@
 import type { ParsedTable } from "./types";
 
 function stripHtml(html: string): string {
+  // Decode entities FIRST, then strip resulting tags
   return String(html ?? "")
-    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
     .replace(/&#60;/g, "<")
     .replace(/&#62;/g, ">")
     .replace(/&#8804;/g, "≤")
     .replace(/&nbsp;/g, " ")
-    .replace(/&sup1;/g, "¹")
-    .replace(/&sup2;/g, "²")
-    .replace(/&sup3;/g, "³")
+    .replace(/&sup(\d+);/g, (_, n) => String.fromCharCode(0x2070 + (n === "1" ? 1 : n === "2" ? 2 : n === "3" ? 3 : 0)))
+    .replace(/<[^>]*>/g, "")
     .trim();
 }
 

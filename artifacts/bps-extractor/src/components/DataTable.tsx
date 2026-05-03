@@ -1,20 +1,95 @@
-import { useState, useMemo } from "react";
-import { Download, Search } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { Download, Search, Pencil } from "lucide-react";
 import { tableToCSV, downloadCSV } from "@/lib/csv";
 import type { ParsedTable } from "@/lib/parsers";
 
-function formatNumber(v: number, decimals = 0): string {
-  return v.toLocaleString("id-ID", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+function formatNumber(v: number): string {
+  return v.toLocaleString("id-ID");
 }
 
 interface DataTableProps {
   table: ParsedTable;
+  columns: string[];
+  onColumnRename: (idx: number, name: string) => void;
 }
 
-export function DataTable({ table }: DataTableProps) {
+function EditableHeader({
+  name,
+  idx,
+  onRename,
+  onSort,
+  sortActive,
+  sortAsc,
+}: {
+  name: string;
+  idx: number;
+  onRename: (idx: number, name: string) => void;
+  onSort: (idx: number) => void;
+  sortActive: boolean;
+  sortAsc: boolean;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(name);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setDraft(name);
+  }, [name]);
+
+  useEffect(() => {
+    if (editing) inputRef.current?.select();
+  }, [editing]);
+
+  function commit() {
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== name) onRename(idx, trimmed);
+    else setDraft(name);
+    setEditing(false);
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") { setDraft(name); setEditing(false); }
+          e.stopPropagation();
+        }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full min-w-[80px] px-1 py-0.5 text-sm border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+      />
+    );
+  }
+
+  return (
+    <span className="flex items-center gap-1 group/header">
+      <span
+        className="cursor-pointer select-none"
+        onClick={() => onSort(idx)}
+      >
+        {name}
+        {sortActive ? (
+          <span className="ml-1 text-blue-600">{sortAsc ? "↑" : "↓"}</span>
+        ) : (
+          <span className="ml-1 text-gray-300">↕</span>
+        )}
+      </span>
+      <button
+        onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+        title="Ganti nama kolom"
+        className="opacity-0 group-hover/header:opacity-100 transition-opacity p-0.5 rounded hover:bg-gray-200"
+      >
+        <Pencil className="w-3 h-3 text-gray-400" />
+      </button>
+    </span>
+  );
+}
+
+export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
   const [search, setSearch] = useState("");
   const [sortCol, setSortCol] = useState<number | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
@@ -46,21 +121,17 @@ export function DataTable({ table }: DataTableProps) {
   }, [table.rows, search, sortCol, sortAsc]);
 
   function handleSort(idx: number) {
-    if (sortCol === idx) {
-      setSortAsc((a) => !a);
-    } else {
-      setSortCol(idx);
-      setSortAsc(true);
-    }
+    if (sortCol === idx) setSortAsc((a) => !a);
+    else { setSortCol(idx); setSortAsc(true); }
   }
 
   function handleDownload() {
-    const csv = tableToCSV(table.columns, table.rows);
+    const csv = tableToCSV(columns, table.rows);
     const filename = `${table.title.slice(0, 50).replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "_")}.csv`;
     downloadCSV(filename, csv);
   }
 
-  if (table.columns.length === 0) {
+  if (columns.length === 0) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">
         Tidak ada kolom yang dapat ditampilkan.
@@ -84,7 +155,7 @@ export function DataTable({ table }: DataTableProps) {
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <span>{filtered.length} baris</span>
           <span>·</span>
-          <span>{table.columns.length} kolom</span>
+          <span>{columns.length} kolom</span>
         </div>
         <button
           onClick={handleDownload}
@@ -95,24 +166,28 @@ export function DataTable({ table }: DataTableProps) {
         </button>
       </div>
 
+      <p className="text-xs text-gray-400 flex items-center gap-1">
+        <Pencil className="w-3 h-3" />
+        Arahkan kursor ke nama kolom lalu klik ikon pensil untuk mengubah nama kolom.
+      </p>
+
       <div className="overflow-auto rounded-xl border border-gray-200 shadow-sm max-h-[500px]">
         <table className="w-full text-sm border-collapse min-w-max">
           <thead className="sticky top-0 z-10">
             <tr className="bg-gray-50 border-b border-gray-200">
-              {table.columns.map((col, i) => (
+              {columns.map((col, i) => (
                 <th
                   key={i}
-                  onClick={() => handleSort(i)}
-                  className="px-4 py-3 text-left font-semibold text-gray-700 whitespace-nowrap cursor-pointer hover:bg-gray-100 transition-colors select-none"
+                  className="px-4 py-3 text-left font-semibold text-gray-700 whitespace-nowrap"
                 >
-                  <span className="flex items-center gap-1">
-                    {col}
-                    {sortCol === i ? (
-                      <span className="text-blue-600">{sortAsc ? "↑" : "↓"}</span>
-                    ) : (
-                      <span className="text-gray-300">↕</span>
-                    )}
-                  </span>
+                  <EditableHeader
+                    name={col}
+                    idx={i}
+                    onRename={onColumnRename}
+                    onSort={handleSort}
+                    sortActive={sortCol === i}
+                    sortAsc={sortAsc}
+                  />
                 </th>
               ))}
             </tr>
@@ -120,7 +195,7 @@ export function DataTable({ table }: DataTableProps) {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={table.columns.length} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={columns.length} className="px-4 py-8 text-center text-gray-400">
                   Tidak ada data yang cocok
                 </td>
               </tr>
