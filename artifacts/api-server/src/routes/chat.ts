@@ -2,9 +2,50 @@ import { Router } from "express";
 
 const router = Router();
 
+const MODELS = [
+  "google/gemma-3-27b-it",
+  "meta/llama-3.1-70b-instruct",
+  "meta/llama-3.1-8b-instruct",
+];
+
 interface Message {
   role: "user" | "assistant" | "system";
   content: string;
+}
+
+async function callNvidia(
+  apiKey: string,
+  model: string,
+  messages: Message[],
+  signal: AbortSignal
+): Promise<Response> {
+  const payload: Record<string, unknown> = {
+    model,
+    messages,
+    max_tokens: 4096,
+    temperature: 0.7,
+    top_p: 0.95,
+    stream: true,
+  };
+
+  if (model.startsWith("google/gemma")) {
+    payload.chat_template_kwargs = { enable_thinking: false };
+  }
+
+  return fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    body: JSON.stringify(payload),
+    signal,
+  });
+}
+
+function isDegraded(status: number, body: string): boolean {
+  return status === 400 && body.includes("DEGRADED");
 }
 
 router.post("/chat", async (req, res) => {
@@ -32,62 +73,85 @@ router.post("/chat", async (req, res) => {
       ].join("\n")
     : "Kamu adalah asisten analisis data statistik BPS Indonesia. Gunakan bahasa Indonesia.";
 
-  const payload = {
-    model: "google/gemma-3-27b-it",
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...messages,
-    ],
-    max_tokens: 4096,
-    temperature: 0.7,
-    top_p: 0.95,
-    stream: true,
-    chat_template_kwargs: { enable_thinking: false },
-  };
+  const fullMessages: Message[] = [
+    { role: "system", content: systemPrompt },
+    ...messages,
+  ];
 
-  try {
-    const upstream = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-      },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(60_000),
-    });
+  let upstream: Response | null = null;
+  let usedModel = MODELS[0];
+  let lastError = "";
 
-    if (!upstream.ok) {
-      const errText = await upstream.text();
-      req.log.error({ status: upstream.status, errText }, "NVIDIA API error");
-      return res.status(upstream.status).json({
-        error: `NVIDIA API mengembalikan status ${upstream.status}`,
+  for (const model of MODELS) {
+    usedModel = model;
+    try {
+      const response = await callNvidia(
+        apiKey,
+        model,
+        fullMessages,
+        AbortSignal.timeout(60_000)
+      );
+
+      if (response.ok) {
+        upstream = response;
+        break;
+      }
+
+      const errText = await response.text();
+      lastError = errText;
+
+      if (isDegraded(response.status, errText)) {
+        req.log.warn({ model, status: response.status }, "Model DEGRADED, mencoba fallback");
+        continue;
+      }
+
+      if (response.status === 429) {
+        req.log.warn({ model }, "Rate limited, mencoba fallback");
+        continue;
+      }
+
+      req.log.error({ model, status: response.status, errText }, "NVIDIA API error");
+      return res.status(response.status).json({
+        error: `Model AI mengembalikan status ${response.status}`,
         details: errText.slice(0, 300),
       });
+    } catch (err: any) {
+      if (err.name === "TimeoutError") {
+        req.log.warn({ model }, "Timeout, mencoba fallback");
+        lastError = "timeout";
+        continue;
+      }
+      if (!res.headersSent) {
+        return res.status(500).json({ error: "Gagal menghubungi NVIDIA API", details: err.message });
+      }
+      return;
     }
+  }
 
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-    res.flushHeaders();
+  if (!upstream) {
+    return res.status(503).json({
+      error: "Semua model AI sedang tidak tersedia (DEGRADED). Coba beberapa saat lagi.",
+      details: lastError.slice(0, 300),
+    });
+  }
 
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Model-Used", usedModel);
+  res.flushHeaders();
+
+  try {
     const reader = upstream.body!.getReader();
     const decoder = new TextDecoder();
-
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       res.write(decoder.decode(value, { stream: true }));
     }
-
     res.end();
-  } catch (err: any) {
-    if (res.headersSent) { res.end(); return; }
-    if (err.name === "TimeoutError") {
-      return res.status(504).json({ error: "Timeout menghubungi NVIDIA API (>60 detik)" });
-    }
-    req.log.error({ err }, "Chat error");
-    return res.status(500).json({ error: "Gagal menghubungi NVIDIA API", details: err.message });
+  } catch {
+    res.end();
   }
 });
 

@@ -79,7 +79,19 @@ export function ChatPanel({ table, columns }: Props) {
         });
       }
     } catch (err: any) {
-      setError(err.message ?? "Terjadi kesalahan.");
+      const raw: string = err.message ?? "";
+      let friendly = raw;
+      if (raw.includes("DEGRADED") || raw.includes("sedang tidak tersedia"))
+        friendly = "Semua model AI sedang tidak tersedia di server NVIDIA. Coba lagi dalam beberapa menit.";
+      else if (raw.includes("504") || raw.includes("timeout") || raw.toLowerCase().includes("Timeout"))
+        friendly = "Permintaan timeout — model membutuhkan terlalu banyak waktu. Coba pertanyaan yang lebih singkat.";
+      else if (raw.includes("429"))
+        friendly = "Terlalu banyak permintaan ke NVIDIA API. Tunggu sebentar lalu coba lagi.";
+      else if (raw.includes("401") || raw.includes("403"))
+        friendly = "NVIDIA API key tidak valid atau tidak memiliki akses. Hubungi administrator.";
+      else if (raw.includes("500"))
+        friendly = "Terjadi kesalahan internal di server NVIDIA. Coba lagi.";
+      setError(friendly);
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setStreaming(false);
