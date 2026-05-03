@@ -60,7 +60,7 @@ function EditableHeader({
           e.stopPropagation();
         }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full min-w-[80px] px-1 py-0.5 text-sm border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+        className="w-full min-w-[80px] px-1 py-0.5 text-sm border border-neutral-800 rounded focus:outline-none focus:ring-2 focus:ring-neutral-900 font-semibold"
       />
     );
   }
@@ -73,7 +73,7 @@ function EditableHeader({
       >
         {name}
         {sortActive ? (
-          <span className="ml-1 text-blue-600">{sortAsc ? "↑" : "↓"}</span>
+          <span className="ml-1 text-neutral-800">{sortAsc ? "↑" : "↓"}</span>
         ) : (
           <span className="ml-1 text-gray-300">↕</span>
         )}
@@ -133,7 +133,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
 
   if (columns.length === 0) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-500">
+      <div className="rounded-xl border border-neutral-200 bg-white p-8 text-center text-neutral-500">
         Tidak ada kolom yang dapat ditampilkan.
       </div>
     );
@@ -149,7 +149,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
             placeholder="Cari data…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
           />
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -159,7 +159,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
         </div>
         <button
           onClick={handleDownload}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ml-auto sm:ml-0"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-700 transition-colors ml-auto sm:ml-0"
         >
           <Download className="w-4 h-4" />
           Download CSV
@@ -203,7 +203,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
               filtered.map((row, ri) => (
                 <tr
                   key={ri}
-                  className={`border-b border-gray-100 hover:bg-blue-50/40 transition-colors ${
+                  className={`border-b border-gray-100 hover:bg-neutral-50 transition-colors ${
                     ri % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                   }`}
                 >

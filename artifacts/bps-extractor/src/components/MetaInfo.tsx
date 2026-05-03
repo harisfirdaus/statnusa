@@ -13,33 +13,33 @@ interface MetaInfoProps {
 
 export function MetaInfo({ table }: MetaInfoProps) {
   return (
-    <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 space-y-2 text-sm">
+    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 space-y-2 text-sm">
       <div className="flex flex-wrap gap-x-6 gap-y-1">
         <div>
-          <span className="font-semibold text-blue-700">Format terdeteksi:</span>{" "}
-          <span className="text-blue-900">{FORMAT_LABELS[table.format] ?? table.format}</span>
+          <span className="font-semibold text-neutral-600">Format terdeteksi:</span>{" "}
+          <span className="text-neutral-800">{FORMAT_LABELS[table.format] ?? table.format}</span>
         </div>
         {table.unit && (
           <div>
-            <span className="font-semibold text-blue-700">Satuan:</span>{" "}
-            <span className="text-blue-900">{table.unit}</span>
+            <span className="font-semibold text-neutral-600">Satuan:</span>{" "}
+            <span className="text-neutral-800">{table.unit}</span>
           </div>
         )}
         {table.source && (
           <div>
-            <span className="font-semibold text-blue-700">Sumber:</span>{" "}
-            <span className="text-blue-900">{table.source}</span>
+            <span className="font-semibold text-neutral-600">Sumber:</span>{" "}
+            <span className="text-neutral-800">{table.source}</span>
           </div>
         )}
         {table.subtitle && (
           <div>
-            <span className="font-semibold text-blue-700">Info:</span>{" "}
-            <span className="text-blue-900">{table.subtitle}</span>
+            <span className="font-semibold text-neutral-600">Info:</span>{" "}
+            <span className="text-neutral-800">{table.subtitle}</span>
           </div>
         )}
       </div>
       {table.note && (
-        <p className="text-xs text-blue-700 border-t border-blue-200 pt-2 mt-1 leading-relaxed">
+        <p className="text-xs text-neutral-600 border-t border-neutral-200 pt-2 mt-1 leading-relaxed">
           <span className="font-semibold">Catatan:</span> {table.note.slice(0, 400)}{table.note.length > 400 ? "…" : ""}
         </p>
       )}

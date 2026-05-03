@@ -33,7 +33,7 @@ function PreviewChart() {
             <span className="text-xs text-gray-500 w-36 text-right flex-shrink-0 truncate">{label}</span>
             <div className="flex-1 h-5 bg-gray-100 rounded relative overflow-hidden">
               <div
-                className="absolute inset-y-0 left-0 bg-blue-600 rounded transition-all"
+                className="absolute inset-y-0 left-0 bg-neutral-800 transition-all"
                 style={{ width: `${pct}%` }}
               />
               <div
@@ -58,7 +58,7 @@ function PreviewChart() {
         <span className="w-36 flex-shrink-0" />
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5 text-[10px] text-gray-400">
-            <span className="w-3 h-2.5 bg-blue-600 rounded-sm inline-block flex-shrink-0" />
+            <span className="w-3 h-2.5 bg-neutral-800 rounded-sm inline-block flex-shrink-0" />
             8 provinsi tertinggi
           </span>
           <span className="flex items-center gap-1.5 text-[10px] text-gray-400">
@@ -132,11 +132,11 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600 text-white flex-shrink-0">
+          <div className="flex items-center justify-center w-9 h-9 bg-neutral-900 text-white flex-shrink-0">
             <Database className="w-5 h-5" />
           </div>
           <div>
@@ -182,7 +182,7 @@ export default function Home() {
               <p className="text-xs text-gray-400">
                 Data riil dari BPS API — otomatis diekstrak, bisa diedit &amp; dikirim ke Datawrapper
               </p>
-              <span className="flex items-center gap-1 text-xs font-semibold text-blue-600">
+              <span className="flex items-center gap-1 text-xs font-semibold text-neutral-700">
                 Coba sekarang <ArrowRight className="w-3 h-3" />
               </span>
             </div>
@@ -201,14 +201,14 @@ export default function Home() {
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://webapi.bps.go.id/v1/api/interoperabilitas/datasource/simdasi/id/25/tahun/2025/id_tabel/.../wilayah/0000000/key/WebAPI_KEY"
               rows={3}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none font-mono"
               disabled={loading}
             />
             <div className="flex items-center gap-3">
               <button
                 type="submit"
                 disabled={loading || !url.trim()}
-                className="flex items-center gap-2 px-5 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="flex items-center gap-2 px-5 py-2 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 {loading ? (
                   <>
@@ -234,7 +234,7 @@ export default function Home() {
                 <button
                   key={ex.url}
                   onClick={() => setUrl(ex.url)}
-                  className="text-xs px-3 py-1.5 border border-blue-200 text-blue-700 bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
+                  className="text-xs px-3 py-1.5 border border-neutral-300 text-neutral-700 bg-white rounded-full hover:bg-neutral-100 transition-colors"
                 >
                   {ex.label}
                 </button>

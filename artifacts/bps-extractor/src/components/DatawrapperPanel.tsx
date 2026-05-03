@@ -100,12 +100,10 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
     chartId: string; editUrl: string; publicUrl: string; published: boolean;
   } | null>(null);
 
-  // Section toggles
   const [showCols, setShowCols]   = useState(false);
   const [showRows, setShowRows]   = useState(false);
   const [showColor, setShowColor] = useState(false);
 
-  // Column selection (index 0 = label, always included)
   const [selectedCols, setSelectedCols] = useState<Set<number>>(
     () => new Set(columns.map((_, i) => i))
   );
@@ -120,7 +118,6 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
     setSelectedCols((p) => { const n = new Set(p); n.has(i) ? n.delete(i) : n.add(i); return n; });
   }
 
-  // Row selection
   const [selectedRows, setSelectedRows] = useState<Set<number>>(
     () => new Set(table.rows.map((_, i) => i))
   );
@@ -139,7 +136,6 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
       .filter(({ label }) => !q || label.toLowerCase().includes(q));
   }, [table.rows, rowSearch]);
 
-  // Build CSV from selections
   const filteredCSV = useMemo(() => {
     const colIdxs = Array.from(validCols).sort((a, b) => a - b);
     const filteredCols = colIdxs.map((i) => columns[i]);
@@ -178,7 +174,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
       <div className="flex items-center gap-2">
-        <BarChart2 className="w-5 h-5 text-blue-600" />
+        <BarChart2 className="w-5 h-5 text-neutral-500" />
         <h3 className="font-semibold text-gray-800">Buat Visualisasi di Datawrapper</h3>
       </div>
 
@@ -190,7 +186,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <a href={result.editUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              className="flex items-center justify-center gap-1.5 px-4 py-2 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-700 transition-colors">
               <ExternalLink className="w-4 h-4" /> Edit di Datawrapper
             </a>
             <a href={result.publicUrl} target="_blank" rel="noopener noreferrer"
@@ -199,19 +195,18 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             </a>
           </div>
           <p className="text-xs text-gray-400">Chart ID: {result.chartId}</p>
-          <button onClick={() => setResult(null)} className="text-xs text-blue-600 hover:underline">
+          <button onClick={() => setResult(null)} className="text-xs text-neutral-600 hover:text-neutral-900 hover:underline">
             Buat chart baru dengan data yang sama
           </button>
         </div>
       ) : (
         <div className="space-y-3">
-          {/* ── Basic info ── */}
           <div className="grid grid-cols-1 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Judul Chart</label>
               <input type="text" value={chartTitle} onChange={(e) => setChartTitle(e.target.value)}
                 maxLength={120} placeholder="Judul chart Datawrapper"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent" />
             </div>
 
             <div>
@@ -220,7 +215,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
               </label>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)}
                 rows={2} maxLength={500} placeholder="Teks pendek di bawah judul chart"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" />
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none" />
             </div>
 
             <div>
@@ -229,15 +224,14 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
               </label>
               <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
                 rows={2} maxLength={500} placeholder="Catatan yang muncul di bawah chart, misalnya keterangan simbol"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" />
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none" />
             </div>
           </div>
 
-          {/* ── Chart type ── */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Tipe Chart</label>
             <select value={chartType} onChange={(e) => setChartType(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 bg-white">
               {CHART_TYPES.map((group) => (
                 <optgroup key={group.group} label={group.group}>
                   {group.items.map((t) => (
@@ -258,14 +252,13 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
                   type="checkbox"
                   checked={sortBars}
                   onChange={(e) => setSortBars(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 rounded border-gray-300 accent-neutral-900 focus:ring-neutral-900"
                 />
                 <span className="text-sm text-gray-700">Urutkan dari nilai terbesar ke terkecil</span>
               </label>
             )}
           </div>
 
-          {/* ── Color palette ── */}
           <Section
             label="Warna Chart"
             badge={`— ${PALETTES[paletteIdx].name}`}
@@ -277,7 +270,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
                 <button key={i} onClick={() => setPaletteIdx(i)}
                   className={`flex flex-col gap-1.5 p-2 rounded-lg border text-left transition-all ${
                     paletteIdx === i
-                      ? "border-blue-500 bg-blue-50 ring-1 ring-blue-400"
+                      ? "border-neutral-900 bg-neutral-50 ring-1 ring-neutral-700"
                       : "border-gray-200 hover:border-gray-300 bg-white"
                   }`}>
                   <span className="text-xs font-medium text-gray-700 truncate">{p.name}</span>
@@ -287,7 +280,6 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             </div>
           </Section>
 
-          {/* ── Column picker ── */}
           <Section
             label="Kolom yang divisualisasikan"
             badge={`(${dataColsSelected} dari ${columns.length - 1} dipilih)`}
@@ -295,13 +287,13 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             onToggle={() => setShowCols((s) => !s)}
           >
             <div className="flex gap-3 text-xs mb-2">
-              <button onClick={() => setSelectedCols(new Set(columns.map((_, i) => i)))} className="text-blue-600 hover:underline">Pilih semua</button>
+              <button onClick={() => setSelectedCols(new Set(columns.map((_, i) => i)))} className="text-neutral-700 hover:underline font-medium">Pilih semua</button>
               <button onClick={() => setSelectedCols(new Set([0]))} className="text-gray-500 hover:underline">Hapus semua</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-48 overflow-y-auto">
               {columns.map((col, i) => (
                 <label key={i} className={`flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-white transition-colors ${i === 0 ? "opacity-60 cursor-not-allowed" : ""}`}>
-                  <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)} disabled={i === 0} className="rounded accent-blue-600" />
+                  <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)} disabled={i === 0} className="rounded accent-neutral-900" />
                   <span className="truncate" title={col}>
                     {i === 0 ? <>{col} <span className="text-xs text-gray-400">(label)</span></> : col}
                   </span>
@@ -310,7 +302,6 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             </div>
           </Section>
 
-          {/* ── Row picker ── */}
           <Section
             label="Baris yang divisualisasikan"
             badge={`(${rowsSelected} dari ${table.rows.length} dipilih)`}
@@ -323,17 +314,17 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                   <input type="search" placeholder="Cari baris…" value={rowSearch}
                     onChange={(e) => setRowSearch(e.target.value)}
-                    className="w-full pl-7 pr-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full pl-7 pr-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900" />
                 </div>
                 <div className="flex gap-2 text-xs flex-shrink-0">
-                  <button onClick={selectAllRows} className="text-blue-600 hover:underline">Semua</button>
+                  <button onClick={selectAllRows} className="text-neutral-700 hover:underline font-medium">Semua</button>
                   <button onClick={selectNoRows} className="text-gray-500 hover:underline">Hapus</button>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-56 overflow-y-auto">
                 {filteredRowIndices.map(({ i, label }) => (
                   <label key={i} className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-white transition-colors">
-                    <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)} className="rounded accent-blue-600" />
+                    <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)} className="rounded accent-neutral-900" />
                     <span className="truncate" title={label}>{label || `Baris ${i + 1}`}</span>
                   </label>
                 ))}
@@ -354,7 +345,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
 
           <button onClick={handleCreate}
             disabled={loading || rowsSelected === 0 || dataColsSelected === 0}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             {loading ? (
               <><Loader2 className="w-4 h-4 animate-spin" />Membuat chart…</>
             ) : (
