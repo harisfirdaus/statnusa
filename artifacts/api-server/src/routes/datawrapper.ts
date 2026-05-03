@@ -4,7 +4,6 @@ const router = Router();
 
 const DW_API = "https://api.datawrapper.de/v3";
 
-// Chart types that need a legend when multi-series
 const MULTI_SERIES_TYPES = new Set([
   "d3-bars-grouped",
   "d3-bars-stacked",
@@ -14,6 +13,13 @@ const MULTI_SERIES_TYPES = new Set([
   "d3-lines",
   "area-chart",
   "d3-pies",
+]);
+
+const BAR_SORT_TYPES = new Set([
+  "d3-bars",
+  "d3-bars-grouped",
+  "d3-bars-stacked",
+  "d3-bars-split",
 ]);
 
 /** Parse column names from the first CSV line, handling quoted values. */
@@ -37,7 +43,7 @@ function parseCsvHeaders(csv: string): string[] {
 }
 
 router.post("/datawrapper/create", async (req, res) => {
-  const { title, chartType, csvData, description, notes, palette } = req.body ?? {};
+  const { title, chartType, csvData, description, notes, palette, sortBars } = req.body ?? {};
 
   if (!title || typeof title !== "string") {
     return res.status(400).json({ error: "Field 'title' harus diisi" });
@@ -53,6 +59,7 @@ router.post("/datawrapper/create", async (req, res) => {
     Array.isArray(palette) && palette.every((c) => typeof c === "string")
       ? (palette as string[])
       : null;
+  const resolvedSortBars = sortBars === true;
 
   const apiKey = process.env.DATAWRAPPER_API_KEY;
   if (!apiKey) {
@@ -65,9 +72,11 @@ router.post("/datawrapper/create", async (req, res) => {
     Accept: "application/json",
   };
 
-  // Series = CSV data columns (excludes the first label column)
+  // Compute series names from CSV column headers (excludes first label column)
   const csvHeaders  = parseCsvHeaders(csvData);
   const seriesNames = csvHeaders.slice(1);
+
+  const needsLegend = MULTI_SERIES_TYPES.has(resolvedChartType) && seriesNames.length > 1;
 
   let customColors: Record<string, string> | null = null;
   if (resolvedPalette && resolvedPalette.length > 0 && seriesNames.length > 0) {
@@ -77,9 +86,22 @@ router.post("/datawrapper/create", async (req, res) => {
     });
   }
 
-  const needsLegend = MULTI_SERIES_TYPES.has(resolvedChartType) && seriesNames.length > 1;
+  // Build complete visualize metadata upfront so it is included at chart
+  // creation time — avoids any timing gap between a PATCH and publish.
+  const visualize: Record<string, unknown> = {};
+  if (needsLegend) {
+    // Set all known Datawrapper legend keys to be safe across chart types
+    visualize["legend"]      = true;
+    visualize["show-legend"] = true;
+  }
+  if (customColors) {
+    visualize["custom-colors"] = customColors;
+  }
+  if (resolvedSortBars && BAR_SORT_TYPES.has(resolvedChartType)) {
+    visualize["sort-by"] = "values";
+  }
 
-  const initialMetadata = {
+  const initialMetadata: Record<string, unknown> = {
     describe: {
       intro: resolvedDesc,
       "source-name": "Badan Pusat Statistik (BPS)",
@@ -87,9 +109,12 @@ router.post("/datawrapper/create", async (req, res) => {
     },
     annotate: { notes: resolvedNotes },
   };
+  if (Object.keys(visualize).length > 0) {
+    initialMetadata["visualize"] = visualize;
+  }
 
   try {
-    // ── Step 1: Create chart ──────────────────────────────────────────────────
+    // ── Step 1: Create chart with complete metadata ───────────────────────────
     const createRes = await fetch(`${DW_API}/charts`, {
       method: "POST",
       headers: jsonHeaders,
@@ -126,22 +151,7 @@ router.post("/datawrapper/create", async (req, res) => {
       });
     }
 
-    // ── Step 3: PATCH metadata – colors, legend ──────────────────────────────
-    // Must run AFTER data upload so Datawrapper recognises series names.
-    if (customColors || needsLegend) {
-      const visualize: Record<string, unknown> = {};
-      if (customColors) visualize["custom-colors"] = customColors;
-      if (needsLegend)  visualize["legend"] = true;
-
-      await fetch(`${DW_API}/charts/${chartId}`, {
-        method: "PATCH",
-        headers: jsonHeaders,
-        body: JSON.stringify({ metadata: { visualize } }),
-        signal: AbortSignal.timeout(10_000),
-      }).catch(() => { /* non-fatal */ });
-    }
-
-    // ── Step 4: Publish ───────────────────────────────────────────────────────
+    // ── Step 3: Publish ───────────────────────────────────────────────────────
     const publishRes = await fetch(`${DW_API}/charts/${chartId}/publish`, {
       method: "POST",
       headers: jsonHeaders,

@@ -93,6 +93,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   const [description, setDescription] = useState("");
   const [notes, setNotes]           = useState(table.note?.slice(0, 300) ?? "");
   const [paletteIdx, setPaletteIdx] = useState(0);
+  const [sortBars, setSortBars]     = useState(false);
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState<string | null>(null);
   const [result, setResult]         = useState<{
@@ -164,6 +165,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
         description: description.trim() || undefined,
         notes: notes.trim() || undefined,
         palette: palette.length > 0 ? palette : undefined,
+        sortBars: sortBars || undefined,
       });
       setResult(res);
     } catch (err: any) {
@@ -249,6 +251,17 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
                 Untuk Column Chart, pilih <strong>5–10 baris</strong> saja di pemilih baris agar chart tidak terlalu padat.
                 Untuk semua provinsi, gunakan <strong>Grouped/Stacked Bars</strong> (horizontal).
               </p>
+            )}
+            {["d3-bars","d3-bars-grouped","d3-bars-stacked","d3-bars-split"].includes(chartType) && (
+              <label className="mt-2 flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={sortBars}
+                  onChange={(e) => setSortBars(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Urutkan dari nilai terbesar ke terkecil</span>
+              </label>
             )}
           </div>
 
