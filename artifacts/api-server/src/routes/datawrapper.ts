@@ -17,7 +17,10 @@ const MULTI_SERIES_TYPES = new Set([
   "d3-pies",
 ]);
 
-// Bar chart types that support sorting by value via "sort-bars" key.
+// Bar chart types that support sorting by row value.
+// NOTE: Datawrapper's metadata sort keys (sort-bars, sort-values) do NOT reliably work
+// via the API for grouped/stacked bar types. Instead we sort the CSV rows ourselves
+// before upload so the chart always reflects the desired order.
 const BAR_SORT_TYPES = new Set([
   "d3-bars",
   "d3-bars-grouped",
@@ -25,24 +28,52 @@ const BAR_SORT_TYPES = new Set([
   "d3-bars-split",
 ]);
 
-/** Parse column names from the first CSV line, handling quoted values. */
-function parseCsvHeaders(csv: string): string[] {
-  const firstLine = csv.split(/\r?\n/)[0] ?? "";
-  const cols: string[] = [];
+/** Split a single CSV line into fields, respecting double-quoted values. */
+function splitCsvLine(line: string): string[] {
+  const fields: string[] = [];
   let inQuote = false;
   let cur = "";
-  for (const ch of firstLine) {
+  for (const ch of line) {
     if (ch === '"') {
       inQuote = !inQuote;
     } else if (ch === "," && !inQuote) {
-      cols.push(cur.trim());
+      fields.push(cur);
       cur = "";
     } else {
       cur += ch;
     }
   }
-  cols.push(cur.trim());
-  return cols;
+  fields.push(cur);
+  return fields;
+}
+
+/** Parse column names from the first CSV line. */
+function parseCsvHeaders(csv: string): string[] {
+  const firstLine = csv.split(/\r?\n/)[0] ?? "";
+  return splitCsvLine(firstLine).map((c) => c.trim());
+}
+
+/**
+ * Sort CSV data rows by the first numeric column (index 1) in descending order.
+ * Returns the full CSV string with header preserved and rows sorted largest-first.
+ * Non-numeric rows are placed at the end in their original order.
+ */
+function sortCsvByFirstValue(csv: string): string {
+  const lines = csv.split(/\r?\n/);
+  if (lines.length < 2) return csv;
+
+  const header = lines[0];
+  const dataLines = lines.slice(1).filter((l) => l.trim() !== "");
+
+  const parsed = dataLines.map((line) => {
+    const fields = splitCsvLine(line);
+    const firstNum = parseFloat(fields[1] ?? "");
+    return { line, value: isNaN(firstNum) ? -Infinity : firstNum };
+  });
+
+  parsed.sort((a, b) => b.value - a.value);
+
+  return [header, ...parsed.map((r) => r.line)].join("\n");
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -84,6 +115,11 @@ router.post("/datawrapper/create", async (req, res) => {
   const needsLegend = MULTI_SERIES_TYPES.has(resolvedChartType) && seriesNames.length > 1;
   const applySort   = resolvedSortBars && BAR_SORT_TYPES.has(resolvedChartType);
 
+  // Sort CSV rows by first data column (descending) when requested.
+  // We do this client-side because Datawrapper's metadata sort keys (sort-bars,
+  // sort-values) do NOT reliably work via the REST API — only in the UI editor.
+  const finalCsvData = applySort ? sortCsvByFirstValue(csvData) : csvData;
+
   let customColors: Record<string, string> | null = null;
   if (resolvedPalette && resolvedPalette.length > 0 && seriesNames.length > 0) {
     customColors = {};
@@ -98,9 +134,9 @@ router.post("/datawrapper/create", async (req, res) => {
    * Keys confirmed from Datawrapper chart JS source (d3-bars-grouped, d3-bars,
    * d3-bars-stacked, d3-bars-split, d3-lines):
    *   "show-color-key": true  → shows the color legend above the chart
-   *   "sort-bars": true       → sorts rows by value
-   *   "revert-sorting": true  → reverses default sort order → largest bar first
    *   "custom-colors": {...}  → maps series name → hex color
+   *
+   * NOTE: Row order / sorting is handled by pre-sorting the CSV data above.
    */
   function buildVisualize(): Record<string, unknown> {
     const v: Record<string, unknown> = {};
@@ -109,10 +145,6 @@ router.post("/datawrapper/create", async (req, res) => {
     }
     if (customColors) {
       v["custom-colors"] = customColors;
-    }
-    if (applySort) {
-      v["sort-bars"]      = true;
-      v["revert-sorting"] = true; // largest value at top
     }
     return v;
   }
@@ -152,10 +184,11 @@ router.post("/datawrapper/create", async (req, res) => {
     const chartId = chart.id;
 
     // ── Step 2: Upload CSV data ───────────────────────────────────────────────
+    // Use finalCsvData which is pre-sorted when sortBars is requested.
     const dataRes = await fetch(`${DW_API}/charts/${chartId}/data`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "text/csv" },
-      body: csvData,
+      body: finalCsvData,
       signal: AbortSignal.timeout(15_000),
     });
 
