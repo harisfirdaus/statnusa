@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, MessageCircle, ChevronDown, ChevronUp, X } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { streamChat, type ChatMessage } from "@/lib/api";
 import type { ParsedTable } from "@/lib/parsers";
 
@@ -160,19 +162,47 @@ export function ChatPanel({ table, columns }: Props) {
                     ? <User className="w-3.5 h-3.5 text-neutral-700 dark:text-neutral-300" />
                     : <Bot  className="w-3.5 h-3.5 text-white dark:text-neutral-900" />}
                 </span>
-                <div className={`max-w-[80%] text-sm leading-relaxed whitespace-pre-wrap ${
+                <div className={`max-w-[80%] text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "text-neutral-800 dark:text-neutral-200 text-right"
-                    : "text-neutral-700 dark:text-neutral-300"
+                    ? "text-neutral-800 dark:text-neutral-200 text-right whitespace-pre-wrap"
+                    : "text-neutral-700 dark:text-neutral-300 prose prose-sm prose-neutral dark:prose-invert max-w-none"
                 }`}>
-                  {msg.content}
-                  {streaming && i === messages.length - 1 && msg.role === "assistant" && msg.content === "" && (
-                    <span className="inline-flex items-center gap-1 text-neutral-400 dark:text-neutral-500">
-                      <Loader2 className="w-3 h-3 animate-spin" /> Sedang berpikir…
-                    </span>
-                  )}
-                  {streaming && i === messages.length - 1 && msg.role === "assistant" && msg.content !== "" && (
-                    <span className="inline-block w-0.5 h-4 bg-neutral-400 dark:bg-neutral-500 ml-0.5 animate-pulse align-middle" />
+                  {msg.role === "assistant" ? (
+                    <>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p:      ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                          strong: ({ children }) => <strong className="font-semibold text-neutral-900 dark:text-neutral-100">{children}</strong>,
+                          ul:     ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-0.5">{children}</ul>,
+                          ol:     ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-0.5">{children}</ol>,
+                          li:     ({ children }) => <li className="leading-relaxed">{children}</li>,
+                          h1:     ({ children }) => <h1 className="text-base font-bold text-neutral-900 dark:text-neutral-100 mt-3 mb-1.5">{children}</h1>,
+                          h2:     ({ children }) => <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 mt-3 mb-1.5">{children}</h2>,
+                          h3:     ({ children }) => <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mt-2 mb-1">{children}</h3>,
+                          code:   ({ children, className }) => className
+                            ? <code className="block bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-mono px-3 py-2 my-1.5 overflow-x-auto">{children}</code>
+                            : <code className="bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-mono px-1 py-0.5">{children}</code>,
+                          blockquote: ({ children }) => <blockquote className="border-l-2 border-neutral-300 dark:border-neutral-600 pl-3 italic text-neutral-500 dark:text-neutral-400 my-1.5">{children}</blockquote>,
+                          hr:     () => <hr className="border-neutral-200 dark:border-neutral-700 my-2" />,
+                          table:  ({ children }) => <div className="overflow-x-auto my-2"><table className="text-xs border-collapse w-full">{children}</table></div>,
+                          th:     ({ children }) => <th className="border border-neutral-300 dark:border-neutral-600 px-2 py-1 bg-neutral-100 dark:bg-neutral-800 font-semibold text-left">{children}</th>,
+                          td:     ({ children }) => <td className="border border-neutral-300 dark:border-neutral-600 px-2 py-1">{children}</td>,
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                      {streaming && i === messages.length - 1 && msg.content === "" && (
+                        <span className="inline-flex items-center gap-1 text-neutral-400 dark:text-neutral-500">
+                          <Loader2 className="w-3 h-3 animate-spin" /> Sedang berpikir…
+                        </span>
+                      )}
+                      {streaming && i === messages.length - 1 && msg.content !== "" && (
+                        <span className="inline-block w-0.5 h-3.5 bg-neutral-400 dark:bg-neutral-500 ml-0.5 animate-pulse align-middle" />
+                      )}
+                    </>
+                  ) : (
+                    msg.content
                   )}
                 </div>
               </div>
