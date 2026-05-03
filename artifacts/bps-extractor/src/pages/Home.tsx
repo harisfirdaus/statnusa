@@ -9,12 +9,16 @@ import type { ParsedTable } from "@/lib/parsers";
 
 const EXAMPLE_URLS = [
   {
-    label: "Perceraian Menurut Faktor (SIMDASI)",
-    url: "https://webapi.bps.go.id/v1/api/interoperabilitas/datasource/simdasi/id/25/tahun/2025/id_tabel/aWhSR0ViS3hxc1hWZlZEbExjNVpDUT09/wilayah/0000000/key/WebAPI_KEY",
+    label: "Pengangguran",
+    url: "https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/2401/th/125/key/%5BWebAPI_KEY%5D",
   },
   {
-    label: "Daftar Domain BPS",
-    url: "https://webapi.bps.go.id/v1/api/domain/type/all/key/WebAPI_KEY",
+    label: "Umur Harapan Hidup",
+    url: "https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/2273/th/125/key/WebAPI_KEY",
+  },
+  {
+    label: "Persentase Penduduk Miskin",
+    url: "https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/192/th/125/key/WebAPI_KEY",
   },
 ];
 
@@ -82,20 +86,7 @@ export default function Home() {
         {/* URL Input */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
           <div>
-            <h2 className="font-semibold text-gray-800 mb-1">Masukkan URL API BPS</h2>
-            <p className="text-sm text-gray-500">
-              Tempel URL dari{" "}
-              <a
-                href="https://webapi.bps.go.id/documentation/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                dokumentasi BPS API
-              </a>
-              . Ganti <code className="bg-gray-100 px-1 rounded text-xs">WebAPI_KEY</code> dengan
-              teks tersebut — API key akan diisi otomatis oleh server.
-            </p>
+            <h2 className="font-semibold text-gray-800 mb-1">Masukkan URL Data JSON BPS</h2>
           </div>
 
           <form onSubmit={handleFetch} className="space-y-3">
