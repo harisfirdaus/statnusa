@@ -4,29 +4,35 @@ import {
   ExternalLink, CheckCircle, Loader2, ArrowRight,
 } from "lucide-react";
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
+// ─── Real data: TPT per Provinsi, November 2025 (Sakernas Triwulanan) ─────────
 
 const PREVIEW_BARS = [
-  { label: "Jawa Barat",          value: 7.44 },
-  { label: "DKI Jakarta",         value: 6.53 },
-  { label: "Kepulauan Riau",      value: 6.11 },
-  { label: "Aceh",                value: 6.03 },
-  { label: "Sumatera Utara",      value: 5.72 },
-  { label: "Jawa Tengah",         value: 5.13 },
-  { label: "Riau",                value: 4.31 },
-  { label: "DI Yogyakarta",       value: 3.57 },
+  { label: "Papua",          value: 7.08 },
+  { label: "Jawa Barat",     value: 6.66 },
+  { label: "Banten",         value: 6.63 },
+  { label: "Papua Barat Daya", value: 6.56 },
+  { label: "Kep. Riau",     value: 6.35 },
+  { label: "DKI Jakarta",   value: 6.31 },
+  { label: "Maluku",        value: 6.11 },
+  { label: "Sulawesi Utara", value: 5.78 },
 ];
-const MAX_VAL = 8;
-
-const MOCK_TITLE = "Tingkat Pengangguran Terbuka (TPT) Menurut Provinsi, 2024";
-const MOCK_NOTE  = "Sumber: Survei Angkatan Kerja Nasional (Sakernas), BPS";
+const NATIONAL_RATE = 4.74;
+const MAX_BAR = 8;
 
 const MOCK_ROWS = [
-  ["Aceh","6.03"],["Sumatera Utara","5.72"],["Sumatera Barat","5.44"],
-  ["Riau","4.31"],["Jambi","4.67"],["Sumatera Selatan","4.09"],
-  ["Bengkulu","3.42"],["Lampung","4.23"],["Kep. Bangka Belitung","4.55"],
-  ["Kepulauan Riau","6.11"],["DKI Jakarta","6.53"],["Jawa Barat","7.44"],
-  ["Jawa Tengah","5.13"],["DI Yogyakarta","3.57"],["Jawa Timur","4.19"],
+  ["Papua","7.08"],["Jawa Barat","6.66"],["Banten","6.63"],
+  ["Papua Barat Daya","6.56"],["Kep. Riau","6.35"],["DKI Jakarta","6.31"],
+  ["Maluku","6.11"],["Sulawesi Utara","5.78"],["Aceh","5.60"],
+  ["Sumatera Barat","5.52"],["Sumatera Utara","5.28"],["Kalimantan Timur","5.20"],
+  ["Kalimantan Barat","4.63"],["Sulawesi Selatan","4.45"],["Maluku Utara","4.44"],
+  ["Papua Barat","4.34"],["Jawa Tengah","4.32"],["Kep. Bangka Belitung","4.30"],
+  ["Lampung","4.14"],["Kalimantan Selatan","4.10"],["Jambi","4.08"],
+  ["Riau","4.06"],["Papua Selatan","3.89"],["Kalimantan Utara","3.83"],
+  ["Papua Tengah","3.74"],["Jawa Timur","3.71"],["Sumatera Selatan","3.59"],
+  ["Kalimantan Tengah","3.44"],["Bengkulu","3.37"],["Sulawesi Tenggara","3.33"],
+  ["DI Yogyakarta","3.30"],["Gorontalo","3.23"],["Nusa Tenggara Timur","3.10"],
+  ["Nusa Tenggara Barat","3.05"],["Sulawesi Barat","3.01"],
+  ["Sulawesi Tengah","2.89"],["Papua Pegunungan","1.55"],["Bali","1.45"],
 ];
 
 const EXAMPLE_URLS = ["Pengangguran", "Umur Harapan Hidup", "Persentase Penduduk Miskin"];
@@ -83,25 +89,31 @@ function Section({ label, badge, open, onToggle, children }: {
   );
 }
 
-/** Static horizontal bar chart — no library needed */
 function PreviewChart() {
+  const nationalPct = (NATIONAL_RATE / MAX_BAR) * 100;
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-2">
       {PREVIEW_BARS.map(({ label, value }) => {
-        const pct = (value / MAX_VAL) * 100;
+        const pct = (value / MAX_BAR) * 100;
         return (
           <div key={label} className="flex items-center gap-3">
-            <span className="text-xs text-neutral-500 w-36 text-right flex-shrink-0 tabular-nums truncate">{label}</span>
+            <span className="text-xs text-neutral-500 w-36 text-right flex-shrink-0 truncate">{label}</span>
             <div className="flex-1 h-5 bg-neutral-100 relative overflow-hidden">
               <div
-                className="absolute inset-y-0 left-0 bg-neutral-800 transition-all"
+                className="absolute inset-y-0 left-0 bg-neutral-800"
                 style={{ width: `${pct}%` }}
+              />
+              {/* national rate marker */}
+              <div
+                className="absolute inset-y-0 w-px bg-neutral-400 opacity-60"
+                style={{ left: `${nationalPct}%` }}
               />
             </div>
             <span className="text-xs font-mono text-neutral-500 w-8 flex-shrink-0">{value}</span>
           </div>
         );
       })}
+      {/* Axis */}
       <div className="flex items-center gap-3 pt-1">
         <span className="w-36 flex-shrink-0" />
         <div className="flex-1 flex justify-between">
@@ -110,6 +122,20 @@ function PreviewChart() {
           ))}
         </div>
         <span className="w-8 flex-shrink-0" />
+      </div>
+      {/* Legend */}
+      <div className="flex items-center gap-3 pt-0.5">
+        <span className="w-36 flex-shrink-0" />
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400">
+            <span className="w-3 h-3 bg-neutral-800 inline-block flex-shrink-0" />
+            8 provinsi tertinggi
+          </span>
+          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400">
+            <span className="w-px h-3 bg-neutral-400 inline-block flex-shrink-0" />
+            Rata-rata nasional ({NATIONAL_RATE}%)
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -150,25 +176,26 @@ export function MinimalMono() {
 
       <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-        {/* ── Hero preview — shown only before data is loaded ── */}
+        {/* ── Hero preview — hanya sebelum data dimuat ── */}
         {!hasData && (
           <div className="border border-neutral-200 overflow-hidden">
             {/* Top strip */}
-            <div className="px-6 pt-6 pb-4 border-b border-neutral-100 flex items-start justify-between gap-6">
+            <div className="px-6 pt-5 pb-4 border-b border-neutral-100 flex items-start justify-between gap-6">
               <div className="space-y-1 max-w-sm">
-                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">Contoh Output</p>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300">Contoh Output</p>
                 <h2 className="text-base font-bold text-neutral-900 leading-snug">
-                  Tingkat Pengangguran Terbuka<br />Menurut Provinsi, 2024
+                  Tingkat Pengangguran Terbuka<br />Menurut Provinsi
                 </h2>
                 <p className="text-xs text-neutral-400">
                   Tempelkan URL data BPS di bawah untuk menghasilkan tabel &amp; visualisasi serupa dalam hitungan detik.
                 </p>
               </div>
-              <div className="flex flex-col items-end gap-1 flex-shrink-0 text-right">
+              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                 {[
-                  { label: "Indikator", value: "TPT (%)" },
-                  { label: "Cakupan",   value: "34 Provinsi" },
-                  { label: "Tahun",     value: "2024" },
+                  { label: "Periode",    value: "November 2025" },
+                  { label: "Cakupan",    value: "38 Provinsi" },
+                  { label: "Nasional",   value: `${NATIONAL_RATE}%` },
+                  { label: "Sumber",     value: "Sakernas, BPS" },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-baseline gap-2">
                     <span className="text-[10px] uppercase tracking-widest text-neutral-300 font-semibold">{label}</span>
@@ -178,15 +205,15 @@ export function MinimalMono() {
               </div>
             </div>
 
-            {/* Chart area */}
+            {/* Chart */}
             <div className="px-6 py-5">
               <PreviewChart />
             </div>
 
-            {/* Bottom CTA strip */}
+            {/* Bottom CTA */}
             <div className="px-6 py-3 bg-neutral-50 border-t border-neutral-100 flex items-center justify-between">
               <p className="text-xs text-neutral-400">
-                Data divisualisasikan otomatis &rarr; bisa diedit &amp; dikirim ke Datawrapper
+                Data riil dari BPS API &mdash; otomatis diekstrak, bisa diedit &amp; dikirim ke Datawrapper
               </p>
               <span className="flex items-center gap-1 text-xs font-semibold text-neutral-700">
                 Coba sekarang <ArrowRight className="w-3 h-3" />
@@ -202,7 +229,7 @@ export function MinimalMono() {
           </h2>
           <div className="space-y-3">
             <textarea
-              defaultValue="https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/2401/th/125/key/WebAPI_KEY"
+              defaultValue="https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/2562/th/125/key/WebAPI_KEY"
               rows={2}
               readOnly
               className="w-full px-3 py-2.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900 resize-none font-mono text-neutral-700 bg-white transition-colors"
@@ -218,8 +245,10 @@ export function MinimalMono() {
                   : <><Search className="w-3.5 h-3.5" />AMBIL DATA</>}
               </button>
               {hasData && (
-                <button onClick={() => { setHasData(false); setChartCreated(false); }}
-                  className="text-xs text-neutral-400 hover:text-neutral-700 underline underline-offset-2">
+                <button
+                  onClick={() => { setHasData(false); setChartCreated(false); }}
+                  className="text-xs text-neutral-400 hover:text-neutral-700 underline underline-offset-2"
+                >
                   Reset
                 </button>
               )}
@@ -236,17 +265,19 @@ export function MinimalMono() {
           </div>
         </div>
 
-        {/* ── Results — only after data loaded ── */}
+        {/* ── Results ── */}
         {hasData && (
           <div className="space-y-5">
 
-            {/* Title + meta */}
             <div className="space-y-1">
-              <h2 className="text-xl font-bold text-neutral-900 leading-tight">{MOCK_TITLE}</h2>
-              <p className="text-xs text-neutral-400">{MOCK_NOTE}</p>
+              <h2 className="text-xl font-bold text-neutral-900 leading-tight">
+                Tingkat Pengangguran Terbuka menurut Provinsi (Triwulanan)
+              </h2>
+              <p className="text-xs text-neutral-400">November 2025 · Survei Angkatan Kerja Nasional (Sakernas), BPS</p>
             </div>
+
             <div className="flex items-center gap-2 flex-wrap">
-              {[{ l:"FORMAT", v:"dynamic" },{ l:"KOLOM", v:"2" },{ l:"BARIS", v:"34" }]
+              {[{ l:"PERIODE", v:"November 2025" },{ l:"KOLOM", v:"2" },{ l:"BARIS", v:"38" }]
                 .map(({ l, v }) => (
                   <span key={l} className="flex items-center gap-1.5 text-xs border border-neutral-200 px-3 py-1">
                     <span className="text-neutral-400 uppercase tracking-widest font-semibold">{l}</span>
@@ -255,7 +286,6 @@ export function MinimalMono() {
                 ))}
             </div>
 
-            {/* Data table */}
             <div className="border border-neutral-200 p-5">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Tabel Data</span>
@@ -276,10 +306,9 @@ export function MinimalMono() {
                   ))}
                 </tbody>
               </table>
-              <p className="text-xs text-neutral-400 mt-3">Menampilkan 15 dari 34 baris</p>
+              <p className="text-xs text-neutral-400 mt-3">38 provinsi · diurutkan dari nilai tertinggi</p>
             </div>
 
-            {/* Datawrapper panel */}
             <div className="border border-neutral-200 p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <BarChart2 className="w-4 h-4 text-neutral-400" />
@@ -311,7 +340,8 @@ export function MinimalMono() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Judul Chart</label>
-                    <input type="text" defaultValue={MOCK_TITLE.slice(0, 80)}
+                    <input type="text"
+                      defaultValue="Tingkat Pengangguran Terbuka menurut Provinsi, November 2025"
                       className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white text-neutral-700 transition-colors" />
                   </div>
                   <div>
@@ -361,7 +391,7 @@ export function MinimalMono() {
                     </div>
                   </Section>
 
-                  <Section label="Baris" badge={`(${MOCK_ROWS.length} dari 34 dipilih)`} open={rowsOpen} onToggle={() => setRowsOpen((s) => !s)}>
+                  <Section label="Baris" badge={`(${MOCK_ROWS.length} dari ${MOCK_ROWS.length} dipilih)`} open={rowsOpen} onToggle={() => setRowsOpen((s) => !s)}>
                     <input type="search" placeholder="Cari baris…"
                       className="w-full px-3 py-1.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900 mb-2" />
                     <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
@@ -385,7 +415,6 @@ export function MinimalMono() {
               )}
             </div>
 
-            {/* Raw JSON toggle */}
             <div className="border border-neutral-200 overflow-hidden">
               <button onClick={() => setShowRaw((s) => !s)}
                 className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-colors">
@@ -394,7 +423,7 @@ export function MinimalMono() {
               </button>
               {showRaw && (
                 <pre className="bg-neutral-950 text-neutral-300 text-xs p-4 overflow-auto max-h-64 font-mono border-t border-neutral-200">
-                  {`{\n  "status": "OK",\n  "datacontent": {"2024": {"11": "6.03", "12": "5.72"}}\n}`}
+                  {`{\n  "status": "OK",\n  "var": [{"val": 2562, "label": "Tingkat Pengangguran Terbuka menurut Provinsi (Triwulanan)"}],\n  "datacontent": {\n    "320025620125328": 6.66,\n    "360025620125328": 6.63,\n    ...\n  }\n}`}
                 </pre>
               )}
             </div>
