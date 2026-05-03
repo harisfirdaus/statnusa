@@ -6,7 +6,7 @@ function injectApiKey(rawUrl: string, apiKey: string): string {
   const url = rawUrl.trim();
 
   if (url.includes("WebAPI_KEY")) {
-    return url.replace(/WebAPI_KEY/g, apiKey);
+    return url.replace(/\[?WebAPI_KEY\]?/g, apiKey);
   }
 
   let urlObj: URL;
