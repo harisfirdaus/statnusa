@@ -2,6 +2,9 @@
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 export const modules: ModuleMap = {
   "./components/mockups/statnusa/DenseTerminal.tsx": () => import("../components/mockups/statnusa/DenseTerminal.tsx"),
+  "./components/mockups/statnusa/LayoutBleed.tsx": () => import("../components/mockups/statnusa/LayoutBleed.tsx"),
+  "./components/mockups/statnusa/LayoutRepl.tsx": () => import("../components/mockups/statnusa/LayoutRepl.tsx"),
+  "./components/mockups/statnusa/LayoutSplit.tsx": () => import("../components/mockups/statnusa/LayoutSplit.tsx"),
   "./components/mockups/statnusa/MinimalMono.tsx": () => import("../components/mockups/statnusa/MinimalMono.tsx"),
   "./components/mockups/statnusa/SoftOfficial.tsx": () => import("../components/mockups/statnusa/SoftOfficial.tsx"),
   "./components/mockups/statnusa/WarmEditorial.tsx": () => import("../components/mockups/statnusa/WarmEditorial.tsx")
