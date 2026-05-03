@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "kUgPrKcgYcYw0r_jdICqG"
+uri = "file://README.md"
+type = "text"
+title = "README — BPS Data Extractor"
