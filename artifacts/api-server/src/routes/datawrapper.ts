@@ -16,12 +16,6 @@ const MULTI_SERIES_TYPES = new Set([
   "d3-pies",
 ]);
 
-// For vertical column charts, Datawrapper needs transpose=true so that:
-//   CSV columns (e.g. "Perkotaan S1", "Perdesaan S1") → X-axis groups
-//   CSV rows (e.g. provinces)                          → colored series
-// This matches what Datawrapper's own dashboard does when selecting "Grouped Columns".
-const TRANSPOSE_TYPES = new Set(["column-chart", "stacked-column-chart"]);
-
 /** Parse column names from the first CSV line, handling quoted values. */
 function parseCsvHeaders(csv: string): string[] {
   const firstLine = csv.split(/\r?\n/)[0] ?? "";
@@ -40,24 +34,6 @@ function parseCsvHeaders(csv: string): string[] {
   }
   cols.push(cur.trim());
   return cols;
-}
-
-/** Extract the label (first cell) from each data row. */
-function parseCsvRowLabels(csv: string): string[] {
-  const lines = csv.split(/\r?\n/).slice(1); // skip header
-  const labels: string[] = [];
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    if (trimmed.startsWith('"')) {
-      const end = trimmed.indexOf('"', 1);
-      labels.push(end >= 0 ? trimmed.slice(1, end) : trimmed.slice(1));
-    } else {
-      const comma = trimmed.indexOf(",");
-      labels.push(comma >= 0 ? trimmed.slice(0, comma) : trimmed);
-    }
-  }
-  return labels;
 }
 
 router.post("/datawrapper/create", async (req, res) => {
@@ -89,17 +65,9 @@ router.post("/datawrapper/create", async (req, res) => {
     Accept: "application/json",
   };
 
-  const useTranspose = TRANSPOSE_TYPES.has(resolvedChartType);
-
-  // For transposed charts (column-chart, stacked-column-chart):
-  //   series = rows (province labels) → use row labels for color keys
-  // For non-transposed charts (bars, lines, etc.):
-  //   series = columns → use column headers for color keys
-  const csvHeaders   = parseCsvHeaders(csvData);
-  const dataColumns  = csvHeaders.slice(1);          // excludes label column
-  const rowLabels    = parseCsvRowLabels(csvData);   // province/category names
-
-  const seriesNames = useTranspose ? rowLabels : dataColumns;
+  // Series = CSV data columns (excludes the first label column)
+  const csvHeaders  = parseCsvHeaders(csvData);
+  const seriesNames = csvHeaders.slice(1);
 
   let customColors: Record<string, string> | null = null;
   if (resolvedPalette && resolvedPalette.length > 0 && seriesNames.length > 0) {
@@ -158,20 +126,17 @@ router.post("/datawrapper/create", async (req, res) => {
       });
     }
 
-    // ── Step 3: PATCH metadata – transpose, colors, legend ───────────────────
+    // ── Step 3: PATCH metadata – colors, legend ──────────────────────────────
     // Must run AFTER data upload so Datawrapper recognises series names.
-    if (customColors || needsLegend || useTranspose) {
+    if (customColors || needsLegend) {
       const visualize: Record<string, unknown> = {};
       if (customColors) visualize["custom-colors"] = customColors;
       if (needsLegend)  visualize["legend"] = true;
 
-      const patchMeta: Record<string, unknown> = { visualize };
-      if (useTranspose) patchMeta["data"] = { transpose: true };
-
       await fetch(`${DW_API}/charts/${chartId}`, {
         method: "PATCH",
         headers: jsonHeaders,
-        body: JSON.stringify({ metadata: patchMeta }),
+        body: JSON.stringify({ metadata: { visualize } }),
         signal: AbortSignal.timeout(10_000),
       }).catch(() => { /* non-fatal */ });
     }
