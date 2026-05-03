@@ -1,5 +1,10 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "Ir5oxRiPZzoTet_-gfjKk"
+uri = "file://artifacts/bps-extractor/public/opengraph.png"
+type = "image"
+title = "statnusa og image"
 
 [[outputs]]
 id = "kUgPrKcgYcYw0r_jdICqG"

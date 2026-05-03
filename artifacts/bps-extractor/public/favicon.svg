@@ -1,3 +1,17 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <rect width="180" height="180" rx="36" fill="#171717"/>
+  <!-- Database icon: cylinder top ellipse -->
+  <ellipse cx="90" cy="62" rx="38" ry="14" fill="#ffffff"/>
+  <!-- Database cylinder body -->
+  <rect x="52" y="62" width="76" height="56" fill="#ffffff"/>
+  <!-- Database bottom ellipse -->
+  <ellipse cx="90" cy="118" rx="38" ry="14" fill="#e5e5e5"/>
+  <!-- Middle horizontal line (second tier) -->
+  <ellipse cx="90" cy="90" rx="38" ry="14" fill="#d4d4d4"/>
+  <!-- Redraw top of middle ellipse to look like a rim -->
+  <path d="M52 90 Q52 76 90 76 Q128 76 128 90" fill="#ffffff"/>
+  <!-- Top ellipse highlight -->
+  <ellipse cx="90" cy="62" rx="38" ry="14" fill="#ffffff"/>
+  <!-- Inner top ellipse for depth -->
+  <ellipse cx="90" cy="62" rx="28" ry="9" fill="#e5e5e5"/>
 </svg>
