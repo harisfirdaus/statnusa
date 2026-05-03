@@ -42,6 +42,8 @@ function parseCsvHeaders(csv: string): string[] {
   return cols;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 router.post("/datawrapper/create", async (req, res) => {
   const { title, chartType, csvData, description, notes, palette, sortBars } = req.body ?? {};
 
@@ -77,6 +79,7 @@ router.post("/datawrapper/create", async (req, res) => {
   const seriesNames = csvHeaders.slice(1);
 
   const needsLegend = MULTI_SERIES_TYPES.has(resolvedChartType) && seriesNames.length > 1;
+  const applySort   = resolvedSortBars && BAR_SORT_TYPES.has(resolvedChartType);
 
   let customColors: Record<string, string> | null = null;
   if (resolvedPalette && resolvedPalette.length > 0 && seriesNames.length > 0) {
@@ -86,20 +89,27 @@ router.post("/datawrapper/create", async (req, res) => {
     });
   }
 
-  // Build complete visualize metadata upfront so it is included at chart
-  // creation time — avoids any timing gap between a PATCH and publish.
-  const visualize: Record<string, unknown> = {};
-  if (needsLegend) {
-    // Set all known Datawrapper legend keys to be safe across chart types
-    visualize["legend"]      = true;
-    visualize["show-legend"] = true;
+  /** Build the visualize block — applied at both CREATE and PATCH steps. */
+  function buildVisualize(): Record<string, unknown> {
+    const v: Record<string, unknown> = {};
+    if (needsLegend) {
+      // Both keys used across different Datawrapper chart-type implementations
+      v["legend"]      = true;
+      v["show-legend"] = true;
+    }
+    if (customColors) {
+      v["custom-colors"] = customColors;
+    }
+    if (applySort) {
+      // "sort-values": true is the correct Datawrapper API key for sorting bars by value.
+      // "revert-sorting": true flips the default ascending order → largest bar first (top).
+      v["sort-values"]    = true;
+      v["revert-sorting"] = true;
+    }
+    return v;
   }
-  if (customColors) {
-    visualize["custom-colors"] = customColors;
-  }
-  if (resolvedSortBars && BAR_SORT_TYPES.has(resolvedChartType)) {
-    visualize["sort-by"] = "values";
-  }
+
+  const visualize = buildVisualize();
 
   const initialMetadata: Record<string, unknown> = {
     describe: {
@@ -108,13 +118,11 @@ router.post("/datawrapper/create", async (req, res) => {
       "source-url": "https://www.bps.go.id",
     },
     annotate: { notes: resolvedNotes },
+    ...(Object.keys(visualize).length > 0 ? { visualize } : {}),
   };
-  if (Object.keys(visualize).length > 0) {
-    initialMetadata["visualize"] = visualize;
-  }
 
   try {
-    // ── Step 1: Create chart with complete metadata ───────────────────────────
+    // ── Step 1: Create chart ──────────────────────────────────────────────────
     const createRes = await fetch(`${DW_API}/charts`, {
       method: "POST",
       headers: jsonHeaders,
@@ -151,7 +159,28 @@ router.post("/datawrapper/create", async (req, res) => {
       });
     }
 
-    // ── Step 3: Publish ───────────────────────────────────────────────────────
+    // ── Step 3: Re-PATCH all visualize settings after data upload ─────────────
+    // Datawrapper needs the data to be present before it fully applies series-
+    // dependent settings like custom-colors and legend. Re-applying here ensures
+    // the published snapshot picks up all settings.
+    if (Object.keys(visualize).length > 0) {
+      const patchRes = await fetch(`${DW_API}/charts/${chartId}`, {
+        method: "PATCH",
+        headers: jsonHeaders,
+        body: JSON.stringify({ metadata: { visualize } }),
+        signal: AbortSignal.timeout(10_000),
+      });
+      req.log.info(
+        { chartId, patchOk: patchRes.ok, status: patchRes.status },
+        "Datawrapper metadata PATCH"
+      );
+    }
+
+    // Brief pause to let Datawrapper's backend fully process the metadata PATCH
+    // before we take a published snapshot.
+    await sleep(400);
+
+    // ── Step 4: Publish ───────────────────────────────────────────────────────
     const publishRes = await fetch(`${DW_API}/charts/${chartId}/publish`, {
       method: "POST",
       headers: jsonHeaders,
