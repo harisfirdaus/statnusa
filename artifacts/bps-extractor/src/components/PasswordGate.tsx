@@ -1,35 +1,58 @@
 import { useState, useEffect } from "react";
-import { Database, Eye, EyeOff } from "lucide-react";
+import { Database, Eye, EyeOff, Loader2 } from "lucide-react";
+import { getAuthStatus, verifyPassword } from "@/lib/api";
 
 const SESSION_KEY = "statnusa_auth";
-const PASSWORD    = import.meta.env.VITE_APP_PASSWORD as string | undefined;
 
 interface Props { children: React.ReactNode; }
 
 export function PasswordGate({ children }: Props) {
-  const [unlocked, setUnlocked] = useState(false);
-  const [input, setInput]       = useState("");
-  const [show, setShow]         = useState(false);
-  const [error, setError]       = useState(false);
-  const [shaking, setShaking]   = useState(false);
+  const [required, setRequired]   = useState<boolean | null>(null);
+  const [unlocked, setUnlocked]   = useState(false);
+  const [input, setInput]         = useState("");
+  const [show, setShow]           = useState(false);
+  const [error, setError]         = useState(false);
+  const [shaking, setShaking]     = useState(false);
+  const [loading, setLoading]     = useState(false);
 
   useEffect(() => {
-    if (!PASSWORD) { setUnlocked(true); return; }
-    if (sessionStorage.getItem(SESSION_KEY) === "1") setUnlocked(true);
+    if (sessionStorage.getItem(SESSION_KEY) === "1") {
+      setUnlocked(true);
+      return;
+    }
+    getAuthStatus()
+      .then(({ required: r }) => {
+        setRequired(r);
+        if (!r) setUnlocked(true);
+      })
+      .catch(() => {
+        setRequired(false);
+        setUnlocked(true);
+      });
   }, []);
 
-  if (!PASSWORD || unlocked) return <>{children}</>;
+  if (unlocked) return <>{children}</>;
+  if (required === null) return null;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (input === PASSWORD) {
-      sessionStorage.setItem(SESSION_KEY, "1");
-      setUnlocked(true);
-    } else {
+    if (!input.trim() || loading) return;
+    setLoading(true);
+    try {
+      const { ok } = await verifyPassword(input);
+      if (ok) {
+        sessionStorage.setItem(SESSION_KEY, "1");
+        setUnlocked(true);
+      } else {
+        setError(true);
+        setShaking(true);
+        setInput("");
+        setTimeout(() => setShaking(false), 500);
+      }
+    } catch {
       setError(true);
-      setShaking(true);
-      setInput("");
-      setTimeout(() => setShaking(false), 500);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -37,7 +60,6 @@ export function PasswordGate({ children }: Props) {
     <div className="min-h-screen bg-white flex items-center justify-center px-4"
       style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <div className="w-full max-w-sm space-y-6">
-        {/* Logo */}
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 bg-neutral-900 text-white flex-shrink-0">
             <Database className="w-4 h-4" />
@@ -50,7 +72,6 @@ export function PasswordGate({ children }: Props) {
 
         <div className="border-t border-neutral-200" />
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div style={{ animation: shaking ? "shake 0.4s ease" : undefined }}>
             <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
@@ -69,26 +90,17 @@ export function PasswordGate({ children }: Props) {
                     : "border-neutral-300 focus:border-neutral-900 text-neutral-700"
                 }`}
               />
-              <button
-                type="button"
-                onClick={() => setShow((s) => !s)}
-                tabIndex={-1}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 transition-colors"
-              >
+              <button type="button" onClick={() => setShow((s) => !s)} tabIndex={-1}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 transition-colors">
                 {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            {error && (
-              <p className="mt-1.5 text-xs text-red-600">Kata sandi salah. Coba lagi.</p>
-            )}
+            {error && <p className="mt-1.5 text-xs text-red-600">Kata sandi salah. Coba lagi.</p>}
           </div>
 
-          <button
-            type="submit"
-            disabled={!input.trim()}
-            className="w-full py-2.5 text-xs font-semibold tracking-wide bg-neutral-900 text-white hover:bg-neutral-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            MASUK
+          <button type="submit" disabled={!input.trim() || loading}
+            className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold tracking-wide bg-neutral-900 text-white hover:bg-neutral-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            {loading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Memverifikasi…</> : "MASUK"}
           </button>
         </form>
       </div>

@@ -32,6 +32,20 @@ export async function fetchBpsData(url: string): Promise<FetchBpsResult> {
   });
 }
 
+export async function getAuthStatus(): Promise<{ required: boolean }> {
+  return apiFetch<{ required: boolean }>("/api/auth/status", { method: "GET" });
+}
+
+export async function verifyPassword(password: string): Promise<{ ok: boolean }> {
+  const res = await fetch(`${BASE}/api/auth/verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  const json = await res.json() as { ok: boolean };
+  return json;
+}
+
 export async function createDatawrapperChart(payload: {
   title: string;
   chartType: string;
