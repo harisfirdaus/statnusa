@@ -15,7 +15,8 @@ const CHART_TYPES = [
     { value: "d3-bars-split",   label: "Split Bars" },
   ]},
   { group: "Column (Vertikal)", items: [
-    { value: "column-chart",         label: "Grouped Columns (multi-seri)" },
+    { value: "column-chart",         label: "Column Chart" },
+    { value: "grouped-column-chart", label: "Grouped Columns (multi-seri)" },
     { value: "stacked-column-chart", label: "Stacked Columns (multi-seri)" },
   ]},
   { group: "Garis & Area", items: [
@@ -240,7 +241,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
                 </optgroup>
               ))}
             </select>
-            {(chartType === "column-chart" || chartType === "stacked-column-chart") && (
+            {(chartType === "column-chart" || chartType === "grouped-column-chart" || chartType === "stacked-column-chart") && (
               <p className="mt-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
                 Untuk Column Chart, pilih <strong>5–10 baris</strong> saja di pemilih baris agar chart tidak terlalu padat.
                 Untuk semua provinsi, gunakan <strong>Grouped/Stacked Bars</strong> (horizontal).
