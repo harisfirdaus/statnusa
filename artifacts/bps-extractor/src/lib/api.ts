@@ -62,8 +62,15 @@ export async function* streamChat(
   });
 
   if (!res.ok) {
-    const json = await res.json() as { error?: string };
-    throw new Error(json.error ?? `HTTP ${res.status}`);
+    const text = await res.text();
+    let msg = `HTTP ${res.status}`;
+    try {
+      const json = JSON.parse(text) as { error?: string };
+      msg = json.error ?? msg;
+    } catch {
+      if (text.trim()) msg = text.trim().slice(0, 200);
+    }
+    throw new Error(msg);
   }
 
   const reader = res.body!.getReader();
