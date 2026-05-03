@@ -4,7 +4,7 @@ const router = Router();
 
 const DW_API = "https://api.datawrapper.de/v3";
 
-// Chart types where a legend should be explicitly enabled
+// Chart types that need a legend when multi-series
 const MULTI_SERIES_TYPES = new Set([
   "d3-bars-grouped",
   "d3-bars-stacked",
@@ -16,9 +16,13 @@ const MULTI_SERIES_TYPES = new Set([
   "d3-pies",
 ]);
 
-/**
- * Parse column names from the first CSV line, handling quoted values.
- */
+// For vertical column charts, Datawrapper needs transpose=true so that:
+//   CSV columns (e.g. "Perkotaan S1", "Perdesaan S1") → X-axis groups
+//   CSV rows (e.g. provinces)                          → colored series
+// This matches what Datawrapper's own dashboard does when selecting "Grouped Columns".
+const TRANSPOSE_TYPES = new Set(["column-chart", "stacked-column-chart"]);
+
+/** Parse column names from the first CSV line, handling quoted values. */
 function parseCsvHeaders(csv: string): string[] {
   const firstLine = csv.split(/\r?\n/)[0] ?? "";
   const cols: string[] = [];
@@ -38,6 +42,24 @@ function parseCsvHeaders(csv: string): string[] {
   return cols;
 }
 
+/** Extract the label (first cell) from each data row. */
+function parseCsvRowLabels(csv: string): string[] {
+  const lines = csv.split(/\r?\n/).slice(1); // skip header
+  const labels: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('"')) {
+      const end = trimmed.indexOf('"', 1);
+      labels.push(end >= 0 ? trimmed.slice(1, end) : trimmed.slice(1));
+    } else {
+      const comma = trimmed.indexOf(",");
+      labels.push(comma >= 0 ? trimmed.slice(0, comma) : trimmed);
+    }
+  }
+  return labels;
+}
+
 router.post("/datawrapper/create", async (req, res) => {
   const { title, chartType, csvData, description, notes, palette } = req.body ?? {};
 
@@ -49,7 +71,7 @@ router.post("/datawrapper/create", async (req, res) => {
   }
 
   const resolvedChartType = typeof chartType === "string" ? chartType : "d3-bars";
-  const resolvedDesc = typeof description === "string" ? description : "";
+  const resolvedDesc  = typeof description === "string" ? description : "";
   const resolvedNotes = typeof notes === "string" ? notes : "";
   const resolvedPalette: string[] | null =
     Array.isArray(palette) && palette.every((c) => typeof c === "string")
@@ -67,32 +89,35 @@ router.post("/datawrapper/create", async (req, res) => {
     Accept: "application/json",
   };
 
-  // Parse CSV headers to map palette colors → column names
-  const csvHeaders = parseCsvHeaders(csvData);
-  const dataColumns = csvHeaders.slice(1); // first column is the label/x-axis
+  const useTranspose = TRANSPOSE_TYPES.has(resolvedChartType);
 
-  // Build custom-colors: { "ColName": "#hexcolor" }
+  // For transposed charts (column-chart, stacked-column-chart):
+  //   series = rows (province labels) → use row labels for color keys
+  // For non-transposed charts (bars, lines, etc.):
+  //   series = columns → use column headers for color keys
+  const csvHeaders   = parseCsvHeaders(csvData);
+  const dataColumns  = csvHeaders.slice(1);          // excludes label column
+  const rowLabels    = parseCsvRowLabels(csvData);   // province/category names
+
+  const seriesNames = useTranspose ? rowLabels : dataColumns;
+
   let customColors: Record<string, string> | null = null;
-  if (resolvedPalette && resolvedPalette.length > 0 && dataColumns.length > 0) {
+  if (resolvedPalette && resolvedPalette.length > 0 && seriesNames.length > 0) {
     customColors = {};
-    dataColumns.forEach((col, i) => {
-      customColors![col] = resolvedPalette[i % resolvedPalette.length];
+    seriesNames.forEach((name, i) => {
+      customColors![name] = resolvedPalette[i % resolvedPalette.length];
     });
   }
 
-  const needsLegend =
-    MULTI_SERIES_TYPES.has(resolvedChartType) && dataColumns.length > 1;
+  const needsLegend = MULTI_SERIES_TYPES.has(resolvedChartType) && seriesNames.length > 1;
 
-  // Initial metadata (no colors yet — set via PATCH after data upload)
   const initialMetadata = {
     describe: {
       intro: resolvedDesc,
       "source-name": "Badan Pusat Statistik (BPS)",
       "source-url": "https://www.bps.go.id",
     },
-    annotate: {
-      notes: resolvedNotes,
-    },
+    annotate: { notes: resolvedNotes },
   };
 
   try {
@@ -113,9 +138,7 @@ router.post("/datawrapper/create", async (req, res) => {
     }
 
     const chart = (await createRes.json()) as {
-      id: string;
-      publicUrl?: string;
-      [k: string]: unknown;
+      id: string; publicUrl?: string; [k: string]: unknown;
     };
     const chartId = chart.id;
 
@@ -135,19 +158,22 @@ router.post("/datawrapper/create", async (req, res) => {
       });
     }
 
-    // ── Step 3: PATCH metadata – colors & legend ──────────────────────────────
-    // Must happen AFTER data upload so Datawrapper recognises column names.
-    if (customColors || needsLegend) {
+    // ── Step 3: PATCH metadata – transpose, colors, legend ───────────────────
+    // Must run AFTER data upload so Datawrapper recognises series names.
+    if (customColors || needsLegend || useTranspose) {
       const visualize: Record<string, unknown> = {};
       if (customColors) visualize["custom-colors"] = customColors;
       if (needsLegend)  visualize["legend"] = true;
 
+      const patchMeta: Record<string, unknown> = { visualize };
+      if (useTranspose) patchMeta["data"] = { transpose: true };
+
       await fetch(`${DW_API}/charts/${chartId}`, {
         method: "PATCH",
         headers: jsonHeaders,
-        body: JSON.stringify({ metadata: { visualize } }),
+        body: JSON.stringify({ metadata: patchMeta }),
         signal: AbortSignal.timeout(10_000),
-      }).catch(() => { /* non-fatal – chart still publishable */ });
+      }).catch(() => { /* non-fatal */ });
     }
 
     // ── Step 4: Publish ───────────────────────────────────────────────────────
@@ -158,7 +184,7 @@ router.post("/datawrapper/create", async (req, res) => {
     });
 
     const publishData = publishRes.ok ? await publishRes.json().catch(() => ({})) : {};
-    const editUrl = `https://app.datawrapper.de/chart/${chartId}/edit`;
+    const editUrl  = `https://app.datawrapper.de/chart/${chartId}/edit`;
     const publicUrl =
       (publishData as any)?.data?.publicUrl ??
       chart.publicUrl ??
