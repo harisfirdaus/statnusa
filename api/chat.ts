@@ -1,4 +1,4 @@
-export const config = { runtime: "edge" };
+export const config = { runtime: "edge", maxDuration: 300 };
 
 const MODELS = [
   "google/gemma-3-27b-it",
@@ -23,7 +23,7 @@ async function callNvidia(
   const payload: Record<string, unknown> = {
     model,
     messages,
-    max_tokens: 4096,
+    max_tokens: 1024,
     temperature: 0.7,
     top_p: 0.95,
     stream: true,
@@ -34,7 +34,7 @@ async function callNvidia(
   }
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 60_000);
+  const timer = setTimeout(() => controller.abort(), 22_000);
 
   try {
     const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
