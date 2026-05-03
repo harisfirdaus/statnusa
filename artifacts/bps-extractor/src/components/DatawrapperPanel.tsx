@@ -4,15 +4,6 @@ import { createDatawrapperChart } from "@/lib/api";
 import { tableToCSV } from "@/lib/csv";
 import type { ParsedTable } from "@/lib/parsers";
 
-const MONO   = "'JetBrains Mono', 'Fira Code', 'Courier New', monospace";
-const PANEL  = "#0d130d";
-const INPUT  = "#060c06";
-const GREEN  = "#22c55e";
-const BRIGHT = "#4ade80";
-const LIGHT  = "#86efac";
-const DIM    = "#166534";
-const BORDER = "#14532d";
-
 const CHART_TYPES = [
   { group: "Bar (Horizontal)", items: [
     { value: "d3-bars",         label: "Bar Chart (1 seri)" },
@@ -50,42 +41,34 @@ const PALETTES: Palette[] = [
 
 function PaletteDots({ colors }: { colors: string[] }) {
   if (colors.length === 0)
-    return <span className="text-xs italic" style={{ color: DIM }}>default Datawrapper</span>;
+    return <span className="text-xs italic text-neutral-400">default Datawrapper</span>;
   return (
     <span className="flex gap-1">
       {colors.map((c) => (
-        <span key={c} className="w-4 h-4 inline-block flex-shrink-0"
-          style={{ background: c, border: `1px solid ${BORDER}` }} />
+        <span key={c} className="w-4 h-4 inline-block flex-shrink-0 border border-neutral-200"
+          style={{ background: c }} />
       ))}
     </span>
   );
 }
 
-interface SectionProps {
-  label: string; badge?: string;
-  open: boolean; onToggle: () => void;
-  children: React.ReactNode;
-}
-
-function Section({ label, badge, open, onToggle, children }: SectionProps) {
+function Section({ label, badge, open, onToggle, children }: {
+  label: string; badge?: string; open: boolean;
+  onToggle: () => void; children: React.ReactNode;
+}) {
   return (
-    <div style={{ border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+    <div className="border border-neutral-200">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-xs transition-colors"
-        style={{ background: PANEL, color: GREEN }}
+        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-colors"
       >
         <span>
-          {open ? "[-]" : "[+]"}{" "}{label}
-          {badge && <span className="ml-1.5" style={{ color: DIM }}>{badge}</span>}
+          {label}
+          {badge && <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400">{badge}</span>}
         </span>
-        {open ? <ChevronUp className="w-3 h-3" style={{ color: DIM }} /> : <ChevronDown className="w-3 h-3" style={{ color: DIM }} />}
+        {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
       </button>
-      {open && (
-        <div className="p-3" style={{ borderTop: `1px solid ${BORDER}`, background: "#0b100b" }}>
-          {children}
-        </div>
-      )}
+      {open && <div className="border-t border-neutral-200 p-4 bg-neutral-50">{children}</div>}
     </div>
   );
 }
@@ -108,9 +91,9 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
     chartId: string; editUrl: string; publicUrl: string; published: boolean;
   } | null>(null);
 
-  const [showCols, setShowCols]     = useState(false);
-  const [showRows, setShowRows]     = useState(false);
-  const [showColor, setShowColor]   = useState(false);
+  const [showCols, setShowCols]   = useState(false);
+  const [showRows, setShowRows]   = useState(false);
+  const [showColor, setShowColor] = useState(false);
 
   const [selectedCols, setSelectedCols] = useState<Set<number>>(
     () => new Set(columns.map((_, i) => i))
@@ -145,7 +128,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   }, [table.rows, rowSearch]);
 
   const filteredCSV = useMemo(() => {
-    const colIdxs    = Array.from(validCols).sort((a, b) => a - b);
+    const colIdxs      = Array.from(validCols).sort((a, b) => a - b);
     const filteredCols = colIdxs.map((i) => columns[i]);
     const filteredRows = table.rows
       .filter((_, i) => selectedRows.has(i))
@@ -179,200 +162,180 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
     }
   }
 
-  const inputStyle = {
-    background: INPUT, border: `1px solid ${BORDER}`,
-    color: LIGHT, fontFamily: MONO, fontSize: "12px",
-  };
-  const inputClass = "w-full px-3 py-2 text-xs focus:outline-none";
-
   return (
-    <div className="space-y-3" style={{ fontFamily: MONO }}>
-      {/* Header */}
-      <div className="px-4 py-2.5 flex items-center gap-2 text-xs"
-        style={{ background: PANEL, border: `1px solid ${BORDER}`, color: BRIGHT }}>
-        <BarChart2 className="w-3 h-3" />
-        DATAWRAPPER EXPORT
+    <div className="border border-neutral-200 p-5 space-y-4">
+      <div className="flex items-center gap-2">
+        <BarChart2 className="w-4 h-4 text-neutral-400" />
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
+          Buat Visualisasi di Datawrapper
+        </h3>
       </div>
 
       {result ? (
-        <div className="p-4 space-y-3 text-xs" style={{ background: PANEL, border: `1px solid ${BORDER}` }}>
-          <div className="flex items-center gap-2" style={{ color: "#4ade80" }}>
-            <CheckCircle className="w-4 h-4 flex-shrink-0" />
-            <span>[OK] Chart berhasil dibuat dan dipublikasikan!</span>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs border border-neutral-300 px-4 py-3">
+            <CheckCircle className="w-4 h-4 flex-shrink-0 text-neutral-700" />
+            <span className="text-neutral-700">Chart berhasil dibuat dan dipublikasikan.</span>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex gap-2 flex-wrap">
             <a href={result.editUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold"
-              style={{ background: DIM, color: "#dcfce7" }}>
-              <ExternalLink className="w-3 h-3" /> [EDIT_DATAWRAPPER]
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-neutral-900 text-white hover:bg-neutral-700 transition-colors">
+              <ExternalLink className="w-3.5 h-3.5" /> Edit di Datawrapper
             </a>
             <a href={result.publicUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs"
-              style={{ border: `1px solid ${BORDER}`, color: GREEN }}>
-              <ExternalLink className="w-3 h-3" /> [PUBLIC_URL]
+              className="flex items-center gap-1.5 px-4 py-2 text-xs border border-neutral-300 text-neutral-700 hover:border-neutral-900 transition-colors">
+              <ExternalLink className="w-3.5 h-3.5" /> Lihat Chart Publik
             </a>
           </div>
-          <p style={{ color: DIM }}>chart_id={result.chartId}</p>
-          <button onClick={() => setResult(null)} className="text-xs underline" style={{ color: DIM }}>
-            [RESET] buat chart baru dengan data yang sama
+          <p className="text-xs text-neutral-400 font-mono">chart_id: {result.chartId}</p>
+          <button onClick={() => setResult(null)}
+            className="text-xs text-neutral-500 hover:text-neutral-900 underline underline-offset-2">
+            Buat chart baru dengan data yang sama
           </button>
         </div>
       ) : (
-        <div className="space-y-3" style={{ border: `1px solid ${BORDER}`, padding: "1rem", background: PANEL }}>
+        <div className="space-y-4">
           {/* Title */}
-          <div className="text-xs space-y-1">
-            <div style={{ color: DIM }}>
-              title=
-              <input type="text" value={chartTitle} onChange={(e) => setChartTitle(e.target.value)}
-                maxLength={120} placeholder="Judul chart Datawrapper"
-                className="focus:outline-none px-2 py-1 ml-1 w-72"
-                style={inputStyle} />
-            </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
+              Judul Chart
+            </label>
+            <input type="text" value={chartTitle} onChange={(e) => setChartTitle(e.target.value)}
+              maxLength={120} placeholder="Judul chart Datawrapper"
+              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white text-neutral-700 transition-colors" />
           </div>
 
           {/* Description */}
-          <div className="text-xs">
-            <div style={{ color: DIM }} className="mb-1">desc= <span style={{ color: DIM, opacity: 0.6 }}>(opsional)</span></div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
+              Deskripsi <span className="font-normal normal-case">(opsional)</span>
+            </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               rows={2} maxLength={500} placeholder="Teks pendek di bawah judul chart"
-              className={`${inputClass} resize-none`} style={inputStyle} />
+              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white resize-none text-neutral-700 transition-colors" />
           </div>
 
           {/* Notes */}
-          <div className="text-xs">
-            <div style={{ color: DIM }} className="mb-1">notes= <span style={{ color: DIM, opacity: 0.6 }}>(opsional)</span></div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
+              Catatan / Footnote <span className="font-normal normal-case">(opsional)</span>
+            </label>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
-              rows={2} maxLength={500} placeholder="Catatan/footnote di bawah chart"
-              className={`${inputClass} resize-none`} style={inputStyle} />
+              rows={2} maxLength={500} placeholder="Catatan di bawah chart"
+              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white resize-none text-neutral-700 transition-colors" />
           </div>
 
           {/* Chart type */}
-          <div className="text-xs">
-            <div className="flex items-center gap-2" style={{ color: DIM }}>
-              type=
-              <select value={chartType} onChange={(e) => setChartType(e.target.value)}
-                className="px-2 py-1 focus:outline-none"
-                style={{ ...inputStyle, width: "auto" }}>
-                {CHART_TYPES.map((group) => (
-                  <optgroup key={group.group} label={group.group}>
-                    {group.items.map((t) => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-            </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
+              Tipe Chart
+            </label>
+            <select value={chartType} onChange={(e) => setChartType(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white text-neutral-700">
+              {CHART_TYPES.map((group) => (
+                <optgroup key={group.group} label={group.group}>
+                  {group.items.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
             {(chartType === "column-chart" || chartType === "grouped-column-chart" || chartType === "stacked-column-chart") && (
-              <p className="mt-1.5 text-xs px-2 py-1.5"
-                style={{ background: "#1a1200", border: "1px solid #713f12", color: "#fcd34d" }}>
-                [TIP] Column Chart: pilih 5–10 baris agar tidak terlalu padat.
-                Untuk semua provinsi, gunakan Grouped/Stacked Bars (horizontal).
+              <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2">
+                Tip: Column Chart lebih baik untuk 5–10 kategori. Untuk seluruh provinsi (38),
+                gunakan Grouped/Stacked Bars (horizontal) agar tidak terlalu padat.
               </p>
             )}
             {["d3-bars","d3-bars-grouped","d3-bars-stacked","d3-bars-split"].includes(chartType) && (
-              <label className="mt-2 flex items-center gap-2 cursor-pointer select-none text-xs" style={{ color: GREEN }}>
+              <label className="mt-2 flex items-center gap-2 cursor-pointer select-none text-sm text-neutral-700">
                 <input type="checkbox" checked={sortBars} onChange={(e) => setSortBars(e.target.checked)}
-                  className="w-3.5 h-3.5" style={{ accentColor: BRIGHT }} />
-                sort_desc=true
+                  className="accent-neutral-900" />
+                Urutkan bar dari nilai terbesar
               </label>
             )}
           </div>
 
           {/* Accordion sections */}
-          <Section label="palette" badge={`— ${PALETTES[paletteIdx].name}`}
+          <Section label="Warna Chart" badge={`— ${PALETTES[paletteIdx].name}`}
             open={showColor} onToggle={() => setShowColor((s) => !s)}>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {PALETTES.map((p, i) => (
                 <button key={i} onClick={() => setPaletteIdx(i)}
-                  className="flex flex-col gap-1.5 p-2 text-left transition-all text-xs"
-                  style={{
-                    border: `1px solid ${paletteIdx === i ? BRIGHT : BORDER}`,
-                    background: paletteIdx === i ? "#0d1f0d" : "transparent",
-                    color: paletteIdx === i ? BRIGHT : DIM,
-                  }}>
-                  <span className="truncate">{p.name}</span>
+                  className={`flex flex-col gap-1.5 p-2 border text-left transition-all ${paletteIdx === i ? "border-neutral-900 bg-white" : "border-neutral-200 hover:border-neutral-400"}`}>
+                  <span className="text-xs font-medium text-neutral-700 truncate">{p.name}</span>
                   <PaletteDots colors={p.colors} />
                 </button>
               ))}
             </div>
           </Section>
 
-          <Section label="cols"
-            badge={`(${dataColsSelected}/${columns.length - 1} dipilih)`}
+          <Section label="Kolom" badge={`(${dataColsSelected} dari ${columns.length - 1} dipilih)`}
             open={showCols} onToggle={() => setShowCols((s) => !s)}>
             <div className="flex gap-3 text-xs mb-2">
               <button onClick={() => setSelectedCols(new Set(columns.map((_, i) => i)))}
-                className="underline" style={{ color: GREEN }}>all</button>
+                className="text-neutral-600 hover:text-neutral-900 underline underline-offset-2">Semua</button>
               <button onClick={() => setSelectedCols(new Set([0]))}
-                className="underline" style={{ color: DIM }}>none</button>
+                className="text-neutral-400 hover:text-neutral-700 underline underline-offset-2">Hapus semua</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-48 overflow-y-auto">
               {columns.map((col, i) => (
-                <label key={i} className={`flex items-center gap-2 px-2 py-1 text-xs cursor-pointer ${i === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
-                  style={{ color: validCols.has(i) ? LIGHT : DIM }}>
+                <label key={i} className={`flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-white transition-colors ${i === 0 ? "opacity-50 cursor-not-allowed" : ""}`}>
                   <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)}
-                    disabled={i === 0} style={{ accentColor: BRIGHT }} />
-                  <span className="truncate">
-                    {i === 0 ? <>{col} <span style={{ color: DIM }}>(label)</span></> : col}
+                    disabled={i === 0} className="accent-neutral-900" />
+                  <span className="text-neutral-700 truncate">
+                    {i === 0 ? <>{col} <span className="text-xs text-neutral-400">(label)</span></> : col}
                   </span>
                 </label>
               ))}
             </div>
           </Section>
 
-          <Section label="rows"
-            badge={`(${rowsSelected}/${table.rows.length} dipilih)`}
+          <Section label="Baris" badge={`(${rowsSelected} dari ${table.rows.length} dipilih)`}
             open={showRows} onToggle={() => setShowRows((s) => !s)}>
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none" style={{ color: DIM }} />
-                  <input type="search" placeholder="search rows..." value={rowSearch}
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
+                  <input type="search" placeholder="Cari baris…" value={rowSearch}
                     onChange={(e) => setRowSearch(e.target.value)}
-                    className="w-full pl-7 pr-2 py-1 text-xs focus:outline-none"
-                    style={inputStyle} />
+                    className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900" />
                 </div>
                 <div className="flex gap-2 text-xs flex-shrink-0">
-                  <button onClick={selectAllRows} className="underline" style={{ color: GREEN }}>all</button>
-                  <button onClick={selectNoRows} className="underline" style={{ color: DIM }}>none</button>
+                  <button onClick={selectAllRows} className="text-neutral-600 hover:text-neutral-900 underline underline-offset-2">Semua</button>
+                  <button onClick={selectNoRows}  className="text-neutral-400 hover:text-neutral-700 underline underline-offset-2">Hapus</button>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-56 overflow-y-auto">
                 {filteredRowIndices.map(({ i, label }) => (
-                  <label key={i} className="flex items-center gap-2 px-2 py-1 text-xs cursor-pointer"
-                    style={{ color: selectedRows.has(i) ? LIGHT : DIM }}>
+                  <label key={i} className="flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-white transition-colors">
                     <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)}
-                      style={{ accentColor: BRIGHT }} />
-                    <span className="truncate">{label || `row_${i + 1}`}</span>
+                      className="accent-neutral-900" />
+                    <span className="text-neutral-700 truncate">{label || `Baris ${i + 1}`}</span>
                   </label>
                 ))}
                 {filteredRowIndices.length === 0 && (
-                  <p className="col-span-2 text-xs py-2 text-center" style={{ color: DIM }}>
-                    [EMPTY] tidak ada baris yang cocok
-                  </p>
+                  <p className="col-span-2 text-xs text-neutral-400 py-2 text-center">Tidak ada baris yang cocok.</p>
                 )}
               </div>
             </div>
           </Section>
 
-          <p className="text-xs" style={{ color: DIM }}>
-            payload: {rowsSelected}_rows × {dataColsSelected + 1}_cols → Datawrapper
+          <p className="text-xs text-neutral-400">
+            {rowsSelected} baris × {dataColsSelected + 1} kolom akan dikirim ke Datawrapper.
           </p>
 
           {error && (
-            <div className="text-xs px-3 py-2"
-              style={{ background: "#1a0000", border: "1px solid #7f1d1d", color: "#fca5a5" }}>
-              [ERROR] {error}
-            </div>
+            <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-3 py-2">{error}</p>
           )}
 
-          <button onClick={handleCreate}
+          <button
+            onClick={handleCreate}
             disabled={loading || rowsSelected === 0 || dataColsSelected === 0}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-bold transition-colors disabled:opacity-50"
-            style={{ background: DIM, color: "#dcfce7", border: "none", cursor: loading || rowsSelected === 0 || dataColsSelected === 0 ? "not-allowed" : "pointer" }}>
+            className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 text-white hover:bg-neutral-700 transition-colors tracking-wide disabled:opacity-50"
+          >
             {loading
-              ? <><Loader2 className="w-3 h-3 animate-spin" />[PUSHING_TO_DATAWRAPPER]</>
-              : <><BarChart2 className="w-3 h-3" />[PUSH_TO_DATAWRAPPER]</>}
+              ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Membuat chart…</>
+              : <><BarChart2 className="w-3.5 h-3.5" />BUAT VISUALISASI</>}
           </button>
         </div>
       )}

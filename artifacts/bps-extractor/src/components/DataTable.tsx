@@ -3,16 +3,6 @@ import { Download, Search, Pencil } from "lucide-react";
 import { tableToCSV, downloadCSV } from "@/lib/csv";
 import type { ParsedTable } from "@/lib/parsers";
 
-const MONO   = "'JetBrains Mono', 'Fira Code', 'Courier New', monospace";
-const BG     = "#0a0f0a";
-const PANEL  = "#0d130d";
-const INPUT  = "#060c06";
-const GREEN  = "#22c55e";
-const BRIGHT = "#4ade80";
-const LIGHT  = "#86efac";
-const DIM    = "#166534";
-const BORDER = "#14532d";
-
 function formatNumber(v: number): string {
   return v.toLocaleString("id-ID");
 }
@@ -58,26 +48,28 @@ function EditableHeader({
           e.stopPropagation();
         }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full min-w-[80px] px-1 py-0.5 text-xs focus:outline-none"
-        style={{ background: INPUT, border: `1px solid ${GREEN}`, color: BRIGHT, fontFamily: MONO }}
+        className="w-full min-w-[80px] px-1.5 py-0.5 text-xs border border-neutral-900 focus:outline-none bg-white font-mono text-neutral-900"
       />
     );
   }
 
   return (
     <span className="flex items-center gap-1 group/header">
-      <span className="cursor-pointer select-none" onClick={() => onSort(idx)}>
+      <span
+        className="cursor-pointer select-none hover:text-neutral-900 transition-colors"
+        onClick={() => onSort(idx)}
+      >
         {name}
         {sortActive
-          ? <span className="ml-1" style={{ color: BRIGHT }}>{sortAsc ? "↑" : "↓"}</span>
-          : <span className="ml-1" style={{ color: DIM }}>↕</span>}
+          ? <span className="ml-1 text-neutral-700">{sortAsc ? "↑" : "↓"}</span>
+          : <span className="ml-1 text-neutral-300">↕</span>}
       </span>
       <button
         onClick={(e) => { e.stopPropagation(); setEditing(true); }}
         title="Ganti nama kolom"
-        className="opacity-0 group-hover/header:opacity-100 transition-opacity p-0.5"
+        className="opacity-0 group-hover/header:opacity-100 transition-opacity p-0.5 text-neutral-400 hover:text-neutral-700"
       >
-        <Pencil className="w-3 h-3" style={{ color: DIM }} />
+        <Pencil className="w-3 h-3" />
       </button>
     </span>
   );
@@ -125,56 +117,50 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
 
   if (columns.length === 0) {
     return (
-      <div className="p-8 text-center text-xs" style={{ color: DIM, fontFamily: MONO }}>
-        [WARN] Tidak ada kolom yang dapat ditampilkan.
+      <div className="border border-neutral-200 px-6 py-8 text-center text-xs text-neutral-400">
+        Tidak ada kolom yang dapat ditampilkan.
       </div>
     );
   }
 
   return (
-    <div className="space-y-0" style={{ fontFamily: MONO }}>
+    <div className="border border-neutral-200 overflow-hidden">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3"
-        style={{ borderBottom: `1px solid ${BORDER}`, background: PANEL }}>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-3 border-b border-neutral-200 bg-white">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: DIM }} />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
           <input
             type="search"
-            placeholder="search..."
+            placeholder="Cari…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs focus:outline-none"
-            style={{ background: INPUT, border: `1px solid ${BORDER}`, color: LIGHT, fontFamily: MONO }}
+            className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white transition-colors"
           />
         </div>
-        <div className="flex items-center gap-2 text-xs" style={{ color: DIM }}>
-          <span>rows={filtered.length}</span>
-          <span>·</span>
-          <span>cols={columns.length}</span>
-        </div>
+        <p className="text-xs text-neutral-400 flex-shrink-0">
+          {filtered.length} dari {table.rows.length} baris
+        </p>
         <button
           onClick={handleDownload}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold ml-auto sm:ml-0 transition-colors"
-          style={{ background: DIM, color: "#dcfce7", border: "none" }}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-colors ml-auto sm:ml-0"
         >
-          <Download className="w-3 h-3" />
-          [CSV]
+          <Download className="w-3.5 h-3.5" />
+          Unduh CSV
         </button>
       </div>
 
-      <p className="px-4 py-2 text-xs flex items-center gap-1.5" style={{ color: DIM, background: PANEL, borderBottom: `1px solid ${BORDER}` }}>
+      <p className="px-5 py-2 text-xs text-neutral-400 border-b border-neutral-100 flex items-center gap-1.5 bg-neutral-50">
         <Pencil className="w-3 h-3" />
-        hover nama kolom → klik ikon pensil untuk rename
+        Hover nama kolom lalu klik ikon pensil untuk mengganti nama
       </p>
 
       {/* Table */}
-      <div className="overflow-auto max-h-[500px]">
-        <table className="w-full text-xs border-collapse min-w-max">
-          <thead className="sticky top-0 z-10">
-            <tr style={{ background: PANEL, borderBottom: `1px solid ${BORDER}` }}>
-              <th className="px-4 py-2.5 text-left font-bold w-10" style={{ color: DIM }}>#</th>
+      <div className="overflow-auto max-h-[520px]">
+        <table className="w-full text-sm border-collapse min-w-max">
+          <thead className="sticky top-0 z-10 bg-white">
+            <tr className="border-b border-neutral-200">
               {columns.map((col, i) => (
-                <th key={i} className="px-4 py-2.5 text-left font-bold whitespace-nowrap" style={{ color: BRIGHT }}>
+                <th key={i} className="text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 px-5 py-2.5 pr-8 last:pr-5">
                   <EditableHeader
                     name={col} idx={i}
                     onRename={onColumnRename}
@@ -189,30 +175,20 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="px-4 py-8 text-center" style={{ color: DIM }}>
-                  [EMPTY] tidak ada data yang cocok
+                <td colSpan={columns.length} className="px-5 py-8 text-center text-xs text-neutral-400">
+                  Tidak ada data yang cocok dengan pencarian.
                 </td>
               </tr>
             ) : (
               filtered.map((row, ri) => (
-                <tr
-                  key={ri}
-                  style={{
-                    borderBottom: `1px solid ${BORDER}`,
-                    background: ri % 2 === 0 ? BG : "#0b100b",
-                  }}
-                >
-                  <td className="px-4 py-2 tabular-nums" style={{ color: DIM }}>
-                    {String(ri).padStart(3, "0")}
-                  </td>
+                <tr key={ri} className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
                   {row.map((cell, ci) => (
                     <td
                       key={ci}
-                      className={`px-4 py-2 ${ci !== 0 ? "text-right tabular-nums" : "whitespace-nowrap"}`}
-                      style={{ color: ci === 0 ? "#6ee7b7" : BRIGHT }}
+                      className={`px-5 py-2 pr-8 last:pr-5 text-sm border-b border-neutral-100 ${ci !== 0 ? "text-right font-mono" : ""} text-neutral-700`}
                     >
                       {cell === null ? (
-                        <span style={{ color: DIM }}>—</span>
+                        <span className="text-neutral-300">—</span>
                       ) : typeof cell === "number" ? (
                         formatNumber(cell)
                       ) : (
