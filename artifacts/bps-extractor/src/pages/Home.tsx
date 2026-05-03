@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database } from "lucide-react";
+import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database, Sun, Moon } from "lucide-react";
 import { fetchBpsData } from "@/lib/api";
 import { parseData } from "@/lib/parsers";
 import { MetaInfo } from "@/components/MetaInfo";
 import { DataTable } from "@/components/DataTable";
 import { DatawrapperPanel } from "@/components/DatawrapperPanel";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import type { ParsedTable } from "@/lib/parsers";
 
 const PREVIEW_BARS = [
@@ -43,12 +44,12 @@ function PreviewChart() {
         const pct = (value / MAX_BAR) * 100;
         return (
           <div key={label} className="flex items-center gap-3">
-            <span className="text-xs text-neutral-500 w-36 text-right flex-shrink-0 truncate">{label}</span>
-            <div className="flex-1 h-5 bg-neutral-100 relative overflow-hidden">
-              <div className="absolute inset-y-0 left-0 bg-neutral-800" style={{ width: `${pct}%` }} />
-              <div className="absolute inset-y-0 w-px bg-neutral-400 opacity-60" style={{ left: `${nationalPct}%` }} />
+            <span className="text-xs text-neutral-500 dark:text-neutral-400 w-36 text-right flex-shrink-0 truncate">{label}</span>
+            <div className="flex-1 h-5 bg-neutral-100 dark:bg-neutral-700 relative overflow-hidden">
+              <div className="absolute inset-y-0 left-0 bg-neutral-800 dark:bg-neutral-200" style={{ width: `${pct}%` }} />
+              <div className="absolute inset-y-0 w-px bg-neutral-400 dark:bg-neutral-500 opacity-60" style={{ left: `${nationalPct}%` }} />
             </div>
-            <span className="text-xs font-mono text-neutral-500 w-8 flex-shrink-0">{value}</span>
+            <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400 w-8 flex-shrink-0">{value}</span>
           </div>
         );
       })}
@@ -56,7 +57,7 @@ function PreviewChart() {
         <span className="w-36 flex-shrink-0" />
         <div className="flex-1 flex justify-between">
           {[0, 2, 4, 6, 8].map((n) => (
-            <span key={n} className="text-[10px] text-neutral-300 tabular-nums">{n}%</span>
+            <span key={n} className="text-[10px] text-neutral-300 dark:text-neutral-600 tabular-nums">{n}%</span>
           ))}
         </div>
         <span className="w-8 flex-shrink-0" />
@@ -64,12 +65,12 @@ function PreviewChart() {
       <div className="flex items-center gap-3 pt-0.5">
         <span className="w-36 flex-shrink-0" />
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400">
-            <span className="w-3 h-3 bg-neutral-800 inline-block flex-shrink-0" />
+          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400 dark:text-neutral-500">
+            <span className="w-3 h-3 bg-neutral-800 dark:bg-neutral-200 inline-block flex-shrink-0" />
             8 provinsi tertinggi
           </span>
-          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400">
-            <span className="w-px h-3 bg-neutral-400 inline-block flex-shrink-0" />
+          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400 dark:text-neutral-500">
+            <span className="w-px h-3 bg-neutral-400 dark:bg-neutral-500 inline-block flex-shrink-0" />
             Rata-rata nasional ({NATIONAL_RATE}%)
           </span>
         </div>
@@ -79,6 +80,7 @@ function PreviewChart() {
 }
 
 export default function Home() {
+  const { dark, toggle }                  = useDarkMode();
   const [url, setUrl]                     = useState("");
   const [loading, setLoading]             = useState(false);
   const [error, setError]                 = useState<string | null>(null);
@@ -117,18 +119,25 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-white dark:bg-neutral-900" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* Header */}
-      <header className="border-b border-neutral-200 bg-white">
+      <header className="border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 bg-neutral-900 text-white flex-shrink-0">
+          <div className="flex items-center justify-center w-8 h-8 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex-shrink-0">
             <Database className="w-4 h-4" />
           </div>
-          <div>
-            <h1 className="text-sm font-bold text-neutral-900 leading-tight tracking-tight">StatNusa</h1>
-            <p className="text-xs text-neutral-400">Ekstrak &amp; Visualisasi Data Badan Pusat Statistik</p>
+          <div className="flex-1">
+            <h1 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 leading-tight tracking-tight">StatNusa</h1>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">Ekstrak &amp; Visualisasi Data Badan Pusat Statistik</p>
           </div>
+          <button
+            onClick={toggle}
+            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            className="p-2 text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
+          >
+            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </div>
       </header>
 
@@ -136,14 +145,14 @@ export default function Home() {
 
         {/* Hero preview */}
         {!table && !loading && !error && (
-          <div className="border border-neutral-200 overflow-hidden">
-            <div className="px-6 pt-5 pb-4 border-b border-neutral-100 flex items-start justify-between gap-6">
+          <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+            <div className="px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 flex items-start justify-between gap-6">
               <div className="space-y-1 max-w-sm">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300">Contoh Output</p>
-                <h2 className="text-base font-bold text-neutral-900 leading-snug">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600">Contoh Output</p>
+                <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100 leading-snug">
                   Tingkat Pengangguran Terbuka<br />Menurut Provinsi
                 </h2>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">
                   Tempelkan URL data BPS di bawah untuk menghasilkan tabel &amp; visualisasi serupa dalam hitungan detik.
                 </p>
               </div>
@@ -155,8 +164,8 @@ export default function Home() {
                   { label: "Sumber",   value: "Sakernas, BPS" },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-baseline gap-2">
-                    <span className="text-[10px] uppercase tracking-widest text-neutral-300 font-semibold">{label}</span>
-                    <span className="text-xs font-mono text-neutral-600">{value}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-neutral-300 dark:text-neutral-600 font-semibold">{label}</span>
+                    <span className="text-xs font-mono text-neutral-600 dark:text-neutral-300">{value}</span>
                   </div>
                 ))}
               </div>
@@ -168,8 +177,8 @@ export default function Home() {
         )}
 
         {/* URL Input */}
-        <div className="border border-neutral-200 p-5 space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
+        <div className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
             Masukkan URL Data JSON BPS
           </h2>
           <form onSubmit={handleFetch} className="space-y-3">
@@ -178,14 +187,14 @@ export default function Home() {
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://webapi.bps.go.id/v1/api/list/model/data/..."
               rows={2}
-              className="w-full px-3 py-2.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900 resize-none font-mono text-neutral-700 bg-white transition-colors"
+              className="w-full px-3 py-2.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 resize-none font-mono text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 transition-colors"
               disabled={loading}
             />
             <div className="flex items-center gap-3">
               <button
                 type="submit"
                 disabled={loading || !url.trim()}
-                className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 text-white hover:bg-neutral-700 transition-colors tracking-wide disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors tracking-wide disabled:opacity-50"
               >
                 {loading
                   ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Mengambil data…</>
@@ -195,7 +204,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => { setTable(null); setRawData(null); setUrl(""); setError(null); }}
-                  className="text-xs text-neutral-400 hover:text-neutral-700 underline underline-offset-2"
+                  className="text-xs text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2"
                 >
                   Reset
                 </button>
@@ -203,12 +212,12 @@ export default function Home() {
             </div>
           </form>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-neutral-400 mr-1">Contoh:</span>
+            <span className="text-xs text-neutral-400 dark:text-neutral-500 mr-1">Contoh:</span>
             {EXAMPLE_URLS.map((ex) => (
               <button
                 key={ex.url}
                 onClick={() => setUrl(ex.url)}
-                className="text-xs px-3 py-1 border border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-colors"
+                className="text-xs px-3 py-1 border border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-neutral-900 dark:hover:border-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
               >
                 {ex.label}
               </button>
@@ -218,11 +227,11 @@ export default function Home() {
 
         {/* Error */}
         {error && (
-          <div className="flex items-start gap-3 px-4 py-3 border border-red-200 bg-red-50 text-sm">
+          <div className="flex items-start gap-3 px-4 py-3 border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950 text-sm">
             <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-400" />
             <div>
-              <p className="font-semibold text-xs text-red-700">Gagal mengambil data</p>
-              <p className="mt-0.5 text-xs text-red-600">{error}</p>
+              <p className="font-semibold text-xs text-red-700 dark:text-red-400">Gagal mengambil data</p>
+              <p className="mt-0.5 text-xs text-red-600 dark:text-red-400">{error}</p>
             </div>
           </div>
         )}
@@ -231,9 +240,9 @@ export default function Home() {
         {table && editedColumns.length > 0 && (
           <div className="space-y-5">
             <div className="space-y-1">
-              <h2 className="text-xl font-bold text-neutral-900 leading-tight">{table.title}</h2>
+              <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">{table.title}</h2>
               {(table.source || table.unit) && (
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">
                   {[table.source, table.unit && `Satuan: ${table.unit}`].filter(Boolean).join(" · ")}
                 </p>
               )}
@@ -245,9 +254,9 @@ export default function Home() {
                 { l: "KOLOM",  v: String(table.columns.length) },
                 { l: "BARIS",  v: String(table.rows.length) },
               ].map(({ l, v }) => (
-                <span key={l} className="flex items-center gap-1.5 text-xs border border-neutral-200 px-3 py-1">
-                  <span className="text-neutral-400 uppercase tracking-widest font-semibold">{l}</span>
-                  <span className="text-neutral-700 font-mono">{v}</span>
+                <span key={l} className="flex items-center gap-1.5 text-xs border border-neutral-200 dark:border-neutral-700 px-3 py-1">
+                  <span className="text-neutral-400 dark:text-neutral-500 uppercase tracking-widest font-semibold">{l}</span>
+                  <span className="text-neutral-700 dark:text-neutral-300 font-mono">{v}</span>
                 </span>
               ))}
             </div>
@@ -257,8 +266,8 @@ export default function Home() {
             {table.columns.length > 0 ? (
               <DataTable table={table} columns={editedColumns} onColumnRename={handleColumnRename} />
             ) : (
-              <div className="border border-neutral-200 px-6 py-8 text-center text-xs text-neutral-400">
-                Format <span className="font-mono text-neutral-700">{table.format}</span> terdeteksi, namun parser belum dapat mengekstrak tabel.
+              <div className="border border-neutral-200 dark:border-neutral-700 px-6 py-8 text-center text-xs text-neutral-400 dark:text-neutral-500">
+                Format <span className="font-mono text-neutral-700 dark:text-neutral-300">{table.format}</span> terdeteksi, namun parser belum dapat mengekstrak tabel.
                 Periksa data mentah di bawah.
               </div>
             )}
@@ -268,16 +277,16 @@ export default function Home() {
             )}
 
             {rawData && (
-              <div className="border border-neutral-200 overflow-hidden">
+              <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                 <button
                   onClick={() => setShowRaw((s) => !s)}
-                  className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-colors"
+                  className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                 >
                   <span>Lihat Data Mentah (JSON)</span>
                   {showRaw ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
                 {showRaw && (
-                  <pre className="bg-neutral-950 text-neutral-300 text-xs p-4 overflow-auto max-h-64 font-mono border-t border-neutral-200">
+                  <pre className="bg-neutral-950 text-neutral-300 text-xs p-4 overflow-auto max-h-64 font-mono border-t border-neutral-700">
                     {JSON.stringify(rawData, null, 2)}
                   </pre>
                 )}
@@ -287,15 +296,15 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="max-w-5xl mx-auto px-6 py-6 border-t border-neutral-100">
-        <p className="text-xs text-neutral-400">
+      <footer className="max-w-5xl mx-auto px-6 py-6 border-t border-neutral-100 dark:border-neutral-800">
+        <p className="text-xs text-neutral-400 dark:text-neutral-500">
           Data bersumber dari{" "}
           <a href="https://webapi.bps.go.id" target="_blank" rel="noopener noreferrer"
-            className="hover:text-neutral-700 underline underline-offset-2">BPS Web API</a>
+            className="hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2">BPS Web API</a>
           . Visualisasi via{" "}
           <a href="https://www.datawrapper.de" target="_blank" rel="noopener noreferrer"
-            className="hover:text-neutral-700 underline underline-offset-2">Datawrapper</a>
-          . StatNusa © 2025
+            className="hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2">Datawrapper</a>
+          . StatNusa © 2026
         </p>
       </footer>
     </div>

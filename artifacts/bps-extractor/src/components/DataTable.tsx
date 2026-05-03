@@ -48,7 +48,7 @@ function EditableHeader({
           e.stopPropagation();
         }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full min-w-[80px] px-1.5 py-0.5 text-xs border border-neutral-900 focus:outline-none bg-white font-mono text-neutral-900"
+        className="w-full min-w-[80px] px-1.5 py-0.5 text-xs border border-neutral-900 dark:border-neutral-300 focus:outline-none bg-white dark:bg-neutral-800 font-mono text-neutral-900 dark:text-neutral-100"
       />
     );
   }
@@ -56,18 +56,18 @@ function EditableHeader({
   return (
     <span className="flex items-center gap-1 group/header">
       <span
-        className="cursor-pointer select-none hover:text-neutral-900 transition-colors"
+        className="cursor-pointer select-none hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
         onClick={() => onSort(idx)}
       >
         {name}
         {sortActive
-          ? <span className="ml-1 text-neutral-700">{sortAsc ? "↑" : "↓"}</span>
-          : <span className="ml-1 text-neutral-300">↕</span>}
+          ? <span className="ml-1 text-neutral-700 dark:text-neutral-300">{sortAsc ? "↑" : "↓"}</span>
+          : <span className="ml-1 text-neutral-300 dark:text-neutral-600">↕</span>}
       </span>
       <button
         onClick={(e) => { e.stopPropagation(); setEditing(true); }}
         title="Ganti nama kolom"
-        className="opacity-0 group-hover/header:opacity-100 transition-opacity p-0.5 text-neutral-400 hover:text-neutral-700"
+        className="opacity-0 group-hover/header:opacity-100 transition-opacity p-0.5 text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
       >
         <Pencil className="w-3 h-3" />
       </button>
@@ -117,39 +117,39 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
 
   if (columns.length === 0) {
     return (
-      <div className="border border-neutral-200 px-6 py-8 text-center text-xs text-neutral-400">
+      <div className="border border-neutral-200 dark:border-neutral-700 px-6 py-8 text-center text-xs text-neutral-400 dark:text-neutral-500">
         Tidak ada kolom yang dapat ditampilkan.
       </div>
     );
   }
 
   return (
-    <div className="border border-neutral-200 overflow-hidden">
+    <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-3 border-b border-neutral-200 bg-white">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
           <input
             type="search"
             placeholder="Cari…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white transition-colors"
+            className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 transition-colors"
           />
         </div>
-        <p className="text-xs text-neutral-400 flex-shrink-0">
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 flex-shrink-0">
           {filtered.length} dari {table.rows.length} baris
         </p>
         <button
           onClick={handleDownload}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-colors ml-auto sm:ml-0"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-neutral-900 dark:hover:border-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors ml-auto sm:ml-0"
         >
           <Download className="w-3.5 h-3.5" />
           Unduh CSV
         </button>
       </div>
 
-      <p className="px-5 py-2 text-xs text-neutral-400 border-b border-neutral-100 flex items-center gap-1.5 bg-neutral-50">
+      <p className="px-5 py-2 text-xs text-neutral-400 dark:text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 bg-neutral-50 dark:bg-neutral-800">
         <Pencil className="w-3 h-3" />
         Hover nama kolom lalu klik ikon pensil untuk mengganti nama
       </p>
@@ -157,10 +157,10 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
       {/* Table */}
       <div className="overflow-auto max-h-[520px]">
         <table className="w-full text-sm border-collapse min-w-max">
-          <thead className="sticky top-0 z-10 bg-white">
-            <tr className="border-b border-neutral-200">
+          <thead className="sticky top-0 z-10 bg-white dark:bg-neutral-900">
+            <tr className="border-b border-neutral-200 dark:border-neutral-700">
               {columns.map((col, i) => (
-                <th key={i} className="text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 px-5 py-2.5 pr-8 last:pr-5">
+                <th key={i} className="text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 px-5 py-2.5 pr-8 last:pr-5">
                   <EditableHeader
                     name={col} idx={i}
                     onRename={onColumnRename}
@@ -175,20 +175,20 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-5 py-8 text-center text-xs text-neutral-400">
+                <td colSpan={columns.length} className="px-5 py-8 text-center text-xs text-neutral-400 dark:text-neutral-500">
                   Tidak ada data yang cocok dengan pencarian.
                 </td>
               </tr>
             ) : (
               filtered.map((row, ri) => (
-                <tr key={ri} className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
+                <tr key={ri} className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
                   {row.map((cell, ci) => (
                     <td
                       key={ci}
-                      className={`px-5 py-2 pr-8 last:pr-5 text-sm border-b border-neutral-100 ${ci !== 0 ? "text-right font-mono" : ""} text-neutral-700`}
+                      className={`px-5 py-2 pr-8 last:pr-5 text-sm border-b border-neutral-100 dark:border-neutral-800 ${ci !== 0 ? "text-right font-mono" : ""} text-neutral-700 dark:text-neutral-300`}
                     >
                       {cell === null ? (
-                        <span className="text-neutral-300">—</span>
+                        <span className="text-neutral-300 dark:text-neutral-600">—</span>
                       ) : typeof cell === "number" ? (
                         formatNumber(cell)
                       ) : (

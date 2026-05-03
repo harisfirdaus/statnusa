@@ -41,11 +41,11 @@ const PALETTES: Palette[] = [
 
 function PaletteDots({ colors }: { colors: string[] }) {
   if (colors.length === 0)
-    return <span className="text-xs italic text-neutral-400">default Datawrapper</span>;
+    return <span className="text-xs italic text-neutral-400 dark:text-neutral-500">default Datawrapper</span>;
   return (
     <span className="flex gap-1">
       {colors.map((c) => (
-        <span key={c} className="w-4 h-4 inline-block flex-shrink-0 border border-neutral-200"
+        <span key={c} className="w-4 h-4 inline-block flex-shrink-0 border border-neutral-200 dark:border-neutral-600"
           style={{ background: c }} />
       ))}
     </span>
@@ -57,21 +57,23 @@ function Section({ label, badge, open, onToggle, children }: {
   onToggle: () => void; children: React.ReactNode;
 }) {
   return (
-    <div className="border border-neutral-200">
+    <div className="border border-neutral-200 dark:border-neutral-700">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
       >
         <span>
           {label}
-          {badge && <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400">{badge}</span>}
+          {badge && <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400 dark:text-neutral-500">{badge}</span>}
         </span>
         {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
       </button>
-      {open && <div className="border-t border-neutral-200 p-4 bg-neutral-50">{children}</div>}
+      {open && <div className="border-t border-neutral-200 dark:border-neutral-700 p-4 bg-neutral-50 dark:bg-neutral-800">{children}</div>}
     </div>
   );
 }
+
+const inputCls = "w-full px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 transition-colors";
 
 interface DatawrapperPanelProps {
   table: ParsedTable;
@@ -163,176 +165,152 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   }
 
   return (
-    <div className="border border-neutral-200 p-5 space-y-4">
+    <div className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4">
       <div className="flex items-center gap-2">
-        <BarChart2 className="w-4 h-4 text-neutral-400" />
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
+        <BarChart2 className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
           Buat Visualisasi di Datawrapper
         </h3>
       </div>
 
       {result ? (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs border border-neutral-300 px-4 py-3">
-            <CheckCircle className="w-4 h-4 flex-shrink-0 text-neutral-700" />
-            <span className="text-neutral-700">Chart berhasil dibuat dan dipublikasikan.</span>
+          <div className="flex items-center gap-2 text-xs border border-neutral-300 dark:border-neutral-600 px-4 py-3">
+            <CheckCircle className="w-4 h-4 flex-shrink-0 text-neutral-700 dark:text-neutral-300" />
+            <span className="text-neutral-700 dark:text-neutral-300">Chart berhasil dibuat dan dipublikasikan.</span>
           </div>
           <div className="flex gap-2 flex-wrap">
             <a href={result.editUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-neutral-900 text-white hover:bg-neutral-700 transition-colors">
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors">
               <ExternalLink className="w-3.5 h-3.5" /> Edit di Datawrapper
             </a>
             <a href={result.publicUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-4 py-2 text-xs border border-neutral-300 text-neutral-700 hover:border-neutral-900 transition-colors">
+              className="flex items-center gap-1.5 px-4 py-2 text-xs border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:border-neutral-900 dark:hover:border-neutral-300 transition-colors">
               <ExternalLink className="w-3.5 h-3.5" /> Lihat Chart Publik
             </a>
           </div>
-          <p className="text-xs text-neutral-400 font-mono">chart_id: {result.chartId}</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500 font-mono">chart_id: {result.chartId}</p>
           <button onClick={() => setResult(null)}
-            className="text-xs text-neutral-500 hover:text-neutral-900 underline underline-offset-2">
+            className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 underline underline-offset-2">
             Buat chart baru dengan data yang sama
           </button>
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Title */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
-              Judul Chart
-            </label>
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-1.5">Judul Chart</label>
             <input type="text" value={chartTitle} onChange={(e) => setChartTitle(e.target.value)}
-              maxLength={120} placeholder="Judul chart Datawrapper"
-              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white text-neutral-700 transition-colors" />
+              maxLength={120} placeholder="Judul chart Datawrapper" className={inputCls} />
           </div>
 
-          {/* Description */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-1.5">
               Deskripsi <span className="font-normal normal-case">(opsional)</span>
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               rows={2} maxLength={500} placeholder="Teks pendek di bawah judul chart"
-              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white resize-none text-neutral-700 transition-colors" />
+              className={`${inputCls} resize-none`} />
           </div>
 
-          {/* Notes */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-1.5">
               Catatan / Footnote <span className="font-normal normal-case">(opsional)</span>
             </label>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
               rows={2} maxLength={500} placeholder="Catatan di bawah chart"
-              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white resize-none text-neutral-700 transition-colors" />
+              className={`${inputCls} resize-none`} />
           </div>
 
-          {/* Chart type */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
-              Tipe Chart
-            </label>
-            <select value={chartType} onChange={(e) => setChartType(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white text-neutral-700">
+            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-1.5">Tipe Chart</label>
+            <select value={chartType} onChange={(e) => setChartType(e.target.value)} className={inputCls}>
               {CHART_TYPES.map((group) => (
                 <optgroup key={group.group} label={group.group}>
-                  {group.items.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
+                  {group.items.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </optgroup>
               ))}
             </select>
             {(chartType === "column-chart" || chartType === "grouped-column-chart" || chartType === "stacked-column-chart") && (
-              <p className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2">
-                Tip: Column Chart lebih baik untuk 5–10 kategori. Untuk seluruh provinsi (38),
-                gunakan Grouped/Stacked Bars (horizontal) agar tidak terlalu padat.
+              <p className="mt-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 px-3 py-2">
+                Tip: Column Chart lebih baik untuk 5–10 kategori. Untuk seluruh provinsi (38), gunakan Grouped/Stacked Bars (horizontal).
               </p>
             )}
             {["d3-bars","d3-bars-grouped","d3-bars-stacked","d3-bars-split"].includes(chartType) && (
-              <label className="mt-2 flex items-center gap-2 cursor-pointer select-none text-sm text-neutral-700">
-                <input type="checkbox" checked={sortBars} onChange={(e) => setSortBars(e.target.checked)}
-                  className="accent-neutral-900" />
+              <label className="mt-2 flex items-center gap-2 cursor-pointer select-none text-sm text-neutral-700 dark:text-neutral-300">
+                <input type="checkbox" checked={sortBars} onChange={(e) => setSortBars(e.target.checked)} className="accent-neutral-900 dark:accent-neutral-100" />
                 Urutkan bar dari nilai terbesar
               </label>
             )}
           </div>
 
-          {/* Accordion sections */}
-          <Section label="Warna Chart" badge={`— ${PALETTES[paletteIdx].name}`}
-            open={showColor} onToggle={() => setShowColor((s) => !s)}>
+          <Section label="Warna Chart" badge={`— ${PALETTES[paletteIdx].name}`} open={showColor} onToggle={() => setShowColor((s) => !s)}>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {PALETTES.map((p, i) => (
                 <button key={i} onClick={() => setPaletteIdx(i)}
-                  className={`flex flex-col gap-1.5 p-2 border text-left transition-all ${paletteIdx === i ? "border-neutral-900 bg-white" : "border-neutral-200 hover:border-neutral-400"}`}>
-                  <span className="text-xs font-medium text-neutral-700 truncate">{p.name}</span>
+                  className={`flex flex-col gap-1.5 p-2 border text-left transition-all ${paletteIdx === i ? "border-neutral-900 dark:border-neutral-300 bg-white dark:bg-neutral-700" : "border-neutral-200 dark:border-neutral-600 hover:border-neutral-400 dark:hover:border-neutral-400"}`}>
+                  <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 truncate">{p.name}</span>
                   <PaletteDots colors={p.colors} />
                 </button>
               ))}
             </div>
           </Section>
 
-          <Section label="Kolom" badge={`(${dataColsSelected} dari ${columns.length - 1} dipilih)`}
-            open={showCols} onToggle={() => setShowCols((s) => !s)}>
+          <Section label="Kolom" badge={`(${dataColsSelected} dari ${columns.length - 1} dipilih)`} open={showCols} onToggle={() => setShowCols((s) => !s)}>
             <div className="flex gap-3 text-xs mb-2">
               <button onClick={() => setSelectedCols(new Set(columns.map((_, i) => i)))}
-                className="text-neutral-600 hover:text-neutral-900 underline underline-offset-2">Semua</button>
+                className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 underline underline-offset-2">Semua</button>
               <button onClick={() => setSelectedCols(new Set([0]))}
-                className="text-neutral-400 hover:text-neutral-700 underline underline-offset-2">Hapus semua</button>
+                className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2">Hapus semua</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-48 overflow-y-auto">
               {columns.map((col, i) => (
-                <label key={i} className={`flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-white transition-colors ${i === 0 ? "opacity-50 cursor-not-allowed" : ""}`}>
-                  <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)}
-                    disabled={i === 0} className="accent-neutral-900" />
-                  <span className="text-neutral-700 truncate">
-                    {i === 0 ? <>{col} <span className="text-xs text-neutral-400">(label)</span></> : col}
+                <label key={i} className={`flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-white dark:hover:bg-neutral-700 transition-colors ${i === 0 ? "opacity-50 cursor-not-allowed" : ""}`}>
+                  <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)} disabled={i === 0} className="accent-neutral-900 dark:accent-neutral-100" />
+                  <span className="text-neutral-700 dark:text-neutral-300 truncate">
+                    {i === 0 ? <>{col} <span className="text-xs text-neutral-400 dark:text-neutral-500">(label)</span></> : col}
                   </span>
                 </label>
               ))}
             </div>
           </Section>
 
-          <Section label="Baris" badge={`(${rowsSelected} dari ${table.rows.length} dipilih)`}
-            open={showRows} onToggle={() => setShowRows((s) => !s)}>
+          <Section label="Baris" badge={`(${rowsSelected} dari ${table.rows.length} dipilih)`} open={showRows} onToggle={() => setShowRows((s) => !s)}>
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 pointer-events-none" />
-                  <input type="search" placeholder="Cari baris…" value={rowSearch}
-                    onChange={(e) => setRowSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900" />
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+                  <input type="search" placeholder="Cari baris…" value={rowSearch} onChange={(e) => setRowSearch(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300" />
                 </div>
                 <div className="flex gap-2 text-xs flex-shrink-0">
-                  <button onClick={selectAllRows} className="text-neutral-600 hover:text-neutral-900 underline underline-offset-2">Semua</button>
-                  <button onClick={selectNoRows}  className="text-neutral-400 hover:text-neutral-700 underline underline-offset-2">Hapus</button>
+                  <button onClick={selectAllRows} className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 underline underline-offset-2">Semua</button>
+                  <button onClick={selectNoRows}  className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2">Hapus</button>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-56 overflow-y-auto">
                 {filteredRowIndices.map(({ i, label }) => (
-                  <label key={i} className="flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-white transition-colors">
-                    <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)}
-                      className="accent-neutral-900" />
-                    <span className="text-neutral-700 truncate">{label || `Baris ${i + 1}`}</span>
+                  <label key={i} className="flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-white dark:hover:bg-neutral-700 transition-colors">
+                    <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)} className="accent-neutral-900 dark:accent-neutral-100" />
+                    <span className="text-neutral-700 dark:text-neutral-300 truncate">{label || `Baris ${i + 1}`}</span>
                   </label>
                 ))}
                 {filteredRowIndices.length === 0 && (
-                  <p className="col-span-2 text-xs text-neutral-400 py-2 text-center">Tidak ada baris yang cocok.</p>
+                  <p className="col-span-2 text-xs text-neutral-400 dark:text-neutral-500 py-2 text-center">Tidak ada baris yang cocok.</p>
                 )}
               </div>
             </div>
           </Section>
 
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-neutral-400 dark:text-neutral-500">
             {rowsSelected} baris × {dataColsSelected + 1} kolom akan dikirim ke Datawrapper.
           </p>
 
           {error && (
-            <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-3 py-2">{error}</p>
+            <p className="text-xs text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 px-3 py-2">{error}</p>
           )}
 
-          <button
-            onClick={handleCreate}
-            disabled={loading || rowsSelected === 0 || dataColsSelected === 0}
-            className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 text-white hover:bg-neutral-700 transition-colors tracking-wide disabled:opacity-50"
-          >
+          <button onClick={handleCreate} disabled={loading || rowsSelected === 0 || dataColsSelected === 0}
+            className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors tracking-wide disabled:opacity-50">
             {loading
               ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Membuat chart…</>
               : <><BarChart2 className="w-3.5 h-3.5" />BUAT VISUALISASI</>}
