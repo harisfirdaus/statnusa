@@ -37,6 +37,8 @@ export async function createDatawrapperChart(payload: {
   chartType: string;
   csvData: string;
   description?: string;
+  notes?: string;
+  palette?: string[];
 }): Promise<CreateChartResult> {
   return apiFetch<CreateChartResult>("/api/datawrapper/create", {
     method: "POST",

@@ -5,7 +5,7 @@ const router = Router();
 const DW_API = "https://api.datawrapper.de/v3";
 
 router.post("/datawrapper/create", async (req, res) => {
-  const { title, chartType, csvData, description } = req.body ?? {};
+  const { title, chartType, csvData, description, notes, palette } = req.body ?? {};
 
   if (!title || typeof title !== "string") {
     return res.status(400).json({ error: "Field 'title' harus diisi" });
@@ -16,6 +16,10 @@ router.post("/datawrapper/create", async (req, res) => {
 
   const resolvedChartType = typeof chartType === "string" ? chartType : "d3-bars";
   const resolvedDesc = typeof description === "string" ? description : "";
+  const resolvedNotes = typeof notes === "string" ? notes : "";
+  const resolvedPalette = Array.isArray(palette) && palette.every((c) => typeof c === "string")
+    ? palette as string[]
+    : null;
 
   const apiKey = process.env.DATAWRAPPER_API_KEY;
   if (!apiKey) {
@@ -28,6 +32,22 @@ router.post("/datawrapper/create", async (req, res) => {
     Accept: "application/json",
   };
 
+  // Build metadata
+  const metadata: Record<string, unknown> = {
+    describe: {
+      intro: resolvedDesc,
+      "source-name": "Badan Pusat Statistik (BPS)",
+      "source-url": "https://www.bps.go.id",
+    },
+    annotate: {
+      notes: resolvedNotes,
+    },
+  };
+
+  if (resolvedPalette && resolvedPalette.length > 0) {
+    metadata.visualize = { palette: resolvedPalette };
+  }
+
   try {
     // Step 1: Create chart
     const createRes = await fetch(`${DW_API}/charts`, {
@@ -36,13 +56,7 @@ router.post("/datawrapper/create", async (req, res) => {
       body: JSON.stringify({
         title,
         type: resolvedChartType,
-        metadata: {
-          describe: {
-            intro: resolvedDesc,
-            "source-name": "Badan Pusat Statistik (BPS)",
-            "source-url": "https://www.bps.go.id",
-          },
-        },
+        metadata,
       }),
       signal: AbortSignal.timeout(15_000),
     });
