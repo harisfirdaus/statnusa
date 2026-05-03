@@ -7,5 +7,8 @@ export const modules: ModuleMap = {
   "./components/mockups/statnusa/LayoutSplit.tsx": () => import("../components/mockups/statnusa/LayoutSplit.tsx"),
   "./components/mockups/statnusa/MinimalMono.tsx": () => import("../components/mockups/statnusa/MinimalMono.tsx"),
   "./components/mockups/statnusa/SoftOfficial.tsx": () => import("../components/mockups/statnusa/SoftOfficial.tsx"),
+  "./components/mockups/statnusa/VibeAmber.tsx": () => import("../components/mockups/statnusa/VibeAmber.tsx"),
+  "./components/mockups/statnusa/VibeChalk.tsx": () => import("../components/mockups/statnusa/VibeChalk.tsx"),
+  "./components/mockups/statnusa/VibeOcean.tsx": () => import("../components/mockups/statnusa/VibeOcean.tsx"),
   "./components/mockups/statnusa/WarmEditorial.tsx": () => import("../components/mockups/statnusa/WarmEditorial.tsx")
 };
