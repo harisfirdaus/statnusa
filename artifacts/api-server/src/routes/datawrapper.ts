@@ -4,6 +4,8 @@ const router = Router();
 
 const DW_API = "https://api.datawrapper.de/v3";
 
+// Chart types that show a color legend when there are multiple series.
+// The correct Datawrapper key (confirmed from chart JS source) is "show-color-key".
 const MULTI_SERIES_TYPES = new Set([
   "d3-bars-grouped",
   "d3-bars-stacked",
@@ -15,6 +17,7 @@ const MULTI_SERIES_TYPES = new Set([
   "d3-pies",
 ]);
 
+// Bar chart types that support sorting by value via "sort-bars" key.
 const BAR_SORT_TYPES = new Set([
   "d3-bars",
   "d3-bars-grouped",
@@ -89,22 +92,27 @@ router.post("/datawrapper/create", async (req, res) => {
     });
   }
 
-  /** Build the visualize block — applied at both CREATE and PATCH steps. */
+  /**
+   * Build the visualize block.
+   *
+   * Keys confirmed from Datawrapper chart JS source (d3-bars-grouped, d3-bars,
+   * d3-bars-stacked, d3-bars-split, d3-lines):
+   *   "show-color-key": true  → shows the color legend above the chart
+   *   "sort-bars": true       → sorts rows by value
+   *   "revert-sorting": true  → reverses default sort order → largest bar first
+   *   "custom-colors": {...}  → maps series name → hex color
+   */
   function buildVisualize(): Record<string, unknown> {
     const v: Record<string, unknown> = {};
     if (needsLegend) {
-      // Both keys used across different Datawrapper chart-type implementations
-      v["legend"]      = true;
-      v["show-legend"] = true;
+      v["show-color-key"] = true;
     }
     if (customColors) {
       v["custom-colors"] = customColors;
     }
     if (applySort) {
-      // "sort-values": true is the correct Datawrapper API key for sorting bars by value.
-      // "revert-sorting": true flips the default ascending order → largest bar first (top).
-      v["sort-values"]    = true;
-      v["revert-sorting"] = true;
+      v["sort-bars"]      = true;
+      v["revert-sorting"] = true; // largest value at top
     }
     return v;
   }
@@ -159,25 +167,19 @@ router.post("/datawrapper/create", async (req, res) => {
       });
     }
 
-    // ── Step 3: Re-PATCH all visualize settings after data upload ─────────────
-    // Datawrapper needs the data to be present before it fully applies series-
-    // dependent settings like custom-colors and legend. Re-applying here ensures
-    // the published snapshot picks up all settings.
+    // ── Step 3: Re-PATCH visualize settings after data upload ─────────────────
+    // Re-applying after data upload ensures Datawrapper's rendering pipeline
+    // picks up the settings with the actual series present.
     if (Object.keys(visualize).length > 0) {
-      const patchRes = await fetch(`${DW_API}/charts/${chartId}`, {
+      await fetch(`${DW_API}/charts/${chartId}`, {
         method: "PATCH",
         headers: jsonHeaders,
         body: JSON.stringify({ metadata: { visualize } }),
         signal: AbortSignal.timeout(10_000),
       });
-      req.log.info(
-        { chartId, patchOk: patchRes.ok, status: patchRes.status },
-        "Datawrapper metadata PATCH"
-      );
     }
 
-    // Brief pause to let Datawrapper's backend fully process the metadata PATCH
-    // before we take a published snapshot.
+    // Brief pause before publish so the PATCH is fully processed.
     await sleep(400);
 
     // ── Step 4: Publish ───────────────────────────────────────────────────────
