@@ -1,4 +1,4 @@
-# Statika
+# StatNusa
 
 Aplikasi web untuk mengambil data dari [BPS Web API](https://webapi.bps.go.id), menampilkannya dalam tabel interaktif yang bisa diedit, mengunduh sebagai CSV, dan membuat visualisasi langsung di [Datawrapper](https://www.datawrapper.de).
 
@@ -53,7 +53,7 @@ Datawrapper menyediakan akun gratis dengan 10.000 views/bulan per chart.
 1. Buka [https://app.datawrapper.de/register](https://app.datawrapper.de/register) dan daftarkan akun (gratis).
 2. Setelah login, buka **Settings** → **API Tokens** (atau langsung ke [https://app.datawrapper.de/account/api-tokens](https://app.datawrapper.de/account/api-tokens)).
 3. Klik **Create new token**.
-4. Beri nama token (misalnya `Statika`), lalu centang permission:
+4. Beri nama token (misalnya `StatNusa`), lalu centang permission:
    - `chart:read`
    - `chart:write`
    - `chart:delete` (opsional, untuk membersihkan chart uji coba)

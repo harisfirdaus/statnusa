@@ -76,7 +76,7 @@ export default function Home() {
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 leading-tight">Statika</h1>
+            <h1 className="text-lg font-bold text-gray-900 leading-tight">StatNusa</h1>
             <p className="text-xs text-gray-500">Ekstrak &amp; Visualisasi Data Badan Pusat Statistik</p>
           </div>
         </div>
