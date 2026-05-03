@@ -15,7 +15,12 @@ Aplikasi web untuk mengambil data dari [BPS Web API](https://webapi.bps.go.id), 
   - Pilih palet warna (Biru BPS, Merah–Oranye, Hijau Alam, dll.)
   - Opsi urut dari nilai terbesar ke terkecil (untuk bar chart)
   - Tambahkan deskripsi dan catatan/footnote
-- **API key aman** — BPS API key dan Datawrapper API key disimpan di server, tidak terekspos ke browser
+- **Tanya data dengan AI** — chatbot berbasis Gemma 3 27B (NVIDIA) yang memahami isi tabel dan menjawab pertanyaan dalam bahasa Indonesia:
+  - Analisis, ringkasan, dan perbandingan nilai
+  - Tombol cepat untuk menghasilkan deskripsi grafik siap pakai untuk Datawrapper
+  - Respons di-render sebagai markdown (bold, list, tabel)
+  - Fallback otomatis ke model lain jika model utama tidak tersedia
+- **API key aman** — BPS API key, Datawrapper API key, dan NVIDIA API key disimpan di server, tidak terekspos ke browser
 
 ---
 
@@ -46,7 +51,19 @@ Untuk menemukan URL yang diinginkan, buka [dokumentasi BPS API](https://webapi.b
 
 ---
 
-### 2. Datawrapper API Key
+### 2. NVIDIA API Key
+
+NVIDIA menyediakan akses ke berbagai model AI besar, termasuk Gemma 3 27B, melalui platform NVIDIA API Catalog.
+
+1. Buka [https://integrate.api.nvidia.com](https://integrate.api.nvidia.com) dan buat akun NVIDIA (gratis).
+2. Setelah login, buka menu **API Keys** di dashboard.
+3. Klik **Generate API Key** dan salin key yang muncul — formatnya diawali `nvapi-`.
+
+> Akun baru NVIDIA API Catalog mendapatkan kredit gratis untuk ujicoba. Pantau penggunaan di dashboard untuk menghindari biaya tak terduga.
+
+---
+
+### 3. Datawrapper API Key
 
 Datawrapper menyediakan akun gratis dengan 10.000 views/bulan per chart.
 
@@ -65,14 +82,17 @@ Datawrapper menyediakan akun gratis dengan 10.000 views/bulan per chart.
 
 ## Konfigurasi
 
-Aplikasi membutuhkan dua environment variable yang disimpan di server (**tidak** di frontend):
+Aplikasi membutuhkan tiga environment variable yang disimpan di server (**tidak** di frontend):
 
 | Variabel | Keterangan |
 |---|---|
 | `BPS_API_KEY` | WebAPI Key dari webapi.bps.go.id |
 | `DATAWRAPPER_API_KEY` | API Token dari app.datawrapper.de |
+| `NVIDIA_API_KEY` | API Key dari integrate.api.nvidia.com (untuk fitur chat AI) |
 
-Di Replit, tambahkan keduanya melalui menu **Secrets** (ikon gembok di sidebar kiri). Nama variabel harus persis seperti di tabel di atas.
+Di Replit, tambahkan ketiganya melalui menu **Secrets** (ikon gembok di sidebar kiri). Nama variabel harus persis seperti di tabel di atas.
+
+> Fitur chat AI akan otomatis dinonaktifkan (panel tidak muncul) jika data belum dimuat, tapi tidak ada cek apakah `NVIDIA_API_KEY` dikonfigurasi — error baru muncul saat tombol kirim ditekan pertama kali.
 
 ---
 
@@ -120,6 +140,27 @@ Setelah data tampil, klik tombol **Unduh CSV** di atas tabel untuk menyimpan dat
 
 > **Tips Column Chart:** Untuk tipe Column Chart (vertikal), pilih maksimal 5–10 baris saja agar chart tidak terlalu padat. Untuk semua provinsi (34 baris), gunakan Grouped/Stacked Bars (horizontal).
 
+### Tanya Data dengan AI
+
+Setelah data tampil, gulir ke bagian **Tanya Data dengan AI** (di bawah panel Datawrapper) dan klik untuk membuka panel chat.
+
+**Tombol cepat yang tersedia saat panel pertama dibuka:**
+
+| Tombol | Fungsi |
+|---|---|
+| ✦ Buat deskripsi untuk grafik Datawrapper | Menghasilkan 2 kalimat deskripsi siap pakai untuk field *Deskripsi* di panel Datawrapper |
+| Mana nilai tertinggi dan terendah? | Menemukan nilai ekstrem dalam data |
+| Berikan ringkasan data ini | Ringkasan umum seluruh dataset |
+| Apa tren yang terlihat? | Analisis pola atau tren |
+| Bandingkan 5 nilai teratas | Perbandingan ranking teratas |
+
+Atau ketik pertanyaan sendiri di kolom input. Tekan **Enter** untuk kirim, **Shift+Enter** untuk baris baru.
+
+**Catatan teknis:**
+- Model utama: `google/gemma-3-27b-it`. Jika model sedang tidak tersedia (DEGRADED), sistem otomatis mencoba `meta/llama-3.1-70b-instruct` lalu `meta/llama-3.1-8b-instruct`.
+- Maksimal 150 baris pertama dari tabel dikirim sebagai konteks ke model.
+- Klik ikon **×** di kiri input untuk menghapus seluruh percakapan.
+
 ---
 
 ## Arsitektur
@@ -127,16 +168,20 @@ Setelah data tampil, klik tombol **Unduh CSV** di atas tabel untuk menyimpan dat
 ```
 Browser (React + Vite)
     │
-    ├─ GET/POST /api/bps/*       ─► Express API Server ─► BPS Web API
+    ├─ POST /api/bps/fetch       ─► Express API Server ─► BPS Web API
     │                                  (sisipkan BPS_API_KEY)
     │
-    └─ POST /api/datawrapper/*   ─► Express API Server ─► Datawrapper API
-                                       (gunakan DATAWRAPPER_API_KEY)
+    ├─ POST /api/datawrapper/*   ─► Express API Server ─► Datawrapper API
+    │                                  (gunakan DATAWRAPPER_API_KEY)
+    │
+    └─ POST /api/chat            ─► Express API Server ─► NVIDIA API (Gemma 3 / Llama)
+         streaming SSE ◄──────────       (gunakan NVIDIA_API_KEY)
 ```
 
-- **Frontend** (`artifacts/bps-extractor`): React + Vite, Tailwind CSS, shadcn/ui
+- **Frontend** (`artifacts/bps-extractor`): React + Vite, Tailwind CSS
 - **Backend** (`artifacts/api-server`): Express + TypeScript, berjalan di port 8080
-- API key tidak pernah dikirim ke browser — semua request ke BPS dan Datawrapper dilakukan dari server
+- API key tidak pernah dikirim ke browser — semua request ke BPS, Datawrapper, dan NVIDIA dilakukan dari server
+- Chat menggunakan Server-Sent Events (SSE) untuk streaming respons kata per kata
 
 ---
 
