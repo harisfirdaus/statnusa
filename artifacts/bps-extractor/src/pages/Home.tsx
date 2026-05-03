@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database, ArrowRight } from "lucide-react";
+import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database } from "lucide-react";
 import { fetchBpsData } from "@/lib/api";
 import { parseData } from "@/lib/parsers";
 import { MetaInfo } from "@/components/MetaInfo";
@@ -163,14 +163,6 @@ export default function Home() {
             </div>
             <div className="px-6 py-5">
               <PreviewChart />
-            </div>
-            <div className="px-6 py-3 bg-neutral-50 border-t border-neutral-100 flex items-center justify-between">
-              <p className="text-xs text-neutral-400">
-                Data riil dari BPS API — otomatis diekstrak, bisa diedit &amp; dikirim ke Datawrapper
-              </p>
-              <span className="flex items-center gap-1 text-xs font-semibold text-neutral-700">
-                Coba sekarang <ArrowRight className="w-3 h-3" />
-              </span>
             </div>
           </div>
         )}
