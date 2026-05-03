@@ -25,6 +25,12 @@ function buildTableContext(table: ParsedTable, columns: string[]): string {
   return lines.join("\n");
 }
 
+const DW_DESCRIPTION_PROMPT =
+  "Tulis deskripsi singkat untuk grafik Datawrapper berdasarkan data ini. " +
+  "Maksimal 2 kalimat: kalimat pertama menjelaskan apa yang ditampilkan, " +
+  "kalimat kedua menyebutkan temuan/insight paling menonjol dari data. " +
+  "Gunakan bahasa Indonesia yang ringkas dan lugas, tanpa bullet point atau markdown.";
+
 const SUGGESTIONS = [
   "Mana nilai tertinggi dan terendah?",
   "Berikan ringkasan data ini.",
@@ -150,6 +156,12 @@ export function ChatPanel({ table, columns }: Props) {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 pl-9">
+                  <button
+                    onClick={() => send(DW_DESCRIPTION_PROMPT)}
+                    className="text-xs px-3 py-1.5 border border-neutral-900 dark:border-neutral-300 text-neutral-900 dark:text-neutral-100 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-900 dark:hover:bg-neutral-100 hover:text-white dark:hover:text-neutral-900 transition-colors font-medium flex items-center gap-1.5"
+                  >
+                    <span>✦</span> Buat deskripsi untuk grafik Datawrapper
+                  </button>
                   {SUGGESTIONS.map((s) => (
                     <button
                       key={s}
