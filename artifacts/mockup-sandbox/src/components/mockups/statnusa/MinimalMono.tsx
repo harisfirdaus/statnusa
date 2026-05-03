@@ -1,34 +1,50 @@
 import { useState } from "react";
 import {
   Search, Database, BarChart2, ChevronDown, ChevronUp,
-  ExternalLink, CheckCircle, Loader2,
+  ExternalLink, CheckCircle, Loader2, ArrowRight,
 } from "lucide-react";
 
+// ─── Mock data ────────────────────────────────────────────────────────────────
+
+const PREVIEW_BARS = [
+  { label: "Jawa Barat",          value: 7.44 },
+  { label: "DKI Jakarta",         value: 6.53 },
+  { label: "Kepulauan Riau",      value: 6.11 },
+  { label: "Aceh",                value: 6.03 },
+  { label: "Sumatera Utara",      value: 5.72 },
+  { label: "Jawa Tengah",         value: 5.13 },
+  { label: "Riau",                value: 4.31 },
+  { label: "DI Yogyakarta",       value: 3.57 },
+];
+const MAX_VAL = 8;
+
 const MOCK_TITLE = "Tingkat Pengangguran Terbuka (TPT) Menurut Provinsi, 2024";
-const MOCK_NOTE = "Sumber: Survei Angkatan Kerja Nasional (Sakernas), BPS";
+const MOCK_NOTE  = "Sumber: Survei Angkatan Kerja Nasional (Sakernas), BPS";
 
 const MOCK_ROWS = [
-  ["Aceh", "6.03"], ["Sumatera Utara", "5.72"], ["Sumatera Barat", "5.44"],
-  ["Riau", "4.31"], ["Jambi", "4.67"], ["Sumatera Selatan", "4.09"],
-  ["Bengkulu", "3.42"], ["Lampung", "4.23"], ["Kep. Bangka Belitung", "4.55"],
-  ["Kepulauan Riau", "6.11"], ["DKI Jakarta", "6.53"], ["Jawa Barat", "7.44"],
-  ["Jawa Tengah", "5.13"], ["DI Yogyakarta", "3.57"], ["Jawa Timur", "4.19"],
+  ["Aceh","6.03"],["Sumatera Utara","5.72"],["Sumatera Barat","5.44"],
+  ["Riau","4.31"],["Jambi","4.67"],["Sumatera Selatan","4.09"],
+  ["Bengkulu","3.42"],["Lampung","4.23"],["Kep. Bangka Belitung","4.55"],
+  ["Kepulauan Riau","6.11"],["DKI Jakarta","6.53"],["Jawa Barat","7.44"],
+  ["Jawa Tengah","5.13"],["DI Yogyakarta","3.57"],["Jawa Timur","4.19"],
 ];
 
 const EXAMPLE_URLS = ["Pengangguran", "Umur Harapan Hidup", "Persentase Penduduk Miskin"];
 
 const CHART_GROUPS = [
-  { group: "Bar (Horizontal)", items: ["Bar Chart (1 seri)", "Grouped Bars", "Stacked Bars"] },
-  { group: "Garis & Area",     items: ["Multiple Lines", "Area Chart"] },
-  { group: "Lainnya",          items: ["Pie Chart", "Tabel Interaktif"] },
+  { group: "Bar (Horizontal)", items: ["Bar Chart (1 seri)","Grouped Bars","Stacked Bars"] },
+  { group: "Garis & Area",     items: ["Multiple Lines","Area Chart"] },
+  { group: "Lainnya",          items: ["Pie Chart","Tabel Interaktif"] },
 ];
 
 const PALETTES = [
-  { name: "Default",   colors: [] as string[] },
-  { name: "Biru BPS",  colors: ["#1a4f8a", "#2e6eb5", "#4a8ecf", "#6fb0e8"] },
-  { name: "Monokrom",  colors: ["#1a1a1a", "#404040", "#666666", "#999999"] },
-  { name: "Hangat",    colors: ["#922b21", "#d35400", "#e67e22", "#f1c40f"] },
+  { name: "Default",  colors: [] as string[] },
+  { name: "Biru BPS", colors: ["#1a4f8a","#2e6eb5","#4a8ecf","#6fb0e8"] },
+  { name: "Monokrom", colors: ["#1a1a1a","#404040","#666666","#999999"] },
+  { name: "Hangat",   colors: ["#922b21","#d35400","#e67e22","#f1c40f"] },
 ];
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function ColHeader({ children }: { children: React.ReactNode }) {
   return (
@@ -46,9 +62,7 @@ function Cell({ children, mono }: { children: React.ReactNode; mono?: boolean })
   );
 }
 
-function Section({
-  label, badge, open, onToggle, children,
-}: {
+function Section({ label, badge, open, onToggle, children }: {
   label: string; badge?: string; open: boolean;
   onToggle: () => void; children: React.ReactNode;
 }) {
@@ -69,15 +83,49 @@ function Section({
   );
 }
 
+/** Static horizontal bar chart — no library needed */
+function PreviewChart() {
+  return (
+    <div className="space-y-2.5">
+      {PREVIEW_BARS.map(({ label, value }) => {
+        const pct = (value / MAX_VAL) * 100;
+        return (
+          <div key={label} className="flex items-center gap-3">
+            <span className="text-xs text-neutral-500 w-36 text-right flex-shrink-0 tabular-nums truncate">{label}</span>
+            <div className="flex-1 h-5 bg-neutral-100 relative overflow-hidden">
+              <div
+                className="absolute inset-y-0 left-0 bg-neutral-800 transition-all"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <span className="text-xs font-mono text-neutral-500 w-8 flex-shrink-0">{value}</span>
+          </div>
+        );
+      })}
+      <div className="flex items-center gap-3 pt-1">
+        <span className="w-36 flex-shrink-0" />
+        <div className="flex-1 flex justify-between">
+          {[0, 2, 4, 6, 8].map((n) => (
+            <span key={n} className="text-[10px] text-neutral-300 tabular-nums">{n}%</span>
+          ))}
+        </div>
+        <span className="w-8 flex-shrink-0" />
+      </div>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export function MinimalMono() {
-  const [hasData, setHasData]         = useState(false);
-  const [loading, setLoading]         = useState(false);
-  const [paletteIdx, setPaletteIdx]   = useState(0);
-  const [showRaw, setShowRaw]         = useState(false);
+  const [hasData, setHasData]           = useState(false);
+  const [loading, setLoading]           = useState(false);
+  const [paletteIdx, setPaletteIdx]     = useState(0);
+  const [showRaw, setShowRaw]           = useState(false);
   const [chartCreated, setChartCreated] = useState(false);
-  const [colorOpen, setColorOpen]     = useState(false);
-  const [colsOpen, setColsOpen]       = useState(false);
-  const [rowsOpen, setRowsOpen]       = useState(false);
+  const [colorOpen, setColorOpen]       = useState(false);
+  const [colsOpen, setColsOpen]         = useState(false);
+  const [rowsOpen, setRowsOpen]         = useState(false);
 
   function handleFetch() {
     setLoading(true);
@@ -87,7 +135,7 @@ export function MinimalMono() {
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-      {/* Header */}
+      {/* ── Header ── */}
       <header className="border-b border-neutral-200 bg-white">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 bg-neutral-900 text-white flex-shrink-0">
@@ -102,7 +150,52 @@ export function MinimalMono() {
 
       <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-        {/* URL Input */}
+        {/* ── Hero preview — shown only before data is loaded ── */}
+        {!hasData && (
+          <div className="border border-neutral-200 overflow-hidden">
+            {/* Top strip */}
+            <div className="px-6 pt-6 pb-4 border-b border-neutral-100 flex items-start justify-between gap-6">
+              <div className="space-y-1 max-w-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">Contoh Output</p>
+                <h2 className="text-base font-bold text-neutral-900 leading-snug">
+                  Tingkat Pengangguran Terbuka<br />Menurut Provinsi, 2024
+                </h2>
+                <p className="text-xs text-neutral-400">
+                  Tempelkan URL data BPS di bawah untuk menghasilkan tabel &amp; visualisasi serupa dalam hitungan detik.
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-1 flex-shrink-0 text-right">
+                {[
+                  { label: "Indikator", value: "TPT (%)" },
+                  { label: "Cakupan",   value: "34 Provinsi" },
+                  { label: "Tahun",     value: "2024" },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex items-baseline gap-2">
+                    <span className="text-[10px] uppercase tracking-widest text-neutral-300 font-semibold">{label}</span>
+                    <span className="text-xs font-mono text-neutral-600">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Chart area */}
+            <div className="px-6 py-5">
+              <PreviewChart />
+            </div>
+
+            {/* Bottom CTA strip */}
+            <div className="px-6 py-3 bg-neutral-50 border-t border-neutral-100 flex items-center justify-between">
+              <p className="text-xs text-neutral-400">
+                Data divisualisasikan otomatis &rarr; bisa diedit &amp; dikirim ke Datawrapper
+              </p>
+              <span className="flex items-center gap-1 text-xs font-semibold text-neutral-700">
+                Coba sekarang <ArrowRight className="w-3 h-3" />
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* ── URL Input ── */}
         <div className="border border-neutral-200 p-5 space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
             Masukkan URL Data JSON BPS
@@ -122,14 +215,11 @@ export function MinimalMono() {
               >
                 {loading
                   ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Mengambil data…</>
-                  : <><Search className="w-3.5 h-3.5" />AMBIL DATA</>
-                }
+                  : <><Search className="w-3.5 h-3.5" />AMBIL DATA</>}
               </button>
               {hasData && (
-                <button
-                  onClick={() => setHasData(false)}
-                  className="text-xs text-neutral-400 hover:text-neutral-700 underline underline-offset-2"
-                >
+                <button onClick={() => { setHasData(false); setChartCreated(false); }}
+                  className="text-xs text-neutral-400 hover:text-neutral-700 underline underline-offset-2">
                   Reset
                 </button>
               )}
@@ -138,17 +228,15 @@ export function MinimalMono() {
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-neutral-400 mr-1">Contoh:</span>
             {EXAMPLE_URLS.map((ex) => (
-              <button
-                key={ex}
-                className="text-xs px-3 py-1 border border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-colors"
-              >
+              <button key={ex}
+                className="text-xs px-3 py-1 border border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-colors">
                 {ex}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Results — only shown after data is loaded */}
+        {/* ── Results — only after data loaded ── */}
         {hasData && (
           <div className="space-y-5">
 
@@ -158,11 +246,11 @@ export function MinimalMono() {
               <p className="text-xs text-neutral-400">{MOCK_NOTE}</p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              {[{ label: "FORMAT", value: "dynamic" }, { label: "KOLOM", value: "2" }, { label: "BARIS", value: "34" }]
-                .map(({ label, value }) => (
-                  <span key={label} className="flex items-center gap-1.5 text-xs border border-neutral-200 px-3 py-1">
-                    <span className="text-neutral-400 uppercase tracking-widest font-semibold">{label}</span>
-                    <span className="text-neutral-700 font-mono">{value}</span>
+              {[{ l:"FORMAT", v:"dynamic" },{ l:"KOLOM", v:"2" },{ l:"BARIS", v:"34" }]
+                .map(({ l, v }) => (
+                  <span key={l} className="flex items-center gap-1.5 text-xs border border-neutral-200 px-3 py-1">
+                    <span className="text-neutral-400 uppercase tracking-widest font-semibold">{l}</span>
+                    <span className="text-neutral-700 font-mono">{v}</span>
                   </span>
                 ))}
             </div>
@@ -177,10 +265,7 @@ export function MinimalMono() {
               </div>
               <table className="w-full">
                 <thead>
-                  <tr>
-                    <ColHeader>Provinsi</ColHeader>
-                    <ColHeader>TPT (%)</ColHeader>
-                  </tr>
+                  <tr><ColHeader>Provinsi</ColHeader><ColHeader>TPT (%)</ColHeader></tr>
                 </thead>
                 <tbody>
                   {MOCK_ROWS.map((row, i) => (
@@ -217,7 +302,8 @@ export function MinimalMono() {
                       <ExternalLink className="w-3.5 h-3.5" /> Lihat Chart Publik
                     </button>
                   </div>
-                  <button onClick={() => setChartCreated(false)} className="text-xs text-neutral-500 hover:text-neutral-900 underline">
+                  <button onClick={() => setChartCreated(false)}
+                    className="text-xs text-neutral-500 hover:text-neutral-900 underline">
                     Buat chart baru
                   </button>
                 </div>
@@ -225,21 +311,15 @@ export function MinimalMono() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Judul Chart</label>
-                    <input
-                      type="text"
-                      defaultValue={MOCK_TITLE.slice(0, 80)}
-                      className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white text-neutral-700 transition-colors"
-                    />
+                    <input type="text" defaultValue={MOCK_TITLE.slice(0, 80)}
+                      className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white text-neutral-700 transition-colors" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">
                       Deskripsi <span className="font-normal normal-case">(opsional)</span>
                     </label>
-                    <textarea
-                      rows={2}
-                      placeholder="Teks pendek di bawah judul chart"
-                      className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white resize-none text-neutral-700 transition-colors"
-                    />
+                    <textarea rows={2} placeholder="Teks pendek di bawah judul chart"
+                      className="w-full px-3 py-2 text-sm border border-neutral-300 focus:outline-none focus:border-neutral-900 bg-white resize-none text-neutral-700 transition-colors" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Tipe Chart</label>
@@ -255,17 +335,13 @@ export function MinimalMono() {
                   <Section label="Warna Chart" badge={`— ${PALETTES[paletteIdx].name}`} open={colorOpen} onToggle={() => setColorOpen((s) => !s)}>
                     <div className="grid grid-cols-4 gap-2">
                       {PALETTES.map((p, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setPaletteIdx(i)}
-                          className={`flex flex-col gap-1.5 p-2 border text-left transition-all ${paletteIdx === i ? "border-neutral-900 bg-white" : "border-neutral-200 hover:border-neutral-400"}`}
-                        >
+                        <button key={i} onClick={() => setPaletteIdx(i)}
+                          className={`flex flex-col gap-1.5 p-2 border text-left transition-all ${paletteIdx === i ? "border-neutral-900 bg-white" : "border-neutral-200 hover:border-neutral-400"}`}>
                           <span className="text-xs font-medium text-neutral-700 truncate">{p.name}</span>
                           <span className="flex gap-1">
                             {p.colors.length === 0
                               ? <span className="text-xs text-neutral-400 italic">default</span>
-                              : p.colors.map((c) => <span key={c} className="w-4 h-4 border border-neutral-200 inline-block" style={{ background: c }} />)
-                            }
+                              : p.colors.map((c) => <span key={c} className="w-4 h-4 border border-neutral-200 inline-block" style={{ background: c }} />)}
                           </span>
                         </button>
                       ))}
@@ -286,11 +362,8 @@ export function MinimalMono() {
                   </Section>
 
                   <Section label="Baris" badge={`(${MOCK_ROWS.length} dari 34 dipilih)`} open={rowsOpen} onToggle={() => setRowsOpen((s) => !s)}>
-                    <input
-                      type="search"
-                      placeholder="Cari baris…"
-                      className="w-full px-3 py-1.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900 mb-2"
-                    />
+                    <input type="search" placeholder="Cari baris…"
+                      className="w-full px-3 py-1.5 text-xs border border-neutral-300 focus:outline-none focus:border-neutral-900 mb-2" />
                     <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
                       {MOCK_ROWS.map((row, i) => (
                         <label key={i} className="flex items-center gap-2 px-2 py-1 text-xs cursor-pointer hover:bg-white">
@@ -303,10 +376,8 @@ export function MinimalMono() {
 
                   <p className="text-xs text-neutral-400">{MOCK_ROWS.length} baris × 2 kolom akan dikirim ke Datawrapper.</p>
 
-                  <button
-                    onClick={() => setChartCreated(true)}
-                    className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 text-white hover:bg-neutral-700 transition-colors tracking-wide"
-                  >
+                  <button onClick={() => setChartCreated(true)}
+                    className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 text-white hover:bg-neutral-700 transition-colors tracking-wide">
                     <BarChart2 className="w-3.5 h-3.5" />
                     BUAT VISUALISASI
                   </button>
@@ -316,10 +387,8 @@ export function MinimalMono() {
 
             {/* Raw JSON toggle */}
             <div className="border border-neutral-200 overflow-hidden">
-              <button
-                onClick={() => setShowRaw((s) => !s)}
-                className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-colors"
-              >
+              <button onClick={() => setShowRaw((s) => !s)}
+                className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-colors">
                 <span>Lihat Data Mentah (JSON)</span>
                 {showRaw ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
@@ -338,13 +407,11 @@ export function MinimalMono() {
       <footer className="max-w-5xl mx-auto px-6 py-6 border-t border-neutral-100">
         <p className="text-xs text-neutral-400">
           Data bersumber dari{" "}
-          <a href="https://webapi.bps.go.id" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-700 underline underline-offset-2">
-            BPS Web API
-          </a>
+          <a href="https://webapi.bps.go.id" target="_blank" rel="noopener noreferrer"
+            className="hover:text-neutral-700 underline underline-offset-2">BPS Web API</a>
           . Visualisasi via{" "}
-          <a href="https://www.datawrapper.de" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-700 underline underline-offset-2">
-            Datawrapper
-          </a>
+          <a href="https://www.datawrapper.de" target="_blank" rel="noopener noreferrer"
+            className="hover:text-neutral-700 underline underline-offset-2">Datawrapper</a>
           .
         </p>
       </footer>
