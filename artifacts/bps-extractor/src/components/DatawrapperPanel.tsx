@@ -18,8 +18,9 @@ const CHART_TYPES = [
     { value: "stacked-column-chart", label: "Stacked Columns (multi-seri)" },
   ]},
   { group: "Garis & Area", items: [
-    { value: "d3-lines",   label: "Multiple Lines" },
-    { value: "area-chart", label: "Area Chart" },
+    { value: "d3-lines",       label: "Lines" },
+    { value: "multiple-lines", label: "Multiple Lines" },
+    { value: "area-chart",     label: "Area Chart" },
   ]},
   { group: "Lainnya", items: [
     { value: "d3-pies", label: "Pie Chart" },

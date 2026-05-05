@@ -11,8 +11,10 @@ const MULTI_SERIES_TYPES = new Set([
   "d3-bars-stacked",
   "d3-bars-split",
   "column-chart",
+  "grouped-column-chart",
   "stacked-column-chart",
   "d3-lines",
+  "multiple-lines",
   "area-chart",
   "d3-pies",
 ]);

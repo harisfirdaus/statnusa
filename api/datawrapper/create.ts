@@ -8,6 +8,7 @@ const MULTI_SERIES_TYPES = new Set([
   "grouped-column-chart",
   "stacked-column-chart",
   "d3-lines",
+  "multiple-lines",
   "area-chart",
   "d3-pies",
 ]);
