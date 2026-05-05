@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { ExternalLink, BarChart2, Loader2, CheckCircle, ChevronDown, ChevronUp, Search } from "lucide-react";
-import { createDatawrapperChart } from "@/lib/api";
+import { createDatawrapperChart, streamChat, type ChatMessage } from "@/lib/api";
+import { buildTableContext, DW_DESCRIPTION_PROMPT, parseAiError } from "@/lib/ai";
 import { tableToCSV } from "@/lib/csv";
 import type { ParsedTable } from "@/lib/parsers";
 
@@ -92,6 +93,8 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   const [result, setResult]           = useState<{
     chartId: string; editUrl: string; publicUrl: string; published: boolean;
   } | null>(null);
+  const [generatingDesc, setGeneratingDesc] = useState(false);
+  const [descError, setDescError] = useState<string | null>(null);
 
   const [showCols, setShowCols]   = useState(false);
   const [showRows, setShowRows]   = useState(false);
@@ -140,6 +143,27 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
 
   const dataColsSelected = validCols.size - 1;
   const rowsSelected     = selectedRows.size;
+
+  async function handleGenerateDescription() {
+    if (generatingDesc) return;
+    setGeneratingDesc(true);
+    setDescError(null);
+    setDescription("");
+
+    try {
+      const ctx = buildTableContext(table, columns);
+      const messages: ChatMessage[] = [{ role: "user", content: DW_DESCRIPTION_PROMPT }];
+      const gen = streamChat(messages, ctx);
+      for await (const chunk of gen) {
+        setDescription((prev) => prev + chunk);
+      }
+    } catch (err: any) {
+      const raw: string = err.message ?? "";
+      setDescError(parseAiError(raw));
+    } finally {
+      setGeneratingDesc(false);
+    }
+  }
 
   async function handleCreate() {
     if (dataColsSelected === 0) { setError("Pilih minimal satu kolom data."); return; }
@@ -204,12 +228,35 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-1.5">
-              Deskripsi <span className="font-normal normal-case">(opsional)</span>
-            </label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)}
-              rows={2} maxLength={500} placeholder="Teks pendek di bawah judul chart"
-              className={`${inputCls} resize-none`} />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+                Deskripsi <span className="font-normal normal-case">(opsional)</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={generatingDesc}
+                className="flex items-center gap-1 text-[10px] font-medium px-2 py-1 border border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-neutral-900 dark:hover:border-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors disabled:opacity-50"
+              >
+                {generatingDesc ? (
+                  <><Loader2 className="w-3 h-3 animate-spin" />Membuat…</>
+                ) : (
+                  <><span>✦</span>Buat dengan AI</>
+                )}
+              </button>
+            </div>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={2}
+              maxLength={500}
+              placeholder="Teks pendek di bawah judul chart"
+              disabled={generatingDesc}
+              className={`${inputCls} resize-none disabled:opacity-60`}
+            />
+            {descError && (
+              <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{descError}</p>
+            )}
           </div>
 
           <div>

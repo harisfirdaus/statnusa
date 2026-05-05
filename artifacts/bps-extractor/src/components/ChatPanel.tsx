@@ -3,33 +3,8 @@ import { Send, Bot, User, Loader2, MessageCircle, ChevronDown, ChevronUp, X } fr
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { streamChat, type ChatMessage } from "@/lib/api";
+import { buildTableContext, parseAiError } from "@/lib/ai";
 import type { ParsedTable } from "@/lib/parsers";
-
-function buildTableContext(table: ParsedTable, columns: string[]): string {
-  const lines: string[] = [];
-  lines.push(`Judul: ${table.title}`);
-  if (table.source) lines.push(`Sumber: ${table.source}`);
-  if (table.unit)   lines.push(`Satuan: ${table.unit}`);
-  if (table.subtitle) lines.push(`Info: ${table.subtitle}`);
-  lines.push("");
-  lines.push(columns.join(" | "));
-  lines.push(columns.map(() => "---").join(" | "));
-  const MAX_ROWS = 150;
-  const rows = table.rows.slice(0, MAX_ROWS);
-  for (const row of rows) {
-    lines.push(row.map((c) => (c === null ? "-" : String(c))).join(" | "));
-  }
-  if (table.rows.length > MAX_ROWS) {
-    lines.push(`... (${table.rows.length - MAX_ROWS} baris lainnya tidak ditampilkan)`);
-  }
-  return lines.join("\n");
-}
-
-const DW_DESCRIPTION_PROMPT =
-  "Tulis deskripsi singkat untuk grafik Datawrapper berdasarkan data ini. " +
-  "Maksimal 2 kalimat: kalimat pertama menjelaskan apa yang ditampilkan, " +
-  "kalimat kedua menyebutkan temuan/insight paling menonjol dari data. " +
-  "Gunakan bahasa Indonesia yang ringkas dan lugas, tanpa bullet point atau markdown.";
 
 const SUGGESTIONS = [
   "Mana nilai tertinggi dan terendah?",
@@ -86,18 +61,7 @@ export function ChatPanel({ table, columns }: Props) {
       }
     } catch (err: any) {
       const raw: string = err.message ?? "";
-      let friendly = raw;
-      if (raw.includes("DEGRADED") || raw.includes("sedang tidak tersedia"))
-        friendly = "Semua model AI sedang tidak tersedia di server NVIDIA. Coba lagi dalam beberapa menit.";
-      else if (raw.includes("504") || raw.includes("timeout") || raw.toLowerCase().includes("Timeout"))
-        friendly = "Permintaan timeout — model membutuhkan terlalu banyak waktu. Coba pertanyaan yang lebih singkat.";
-      else if (raw.includes("429"))
-        friendly = "Terlalu banyak permintaan ke NVIDIA API. Tunggu sebentar lalu coba lagi.";
-      else if (raw.includes("401") || raw.includes("403"))
-        friendly = "NVIDIA API key tidak valid atau tidak memiliki akses. Hubungi administrator.";
-      else if (raw.includes("500"))
-        friendly = "Terjadi kesalahan internal di server NVIDIA. Coba lagi.";
-      setError(friendly);
+      setError(parseAiError(raw));
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setStreaming(false);
@@ -156,12 +120,6 @@ export function ChatPanel({ table, columns }: Props) {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 pl-9">
-                  <button
-                    onClick={() => send(DW_DESCRIPTION_PROMPT)}
-                    className="text-xs px-3 py-1.5 border border-neutral-900 dark:border-neutral-300 text-neutral-900 dark:text-neutral-100 bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-900 dark:hover:bg-neutral-100 hover:text-white dark:hover:text-neutral-900 transition-colors font-medium flex items-center gap-1.5"
-                  >
-                    <span>✦</span> Buat deskripsi untuk grafik Datawrapper
-                  </button>
                   {SUGGESTIONS.map((s) => (
                     <button
                       key={s}
