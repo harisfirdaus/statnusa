@@ -248,7 +248,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={2}
+              rows={4}
               maxLength={500}
               placeholder="Teks pendek di bawah judul chart"
               disabled={generatingDesc}
