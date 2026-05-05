@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { ExternalLink, BarChart2, Loader2, CheckCircle, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { createDatawrapperChart, streamChat, type ChatMessage } from "@/lib/api";
 import { buildTableContext, DW_DESCRIPTION_PROMPT, parseAiError } from "@/lib/ai";
-import { tableToCSV } from "@/lib/csv";
+import { tableToCSV, transposeTable } from "@/lib/csv";
 import type { ParsedTable } from "@/lib/parsers";
 
 const CHART_TYPES = [
@@ -88,6 +88,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   const [notes, setNotes]             = useState(table.note?.slice(0, 300) ?? "");
   const [paletteIdx, setPaletteIdx]   = useState(0);
   const [sortBars, setSortBars]       = useState(false);
+  const [transpose, setTranspose]     = useState(false);
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState<string | null>(null);
   const [result, setResult]           = useState<{
@@ -148,8 +149,13 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
     const filteredRows = table.rows
       .filter((_, i) => selectedRows.has(i))
       .map((row) => colIdxs.map((i) => row[i]));
+
+    if (transpose) {
+      const { columns: tCols, rows: tRows } = transposeTable(filteredCols, filteredRows);
+      return tableToCSV(tCols, tRows);
+    }
     return tableToCSV(filteredCols, filteredRows);
-  }, [validCols, columns, table.rows, selectedRows]);
+  }, [validCols, columns, table.rows, selectedRows, transpose]);
 
   const dataColsSelected = validCols.size - 1;
   const rowsSelected     = selectedRows.size;
@@ -298,6 +304,16 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
                 Urutkan bar dari nilai terbesar
               </label>
             )}
+          </div>
+
+          <div className="border border-neutral-200 dark:border-neutral-700 p-3 bg-neutral-50 dark:bg-neutral-800">
+            <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-neutral-700 dark:text-neutral-300 mb-1">
+              <input type="checkbox" checked={transpose} onChange={(e) => setTranspose(e.target.checked)} className="accent-neutral-900 dark:accent-neutral-100" />
+              <span className="font-medium">Transpose data sebelum kirim ke Datawrapper</span>
+            </label>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 pl-5">
+              Aktifkan kalau Datawrapper salah mendeteksi sumbu (misalnya tahun jadi garis/series, padahal harusnya jadi sumbu X). Kolom dan baris akan ditukar sebelum dikirim.
+            </p>
           </div>
 
           <Section label="Warna Chart" badge={`— ${PALETTES[paletteIdx].name}`} open={showColor} onToggle={() => setShowColor((s) => !s)}>
