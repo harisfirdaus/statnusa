@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { ExternalLink, BarChart2, Loader2, CheckCircle, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { createDatawrapperChart, streamChat, type ChatMessage } from "@/lib/api";
 import { buildTableContext, DW_DESCRIPTION_PROMPT, parseAiError } from "@/lib/ai";
@@ -95,6 +95,16 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   } | null>(null);
   const [generatingDesc, setGeneratingDesc] = useState(false);
   const [descError, setDescError] = useState<string | null>(null);
+
+  const prevDataColCount = useRef(table.columns.length - 1);
+
+  useEffect(() => {
+    const dataColCount = table.columns.length - 1;
+    if (dataColCount > 1 && prevDataColCount.current <= 1) {
+      setChartType("d3-lines");
+    }
+    prevDataColCount.current = dataColCount;
+  }, [table.columns.length]);
 
   const [showCols, setShowCols]   = useState(false);
   const [showRows, setShowRows]   = useState(false);

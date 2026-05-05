@@ -3,11 +3,13 @@ export { detectFormat } from "./detectFormat";
 export { parseDynamic } from "./parseDynamic";
 export { parseSimdasi } from "./parseSimdasi";
 export { parseList } from "./parseList";
+export { mergeMultiYear } from "./mergeMultiYear";
 
 import { detectFormat } from "./detectFormat";
 import { parseDynamic } from "./parseDynamic";
 import { parseSimdasi } from "./parseSimdasi";
 import { parseList } from "./parseList";
+import { mergeMultiYear } from "./mergeMultiYear";
 import type { ParsedTable } from "./types";
 
 export function parseData(data: unknown): ParsedTable {

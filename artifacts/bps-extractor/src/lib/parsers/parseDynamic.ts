@@ -128,12 +128,14 @@ export function parseDynamic(data: Record<string, unknown>): ParsedTable {
   });
 
   const note = varInfo.note ? stripHtml(String(varInfo.note)) : undefined;
+  const yearLabel = tahunList[0]?.label;
 
   return {
     format: "dynamic",
     title: String(varInfo.label ?? "Data BPS"),
     unit: String(varInfo.unit ?? ""),
     note,
+    yearLabel,
     columns,
     rows,
   };

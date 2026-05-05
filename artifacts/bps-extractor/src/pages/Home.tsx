@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database, Sun, Moon } from "lucide-react";
 import { fetchBpsData } from "@/lib/api";
-import { parseData } from "@/lib/parsers";
+import { parseData, mergeMultiYear } from "@/lib/parsers";
 import { MetaInfo } from "@/components/MetaInfo";
 import { DataTable } from "@/components/DataTable";
 import { DatawrapperPanel } from "@/components/DatawrapperPanel";
@@ -90,6 +90,13 @@ export default function Home() {
   const [editedColumns, setEditedColumns] = useState<string[]>([]);
   const [showRaw, setShowRaw]             = useState(false);
 
+  const [yearTables, setYearTables]       = useState<ParsedTable[]>([]);
+  const [rawDataList, setRawDataList]     = useState<unknown[]>([]);
+  const [addYearUrl, setAddYearUrl]       = useState("");
+  const [showAddYearInput, setShowAddYearInput] = useState(false);
+  const [addYearLoading, setAddYearLoading] = useState(false);
+  const [addYearError, setAddYearError]   = useState<string | null>(null);
+
   useEffect(() => {
     if (table) setEditedColumns([...table.columns]);
   }, [table]);
@@ -106,18 +113,70 @@ export default function Home() {
     setError(null);
     setTable(null);
     setRawData(null);
+    setRawDataList([]);
+    setYearTables([]);
     setShowRaw(false);
+    setAddYearUrl("");
+    setShowAddYearInput(false);
+    setAddYearError(null);
     try {
       const result = await fetchBpsData(trimmed);
       setRawData(result.data);
       const parsed = parseData(result.data);
-      setTable(parsed);
+      const newYearTables = [parsed];
+      setYearTables(newYearTables);
+      setTable(mergeMultiYear(newYearTables));
+      setRawDataList([result.data]);
     } catch (err: any) {
       setError(err.message ?? "Terjadi kesalahan saat mengambil data.");
     } finally {
       setLoading(false);
     }
   }
+
+  async function handleAddYear() {
+    const trimmed = addYearUrl.trim();
+    if (!trimmed || addYearLoading) return;
+    setAddYearLoading(true);
+    setAddYearError(null);
+    try {
+      const result = await fetchBpsData(trimmed);
+      const parsed = parseData(result.data);
+
+      if (yearTables.length > 0 && parsed.format !== yearTables[0].format) {
+        throw new Error(
+          `Format data berbeda (${parsed.format} vs ${yearTables[0].format}). Tidak dapat digabungkan.`
+        );
+      }
+
+      const newYearTables = [...yearTables, parsed];
+      setYearTables(newYearTables);
+      setTable(mergeMultiYear(newYearTables));
+      setRawDataList((prev) => [...prev, result.data]);
+      setAddYearUrl("");
+      setShowAddYearInput(false);
+    } catch (err: any) {
+      setAddYearError(err.message ?? "Gagal mengambil data tambahan.");
+    } finally {
+      setAddYearLoading(false);
+    }
+  }
+
+  function removeYear(index: number) {
+    const newYearTables = yearTables.filter((_, i) => i !== index);
+    setYearTables(newYearTables);
+    setTable(mergeMultiYear(newYearTables));
+    setRawDataList((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  const incompleteRowCount = useMemo(() => {
+    if (!table || yearTables.length <= 1) return 0;
+    const expectedDataCols = table.columns.length - 1;
+    return table.rows.filter((row) => {
+      const nullCount = row.slice(1).filter((v) => v === null).length;
+      return nullCount > 0 && nullCount < expectedDataCols;
+    }).length;
+  }, [table, yearTables.length]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-900" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -204,7 +263,11 @@ export default function Home() {
               {table && (
                 <button
                   type="button"
-                  onClick={() => { setTable(null); setRawData(null); setUrl(""); setError(null); }}
+                  onClick={() => {
+                    setTable(null); setRawData(null); setRawDataList([]);
+                    setYearTables([]); setUrl(""); setError(null);
+                    setAddYearUrl(""); setShowAddYearInput(false); setAddYearError(null);
+                  }}
                   className="text-xs text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2"
                 >
                   Reset
@@ -261,6 +324,79 @@ export default function Home() {
                 </span>
               ))}
             </div>
+
+            {yearTables.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-widest font-semibold">Tahun:</span>
+                  {yearTables.map((yt, i) => (
+                    <span key={i} className="flex items-center gap-1 text-xs border border-neutral-200 dark:border-neutral-700 px-2 py-0.5">
+                      <span className="text-neutral-700 dark:text-neutral-300 font-mono">{yt.yearLabel || `Data ${i + 1}`}</span>
+                      {i > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => removeYear(i)}
+                          className="text-neutral-400 hover:text-red-500 dark:hover:text-red-400 transition-colors leading-none"
+                          title="Hapus tahun ini"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                  {yearTables.length < 5 && !showAddYearInput && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddYearInput(true)}
+                      className="text-xs px-2 py-0.5 border border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-400 hover:border-neutral-900 dark:hover:border-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                    >
+                      + Tambah Data Tahun Lain
+                    </button>
+                  )}
+                </div>
+
+                {showAddYearInput && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={addYearUrl}
+                      onChange={(e) => setAddYearUrl(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") handleAddYear(); }}
+                      placeholder="URL data tahun lain…"
+                      className="flex-1 px-3 py-2 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 font-mono text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddYear}
+                      disabled={!addYearUrl.trim() || addYearLoading}
+                      className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors disabled:opacity-50"
+                    >
+                      {addYearLoading ? <><Loader2 className="w-3 h-3 animate-spin" />Memuat…</> : "Ambil"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAddYearInput(false); setAddYearUrl(""); setAddYearError(null); }}
+                      className="text-xs text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                )}
+
+                {addYearError && (
+                  <div className="text-xs text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 px-3 py-2">
+                    {addYearError}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {incompleteRowCount > 0 && (
+              <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 px-3 py-2">
+                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>{incompleteRowCount} baris memiliki data tidak lengkap (wilayah tidak tersedia di semua tahun).</span>
+              </div>
+            )}
 
             <MetaInfo table={table} />
 

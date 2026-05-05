@@ -96,11 +96,14 @@ export function parseSimdasi(data: Record<string, unknown>): ParsedTable {
     note = entries || undefined;
   }
 
+  const yearLabel = tableData.tahun_data ? String(tableData.tahun_data) : undefined;
+
   return {
     format: "simdasi",
     title,
     source: String(tableData.penanggung_jawab ?? "BPS"),
     note,
+    yearLabel,
     columns,
     rows,
   };
