@@ -22,6 +22,22 @@ const PREVIEW_BARS = [
 const NATIONAL_RATE = 4.74;
 const MAX_BAR = 8;
 
+function isStandardBpsUrl(rawUrl: string): boolean {
+  return (
+    rawUrl.includes("/list/model/data") &&
+    !rawUrl.includes("interoperabilitas/datasource/simdasi")
+  );
+}
+
+function hasYearRange(rawUrl: string): boolean {
+  return /th\/\d+-\d+/.test(rawUrl);
+}
+
+function toAllYearsUrl(rawUrl: string): string {
+  if (!isStandardBpsUrl(rawUrl) || hasYearRange(rawUrl)) return rawUrl;
+  return rawUrl.replace(/th\/(\d+)/, (_, n) => `th/${parseInt(n, 10) - 1}-${n}`);
+}
+
 const EXAMPLE_URLS = [
   {
     label: "Pengangguran",
@@ -89,6 +105,7 @@ export default function Home() {
   const [table, setTable]                 = useState<ParsedTable | null>(null);
   const [editedColumns, setEditedColumns] = useState<string[]>([]);
   const [showRaw, setShowRaw]             = useState(false);
+  const [fetchAllYears, setFetchAllYears] = useState(false);
 
   const [yearTables, setYearTables]       = useState<ParsedTable[]>([]);
   const [rawDataList, setRawDataList]     = useState<unknown[]>([]);
@@ -100,6 +117,12 @@ export default function Home() {
   useEffect(() => {
     if (table) setEditedColumns([...table.columns]);
   }, [table]);
+
+  useEffect(() => {
+    if (!isStandardBpsUrl(url) || hasYearRange(url)) {
+      setFetchAllYears(false);
+    }
+  }, [url]);
 
   function handleColumnRename(idx: number, name: string) {
     setEditedColumns((prev) => { const next = [...prev]; next[idx] = name; return next; });
@@ -120,7 +143,8 @@ export default function Home() {
     setShowAddYearInput(false);
     setAddYearError(null);
     try {
-      const result = await fetchBpsData(trimmed);
+      const urlToFetch = fetchAllYears ? toAllYearsUrl(trimmed) : trimmed;
+      const result = await fetchBpsData(urlToFetch);
       setRawData(result.data);
       const parsed = parseData(result.data);
       const newYearTables = [parsed];
@@ -267,12 +291,40 @@ export default function Home() {
                     setTable(null); setRawData(null); setRawDataList([]);
                     setYearTables([]); setUrl(""); setError(null);
                     setAddYearUrl(""); setShowAddYearInput(false); setAddYearError(null);
+                    setFetchAllYears(false);
                   }}
                   className="text-xs text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2"
                 >
                   Reset
                 </button>
               )}
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="fetchAllYears"
+                checked={fetchAllYears}
+                onChange={(e) => setFetchAllYears(e.target.checked)}
+                disabled={loading || !isStandardBpsUrl(url) || hasYearRange(url)}
+                className="accent-neutral-900 dark:accent-neutral-100"
+              />
+              <label
+                htmlFor="fetchAllYears"
+                className={`text-xs select-none ${
+                  loading || !isStandardBpsUrl(url) || hasYearRange(url)
+                    ? "text-neutral-300 dark:text-neutral-600 cursor-not-allowed"
+                    : "text-neutral-600 dark:text-neutral-400 cursor-pointer"
+                }`}
+                title={
+                  hasYearRange(url)
+                    ? "URL sudah berisi rentang tahun"
+                    : !isStandardBpsUrl(url)
+                      ? "Hanya untuk URL BPS standar"
+                      : "Ambil seluruh data historis dari BPS sekaligus"
+                }
+              >
+                Ambil data dari semua tahun yang tersedia
+              </label>
             </div>
           </form>
           <div className="flex items-center gap-2 flex-wrap">
@@ -417,7 +469,7 @@ export default function Home() {
               <ChatPanel table={table} columns={editedColumns} />
             )}
 
-            {rawData && (
+            {rawData != null && (
               <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                 <button
                   onClick={() => setShowRaw((s) => !s)}

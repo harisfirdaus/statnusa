@@ -3,6 +3,8 @@ import type { ParsedTable } from "./types";
 interface DimItem {
   val: number | string;
   label: string;
+  note?: string;
+  unit?: string;
 }
 
 function decodeKey(
