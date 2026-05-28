@@ -25,11 +25,38 @@ async function apiFetch<T>(path: string, options: RequestInit): Promise<T> {
 }
 
 export async function fetchBpsData(url: string): Promise<FetchBpsResult> {
-  return apiFetch<FetchBpsResult>("/api/bps/fetch", {
+  // Step 1: minta server untuk inject API key ke URL
+  const { resolvedUrl } = await apiFetch<{ success: boolean; resolvedUrl: string }>("/api/bps/fetch", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url }),
   });
+
+  // Step 2: fetch langsung ke BPS API dari browser
+  // Ini menghindari blokir Cloudflare pada IP serverless/datacenter
+  const response = await fetch(resolvedUrl, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`BPS API mengembalikan status ${response.status}`);
+  }
+
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    const text = await response.text();
+    throw new Error(`Respons bukan JSON: ${text.slice(0, 200)}`);
+  }
+
+  const data = await response.json();
+
+  if ((data as any)["data-availability"] === "not-available") {
+    throw new Error("Data tidak tersedia untuk URL yang diberikan");
+  }
+
+  return { success: true, data, resolvedUrl };
 }
 
 export async function getAuthStatus(): Promise<{ required: boolean }> {

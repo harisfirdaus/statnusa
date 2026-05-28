@@ -7,17 +7,21 @@ Aplikasi web untuk mengambil data dari [BPS Web API](https://webapi.bps.go.id), 
 ## Fitur
 
 - **Ambil data BPS** — tempel URL API BPS, data langsung ter-parse ke tabel
+- **Gabung data multi-tahun** — otomatis menggabungkan data dari beberapa tahun menjadi satu tabel (untuk URL BPS standar)
+- **Ambil semua tahun** — toggle untuk mengambil semua data tahun yang tersedia untuk URL BPS standar
 - **Edit nama kolom** — klik header tabel untuk mengganti nama kolom sebelum divisualisasikan
 - **Unduh CSV** — ekspor tabel hasil ke file `.csv`
 - **Visualisasi Datawrapper** — buat chart langsung dari data dengan satu klik:
-  - Pilih tipe chart (bar, grouped bar, stacked, line, area, pie, tabel)
-  - Pilih kolom dan baris yang ingin divisualisasikan
-  - Pilih palet warna (Biru BPS, Merah–Oranye, Hijau Alam, dll.)
-  - Opsi urut dari nilai terbesar ke terkecil (untuk bar chart)
-  - Tambahkan deskripsi dan catatan/footnote
+   - Pilih tipe chart (bar, grouped bar, stacked, line, multiple lines, area, pie, tabel)
+   - Pilih kolom dan baris yang ingin divisualisasikan
+   - Pilih palet warna (Biru BPS, Merah–Oranye, Hijau Alam, dll.)
+   - Opsi urut dari nilai terbesar ke terkecil (untuk bar chart)
+   - Toggle transpose untuk memutar orientasi chart
+   - Tambahkan deskripsi dan catatan/footnote
+   - Generator deskripsi otomatis menggunakan AI
 - **Tanya data dengan AI** — chatbot berbasis Gemma 3 27B (NVIDIA) yang memahami isi tabel dan menjawab pertanyaan dalam bahasa Indonesia:
   - Analisis, ringkasan, dan perbandingan nilai
-  - Tombol cepat untuk menghasilkan deskripsi grafik siap pakai untuk Datawrapper
+  - Tombol cepat untuk menghasilkan deskripsi grafik siap pakai untuk Datawrapper (juga tersedia langsung di form Datawrapper)
   - Respons di-render sebagai markdown (bold, list, tabel)
   - Fallback otomatis ke model lain jika model utama tidak tersedia
 - **API key aman** — BPS API key, Datawrapper API key, dan NVIDIA API key disimpan di server, tidak terekspos ke browser
@@ -102,8 +106,21 @@ Di Replit, tambahkan ketiganya melalui menu **Secrets** (ikon gembok di sidebar 
 
 1. Buka aplikasi di browser.
 2. Salin URL API BPS dari [dokumentasi](https://webapi.bps.go.id/documentation/) — biarkan `WebAPI_KEY` apa adanya.
-3. Tempel URL ke kolom input dan klik **Ambil Data**.
-4. Data akan tampil dalam bentuk tabel. Klik header kolom untuk mengganti namanya.
+3. Tempel URL ke kolom input.
+4. (Opsional) Centang **Ambil semua tahun** jika ingin mengambil data dari semua tahun yang tersedia untuk URL BPS standar.
+5. Klik **Ambil Data**.
+6. Data akan tampil dalam bentuk tabel. Klik header kolom untuk mengganti namanya.
+
+### Menggabungkan Data Multi-Tahun
+
+Untuk URL BPS standar (bukan SIMDASI), aplikasi dapat menggabungkan data dari beberapa tahun menjadi satu tabel:
+
+1. Masukkan URL BPS standar (misalnya data per wilayah).
+2. Centang opsi **Gabung data multi-tahun** yang muncul di bawah kolom input.
+3. Pilih tahun-tahun yang ingin digabungkan.
+4. Klik **Ambil Data** — data dari semua tahun terpilih akan digabungkan berdasarkan kolom wilayah/identifier.
+
+> **Catatan:** Fitur ini hanya tersedia untuk format `dataview` (URL BPS standar), tidak untuk SIMDASI atau format lainnya.
 
 **Contoh URL yang bisa dicoba:**
 
@@ -127,18 +144,22 @@ Setelah data tampil, klik tombol **Unduh CSV** di atas tabel untuk menyimpan dat
    - *Bar Chart (1 seri)* — satu kolom data, cocok untuk perbandingan antar wilayah
    - *Grouped Bars* — beberapa kolom data ditampilkan berdampingan per baris
    - *Stacked Bars* — beberapa kolom data ditumpuk per baris
-   - *Multiple Lines* — cocok untuk data deret waktu
+   - *Line Chart* — satu seri data untuk deret waktu
+   - *Multiple Lines* — beberapa seri data untuk deret waktu
    - *Area Chart* — seperti line chart tapi area di bawah diisi
    - *Pie Chart* — cocok untuk komposisi satu baris
    - *Tabel Interaktif* — tabel yang bisa dicari dan diurutkan
-4. (Opsional) Centang **Urutkan dari nilai terbesar ke terkecil** untuk bar chart.
-5. (Opsional) Buka **Warna Chart** untuk memilih palet warna.
-6. (Opsional) Buka **Kolom yang divisualisasikan** untuk memilih/menghapus kolom tertentu.
-7. (Opsional) Buka **Baris yang divisualisasikan** untuk memilih wilayah/baris tertentu.
-8. Klik **Buat Visualisasi** — chart akan dibuat dan dipublikasikan di Datawrapper.
-9. Klik **Edit di Datawrapper** untuk menyempurnakan desain, atau **Lihat Chart Publik** untuk melihat hasilnya.
+4. (Opsional) Centang **Transpose** untuk memutar orientasi chart (menukar baris dan kolom).
+5. (Opsional) Centang **Urutkan dari nilai terbesar ke terkecil** untuk bar chart.
+6. (Opsional) Buka **Warna Chart** untuk memilih palet warna.
+7. (Opsional) Buka **Kolom yang divisualisasikan** untuk memilih/menghapus kolom tertentu.
+8. (Opsional) Buka **Baris yang divisualisasikan** untuk memilih wilayah/baris tertentu.
+9. Klik **Buat Visualisasi** — chart akan dibuat dan dipublikasikan di Datawrapper.
+10. Klik **Edit di Datawrapper** untuk menyempurnakan desain, atau **Lihat Chart Publik** untuk melihat hasilnya.
 
 > **Tips Column Chart:** Untuk tipe Column Chart (vertikal), pilih maksimal 5–10 baris saja agar chart tidak terlalu padat. Untuk semua provinsi (34 baris), gunakan Grouped/Stacked Bars (horizontal).
+
+> **AI Description Generator:** Di dalam form Datawrapper, terdapat tombol untuk menghasilkan deskripsi chart secara otomatis menggunakan AI. Cukup klik tombol tersebut dan deskripsi akan terisi otomatis di field **Deskripsi**.
 
 ### Tanya Data dengan AI
 
@@ -148,7 +169,7 @@ Setelah data tampil, gulir ke bagian **Tanya Data dengan AI** (di bawah panel Da
 
 | Tombol | Fungsi |
 |---|---|
-| ✦ Buat deskripsi untuk grafik Datawrapper | Menghasilkan 2 kalimat deskripsi siap pakai untuk field *Deskripsi* di panel Datawrapper |
+| ✦ Buat deskripsi untuk grafik Datawrapper | Menghasilkan 2 kalimat deskripsi siap pakai untuk field *Deskripsi* di panel Datawrapper (juga tersedia langsung di form Datawrapper) |
 | Mana nilai tertinggi dan terendah? | Menemukan nilai ekstrem dalam data |
 | Berikan ringkasan data ini | Ringkasan umum seluruh dataset |
 | Apa tren yang terlihat? | Analisis pola atau tren |
@@ -189,7 +210,7 @@ Browser (React + Vite)
 
 | Format | Keterangan |
 |---|---|
-| `dataview` | Format tabel BPS standar (paling umum) |
+| `dataview` | Format tabel BPS standar (paling umum) — mendukung penggabungan multi-tahun dan ambil semua tahun |
 | `SIMDASI` | Data Sistem Informasi Manajemen Statistik |
 | `list` | Format daftar domain/wilayah |
 

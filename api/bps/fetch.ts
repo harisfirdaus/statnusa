@@ -52,40 +52,8 @@ export default async function handler(
 
   const targetUrl = injectApiKey(rawUrl, apiKey);
 
-  try {
-    const response = await fetch(targetUrl, {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "BPS-Extractor/1.0",
-      },
-      signal: AbortSignal.timeout(30_000),
-    });
-
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: `BPS API mengembalikan status ${response.status}`,
-        statusText: response.statusText,
-      });
-    }
-
-    const contentType = response.headers.get("content-type") ?? "";
-    if (!contentType.includes("application/json")) {
-      const text = await response.text();
-      return res.status(502).json({ error: "Respons bukan JSON", preview: text.slice(0, 300) });
-    }
-
-    const data = await response.json();
-
-    if ((data as any)["data-availability"] === "not-available") {
-      return res.status(404).json({ error: "Data tidak tersedia untuk URL yang diberikan" });
-    }
-
-    return res.status(200).json({ success: true, data, resolvedUrl: targetUrl });
-  } catch (err: any) {
-    if (err.name === "TimeoutError") {
-      return res.status(504).json({ error: "Permintaan ke BPS API timeout (>30 detik)" });
-    }
-    console.error("[bps/fetch]", err);
-    return res.status(500).json({ error: "Gagal mengambil data dari BPS API", details: err.message });
-  }
+  // Mengembalikan URL yang sudah di-resolve saja.
+  // Browser akan fetch langsung ke BPS API untuk menghindari blokir Cloudflare
+  // pada IP serverless/datacenter.
+  return res.status(200).json({ success: true, resolvedUrl: targetUrl });
 }
