@@ -21,7 +21,7 @@ export function buildTableContext(table: ParsedTable, columns: string[]): string
 }
 
 export const DW_DESCRIPTION_PROMPT =
-  "Tulis deskripsi singkat untuk grafik Datawrapper berdasarkan data ini. " +
+  "Tulis deskripsi singkat untuk berdasarkan data ini. " +
   "Maksimal 2 kalimat: kalimat pertama menjelaskan apa yang ditampilkan, " +
   "kalimat kedua menyebutkan temuan/insight paling menonjol dari data. " +
   "Gunakan bahasa Indonesia yang ringkas dan lugas, tanpa bullet point atau markdown.";
