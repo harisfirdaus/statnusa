@@ -177,29 +177,26 @@ export default function Home() {
           <div className="space-y-4">
 
             {/* Hero */}
-            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/30 rounded-lg px-6 py-8 text-center space-y-3">
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
+            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/30 rounded-lg px-6 py-10 text-center space-y-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
                 Visualisasi Data Statistik Indonesia
               </h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                dari Badan Pusat Statistik (BPS)
-              </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 max-w-md mx-auto">
-                Tempel URL data BPS, dapatkan tabel dan grafik siap analisis dalam hitungan detik.
+              <p className="text-base text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
+                Tempel URL data Badan Pusat Statistik, dapatkan tabel dan grafik siap analisis dalam hitungan detik.
               </p>
               <button
                 onClick={() => urlInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors rounded-md mt-2"
+                className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors rounded-md mt-2"
               >
                 Mulai Sekarang
-                <ArrowDown className="w-3.5 h-3.5" />
+                <ArrowDown className="w-4 h-4" />
               </button>
             </div>
 
             {/* Cara Pakai */}
             <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
               <div className="px-6 py-5">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-5">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-5">
                   Cara Pakai
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -212,12 +209,12 @@ export default function Home() {
                       {i < arr.length - 1 && (
                         <div className="hidden sm:block absolute top-3 left-[1.125rem] w-full h-px bg-neutral-200 dark:bg-neutral-700 -z-10" style={{ width: "calc(100% + 1.5rem)" }} />
                       )}
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 flex items-center justify-center text-[10px] font-bold relative z-0">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 flex items-center justify-center text-xs font-bold relative z-0">
                         {step.num}
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{step.title}</h3>
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{step.desc}</p>
+                      <div className="space-y-1.5">
+                        <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">{step.title}</h3>
+                        <p className="text-sm text-neutral-400 dark:text-neutral-500 leading-relaxed">{step.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -228,7 +225,7 @@ export default function Home() {
             {/* Fitur */}
             <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
               <div className="px-6 py-5">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-5">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-5">
                   Fitur
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -237,12 +234,12 @@ export default function Home() {
                     { icon: MessageCircle, title: "Tanya AI", desc: "Chat dengan model AI tentang data yang sedang dilihat" },
                     { icon: ExternalLink, title: "Datawrapper", desc: "Ekspor chart ke Datawrapper dengan satu klik" },
                   ].map(({ icon: Icon, title, desc }) => (
-                    <div key={title} className="group p-4 rounded-lg border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all cursor-default">
-                      <div className="w-8 h-8 rounded-md bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-2 group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700 transition-colors">
-                        <Icon className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
+                    <div key={title} className="group p-5 rounded-lg border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all cursor-default">
+                      <div className="w-9 h-9 rounded-md bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-3 group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700 transition-colors">
+                        <Icon className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                       </div>
-                      <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">{title}</h3>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{desc}</p>
+                      <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1">{title}</h3>
+                      <p className="text-sm text-neutral-400 dark:text-neutral-500 leading-relaxed">{desc}</p>
                     </div>
                   ))}
                 </div>
