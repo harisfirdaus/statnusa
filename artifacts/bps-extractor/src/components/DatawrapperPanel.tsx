@@ -62,7 +62,7 @@ function Section({ label, badge, open, onToggle, children }: {
     <div className="border border-neutral-200 dark:border-neutral-700">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-muted dark:hover:bg-muted transition-colors"
       >
         <span>
           {label}
@@ -70,12 +70,12 @@ function Section({ label, badge, open, onToggle, children }: {
         </span>
         {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
       </button>
-      {open && <div className="border-t border-neutral-200 dark:border-neutral-700 p-4 bg-neutral-50 dark:bg-neutral-800">{children}</div>}
+      {open && <div className="border-t border-neutral-200 dark:border-neutral-700 p-4 bg-muted dark:bg-muted">{children}</div>}
     </div>
   );
 }
 
-const inputCls = "w-full px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 transition-colors";
+const inputCls = "w-full px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-card dark:bg-card text-neutral-700 dark:text-neutral-300 transition-colors";
 
 interface DatawrapperPanelProps {
   table: ParsedTable;
@@ -307,7 +307,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             )}
           </div>
 
-          <div className="border border-neutral-200 dark:border-neutral-700 p-3 bg-neutral-50 dark:bg-neutral-800">
+          <div className="border border-neutral-200 dark:border-neutral-700 p-3 bg-muted dark:bg-muted">
             <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-neutral-700 dark:text-neutral-300 mb-1">
               <input type="checkbox" checked={transpose} onChange={(e) => setTranspose(e.target.checked)} className="accent-neutral-900 dark:accent-neutral-100" />
               <span className="font-medium">Transpose data sebelum kirim ke Datawrapper</span>
@@ -321,7 +321,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {PALETTES.map((p, i) => (
                 <button key={i} onClick={() => setPaletteIdx(i)}
-                  className={`flex flex-col gap-1.5 p-2 border text-left transition-all ${paletteIdx === i ? "border-neutral-900 dark:border-neutral-300 bg-white dark:bg-neutral-700" : "border-neutral-200 dark:border-neutral-600 hover:border-neutral-400 dark:hover:border-neutral-400"}`}>
+                  className={`flex flex-col gap-1.5 p-2 border text-left transition-all ${paletteIdx === i ? "border-neutral-900 dark:border-neutral-300 bg-card dark:bg-card" : "border-neutral-200 dark:border-neutral-600 hover:border-neutral-400 dark:hover:border-neutral-400"}`}>
                   <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 truncate">{p.name}</span>
                   <PaletteDots colors={p.colors} />
                 </button>
@@ -338,7 +338,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-48 overflow-y-auto">
               {columns.map((col, i) => (
-                <label key={i} className={`flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-white dark:hover:bg-neutral-700 transition-colors ${i === 0 ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <label key={i} className={`flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-card dark:hover:bg-card transition-colors ${i === 0 ? "opacity-50 cursor-not-allowed" : ""}`}>
                   <input type="checkbox" checked={validCols.has(i)} onChange={() => toggleCol(i)} disabled={i === 0} className="accent-neutral-900 dark:accent-neutral-100" />
                   <span className="text-neutral-700 dark:text-neutral-300 truncate">
                     {i === 0 ? <>{col} <span className="text-xs text-neutral-400 dark:text-neutral-500">(label)</span></> : col}
@@ -354,7 +354,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
                 <div className="relative flex-1">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
                   <input type="search" placeholder="Cari baris…" value={rowSearch} onChange={(e) => setRowSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300" />
+                    className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-card dark:bg-card text-neutral-700 dark:text-neutral-300" />
                 </div>
                 <div className="flex gap-2 text-xs flex-shrink-0">
                   <button onClick={selectAllRows} className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 underline underline-offset-2">Semua</button>
@@ -363,7 +363,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5 max-h-56 overflow-y-auto">
                 {filteredRowIndices.map(({ i, label }) => (
-                  <label key={i} className="flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-white dark:hover:bg-neutral-700 transition-colors">
+                  <label key={i} className="flex items-center gap-2 px-2 py-1 text-sm cursor-pointer hover:bg-card dark:hover:bg-card transition-colors">
                     <input type="checkbox" checked={selectedRows.has(i)} onChange={() => toggleRow(i)} className="accent-neutral-900 dark:accent-neutral-100" />
                     <span className="text-neutral-700 dark:text-neutral-300 truncate">{label || `Baris ${i + 1}`}</span>
                   </label>

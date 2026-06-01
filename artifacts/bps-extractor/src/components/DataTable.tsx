@@ -48,7 +48,7 @@ function EditableHeader({
           e.stopPropagation();
         }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full min-w-[80px] px-1.5 py-0.5 text-xs border border-neutral-900 dark:border-neutral-300 focus:outline-none bg-white dark:bg-neutral-800 font-mono text-neutral-900 dark:text-neutral-100"
+        className="w-full min-w-[80px] px-1.5 py-0.5 text-xs border border-neutral-900 dark:border-neutral-300 focus:outline-none bg-card dark:bg-card font-mono text-neutral-900 dark:text-neutral-100"
       />
     );
   }
@@ -126,7 +126,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
   return (
     <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-card dark:bg-card">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
           <input
@@ -134,7 +134,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
             placeholder="Cari…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 transition-colors"
+            className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-card dark:bg-card text-neutral-700 dark:text-neutral-300 transition-colors"
           />
         </div>
         <p className="text-xs text-neutral-400 dark:text-neutral-500 flex-shrink-0">
@@ -149,7 +149,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
         </button>
       </div>
 
-      <p className="px-5 py-2 text-xs text-neutral-400 dark:text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 bg-neutral-50 dark:bg-neutral-800">
+      <p className="px-5 py-2 text-xs text-neutral-400 dark:text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 bg-muted dark:bg-muted">
         <Pencil className="w-3 h-3" />
         Hover nama kolom lalu klik ikon pensil untuk mengganti nama
       </p>
@@ -157,7 +157,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
       {/* Table */}
       <div className="overflow-auto max-h-[520px]">
         <table className="w-full text-sm border-collapse min-w-max">
-          <thead className="sticky top-0 z-10 bg-white dark:bg-neutral-900">
+          <thead className="sticky top-0 z-10 bg-card dark:bg-card">
             <tr className="border-b border-neutral-200 dark:border-neutral-700">
               {columns.map((col, i) => (
                 <th key={i} className="text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 px-5 py-2.5 pr-8 last:pr-5">
@@ -181,7 +181,7 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
               </tr>
             ) : (
               filtered.map((row, ri) => (
-                <tr key={ri} className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+                <tr key={ri} className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-muted dark:hover:bg-muted transition-colors">
                   {row.map((cell, ci) => (
                     <td
                       key={ci}

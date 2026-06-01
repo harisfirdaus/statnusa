@@ -107,7 +107,7 @@ export function ChatPanel({ table, columns }: Props) {
       {open && (
         <div className="border-t border-neutral-200 dark:border-neutral-700 flex flex-col" style={{ height: "480px" }}>
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-white dark:bg-neutral-900">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-card dark:bg-card">
             {messages.length === 0 && (
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -137,7 +137,7 @@ export function ChatPanel({ table, columns }: Props) {
               <div key={i} className={`flex items-start gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                 <span className={`flex-shrink-0 w-6 h-6 flex items-center justify-center ${
                   msg.role === "user"
-                    ? "bg-neutral-200 dark:bg-neutral-700"
+                    ? "bg-secondary dark:bg-secondary"
                     : "bg-neutral-900 dark:bg-neutral-100"
                 }`}>
                   {msg.role === "user"
@@ -163,12 +163,12 @@ export function ChatPanel({ table, columns }: Props) {
                           h2:     ({ children }) => <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 mt-3 mb-1.5">{children}</h2>,
                           h3:     ({ children }) => <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mt-2 mb-1">{children}</h3>,
                           code:   ({ children, className }) => className
-                            ? <code className="block bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-mono px-3 py-2 my-1.5 overflow-x-auto">{children}</code>
-                            : <code className="bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-mono px-1 py-0.5">{children}</code>,
+                            ? <code className="block bg-muted dark:bg-muted text-neutral-800 dark:text-neutral-200 text-xs font-mono px-3 py-2 my-1.5 overflow-x-auto">{children}</code>
+                            : <code className="bg-muted dark:bg-muted text-neutral-800 dark:text-neutral-200 text-xs font-mono px-1 py-0.5">{children}</code>,
                           blockquote: ({ children }) => <blockquote className="border-l-2 border-neutral-300 dark:border-neutral-600 pl-3 italic text-neutral-500 dark:text-neutral-400 my-1.5">{children}</blockquote>,
                           hr:     () => <hr className="border-neutral-200 dark:border-neutral-700 my-2" />,
                           table:  ({ children }) => <div className="overflow-x-auto my-2"><table className="text-xs border-collapse w-full">{children}</table></div>,
-                          th:     ({ children }) => <th className="border border-neutral-300 dark:border-neutral-600 px-2 py-1 bg-neutral-100 dark:bg-neutral-800 font-semibold text-left">{children}</th>,
+                          th:     ({ children }) => <th className="border border-neutral-300 dark:border-neutral-600 px-2 py-1 bg-muted dark:bg-muted font-semibold text-left">{children}</th>,
                           td:     ({ children }) => <td className="border border-neutral-300 dark:border-neutral-600 px-2 py-1">{children}</td>,
                         }}
                       >
@@ -200,7 +200,7 @@ export function ChatPanel({ table, columns }: Props) {
           </div>
 
           {/* Input */}
-          <div className="border-t border-neutral-200 dark:border-neutral-700 px-4 py-3 bg-neutral-50 dark:bg-neutral-800 flex items-end gap-2">
+          <div className="border-t border-neutral-200 dark:border-neutral-700 px-4 py-3 bg-muted dark:bg-muted flex items-end gap-2">
             {messages.length > 0 && (
               <button
                 onClick={clearChat}
@@ -219,7 +219,7 @@ export function ChatPanel({ table, columns }: Props) {
                 placeholder="Tanyakan sesuatu tentang data… (Enter untuk kirim)"
                 rows={1}
                 disabled={streaming}
-                className="flex-1 px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 resize-none bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 transition-colors disabled:opacity-50"
+                className="flex-1 px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 resize-none bg-card dark:bg-card text-neutral-700 dark:text-neutral-300 transition-colors disabled:opacity-50"
                 style={{ minHeight: "38px", maxHeight: "100px" }}
               />
               <button
