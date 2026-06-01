@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database, Sun, Moon, BarChart3, MessageCircle, ExternalLink } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database, Sun, Moon, BarChart3, MessageCircle, ExternalLink, ArrowDown } from "lucide-react";
 import { fetchBpsData } from "@/lib/api";
 import { parseData, mergeMultiYear } from "@/lib/parsers";
 import { MetaInfo } from "@/components/MetaInfo";
@@ -41,6 +41,7 @@ const EXAMPLE_URLS = [
 ];
 
 export default function Home() {
+  const urlInputRef = useRef<HTMLDivElement>(null);
   const { dark, toggle }                  = useDarkMode();
   const [url, setUrl]                     = useState("");
   const [loading, setLoading]             = useState(false);
@@ -173,55 +174,78 @@ export default function Home() {
 
         {/* Landing page */}
         {!table && !loading && !error && (
-          <div className="border border-neutral-200 dark:border-neutral-700 divide-y divide-neutral-100 dark:divide-neutral-800">
+          <div className="space-y-4">
 
-            <div className="px-6 py-6 space-y-1">
-              <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100 leading-snug">
+            {/* Hero */}
+            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/30 rounded-lg px-6 py-8 text-center space-y-3">
+              <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
                 Visualisasi Data Statistik Indonesia
               </h2>
               <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 dari Badan Pusat Statistik (BPS)
               </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                Tempel URL data BPS, dapatkan tabel &amp; grafik siap analisis dalam hitungan detik.
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 max-w-md mx-auto">
+                Tempel URL data BPS, dapatkan tabel dan grafik siap analisis dalam hitungan detik.
               </p>
+              <button
+                onClick={() => urlInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors rounded-md mt-2"
+              >
+                Mulai Sekarang
+                <ArrowDown className="w-3.5 h-3.5" />
+              </button>
             </div>
 
-            <div className="px-6 py-5">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-4">
-                Cara Pakai
-              </p>
-              <div className="grid grid-cols-3 gap-6">
-                {[
-                  { num: "1", title: "Cari URL Data", desc: "Buka web BPS, salin link tabel statistik yang diinginkan." },
-                  { num: "2", title: "Tempel di sini", desc: "Masukkan URL BPS pada kolom input di bawah." },
-                  { num: "3", title: "Analisis &amp; Visual", desc: "Lihat tabel interaktif, buat grafik Datawrapper, &amp; tanya AI soal data." },
-                ].map((step) => (
-                  <div key={step.num} className="space-y-1.5">
-                    <span className="text-xs font-bold text-neutral-300 dark:text-neutral-600">{step.num}</span>
-                    <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{step.title}</h3>
-                    <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{step.desc}</p>
-                  </div>
-                ))}
+            {/* Cara Pakai */}
+            <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
+              <div className="px-6 py-5">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-5">
+                  Cara Pakai
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {[
+                    { num: "1", title: "Cari URL Data", desc: "Buka web BPS, salin link tabel statistik yang diinginkan." },
+                    { num: "2", title: "Tempel di sini", desc: "Masukkan URL BPS pada kolom input di bawah." },
+                    { num: "3", title: "Analisis dan Visual", desc: "Lihat tabel interaktif, buat grafik Datawrapper, dan tanya AI soal data." },
+                  ].map((step, i, arr) => (
+                    <div key={step.num} className="relative flex gap-3">
+                      {i < arr.length - 1 && (
+                        <div className="hidden sm:block absolute top-3 left-[1.125rem] w-full h-px bg-neutral-200 dark:bg-neutral-700 -z-10" style={{ width: "calc(100% + 1.5rem)" }} />
+                      )}
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 flex items-center justify-center text-[10px] font-bold relative z-0">
+                        {step.num}
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{step.title}</h3>
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{step.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="px-6 py-5">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-4">
-                Fitur
-              </p>
-              <div className="grid grid-cols-3 gap-6">
-                {[
-                  { icon: BarChart3, title: "Tabel &amp; Grafik", desc: "Parsing otomatis data BPS ke tabel interaktif" },
-                  { icon: MessageCircle, title: "Tanya AI", desc: "Chat dengan model AI tentang data yang sedang dilihat" },
-                  { icon: ExternalLink, title: "Datawrapper", desc: "Ekspor chart ke Datawrapper dengan satu klik" },
-                ].map(({ icon: Icon, title, desc }) => (
-                  <div key={title} className="space-y-1.5">
-                    <Icon className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
-                    <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{title}</h3>
-                    <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{desc}</p>
-                  </div>
-                ))}
+            {/* Fitur */}
+            <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
+              <div className="px-6 py-5">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-5">
+                  Fitur
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { icon: BarChart3, title: "Tabel dan Grafik", desc: "Parsing otomatis data BPS ke tabel interaktif" },
+                    { icon: MessageCircle, title: "Tanya AI", desc: "Chat dengan model AI tentang data yang sedang dilihat" },
+                    { icon: ExternalLink, title: "Datawrapper", desc: "Ekspor chart ke Datawrapper dengan satu klik" },
+                  ].map(({ icon: Icon, title, desc }) => (
+                    <div key={title} className="group p-4 rounded-lg border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all cursor-default">
+                      <div className="w-8 h-8 rounded-md bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-2 group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700 transition-colors">
+                        <Icon className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
+                      </div>
+                      <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">{title}</h3>
+                      <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{desc}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -229,7 +253,7 @@ export default function Home() {
         )}
 
         {/* URL Input */}
-        <div className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4">
+        <div ref={urlInputRef} className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
             Masukkan URL Data JSON BPS
           </h2>
