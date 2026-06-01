@@ -148,10 +148,10 @@ export default function Home() {
   }, [table, yearTables.length]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-900" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-background dark:bg-neutral-900" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* Header */}
-      <header className="border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
+      <header className="border-b border-neutral-200 dark:border-neutral-700 bg-background dark:bg-neutral-900">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex-shrink-0">
             <Database className="w-4 h-4" />
