@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database, Sun, Moon } from "lucide-react";
+import { Search, Loader2, AlertCircle, ChevronDown, ChevronUp, Database, Sun, Moon, BarChart3, MessageCircle, ExternalLink } from "lucide-react";
 import { fetchBpsData } from "@/lib/api";
 import { parseData, mergeMultiYear } from "@/lib/parsers";
 import { MetaInfo } from "@/components/MetaInfo";
@@ -8,19 +8,6 @@ import { DatawrapperPanel } from "@/components/DatawrapperPanel";
 import { ChatPanel } from "@/components/ChatPanel";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import type { ParsedTable } from "@/lib/parsers";
-
-const PREVIEW_BARS = [
-  { label: "Papua",             value: 7.08 },
-  { label: "Jawa Barat",        value: 6.66 },
-  { label: "Banten",            value: 6.63 },
-  { label: "Papua Barat Daya",  value: 6.56 },
-  { label: "Kep. Riau",         value: 6.35 },
-  { label: "DKI Jakarta",       value: 6.31 },
-  { label: "Maluku",            value: 6.11 },
-  { label: "Sulawesi Utara",    value: 5.78 },
-];
-const NATIONAL_RATE = 4.74;
-const MAX_BAR = 8;
 
 function isStandardBpsUrl(rawUrl: string): boolean {
   return (
@@ -52,49 +39,6 @@ const EXAMPLE_URLS = [
     url: "https://webapi.bps.go.id/v1/api/list/model/data/lang/ind/domain/0000/var/192/th/125/key/WebAPI_KEY",
   },
 ];
-
-function PreviewChart() {
-  const nationalPct = (NATIONAL_RATE / MAX_BAR) * 100;
-  return (
-    <div className="space-y-2">
-      {PREVIEW_BARS.map(({ label, value }) => {
-        const pct = (value / MAX_BAR) * 100;
-        return (
-          <div key={label} className="flex items-center gap-3">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 w-36 text-right flex-shrink-0 truncate">{label}</span>
-            <div className="flex-1 h-5 bg-neutral-100 dark:bg-neutral-700 relative overflow-hidden">
-              <div className="absolute inset-y-0 left-0 bg-neutral-800 dark:bg-neutral-200" style={{ width: `${pct}%` }} />
-              <div className="absolute inset-y-0 w-px bg-neutral-400 dark:bg-neutral-500 opacity-60" style={{ left: `${nationalPct}%` }} />
-            </div>
-            <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400 w-8 flex-shrink-0">{value}</span>
-          </div>
-        );
-      })}
-      <div className="flex items-center gap-3 pt-1">
-        <span className="w-36 flex-shrink-0" />
-        <div className="flex-1 flex justify-between">
-          {[0, 2, 4, 6, 8].map((n) => (
-            <span key={n} className="text-[10px] text-neutral-300 dark:text-neutral-600 tabular-nums">{n}%</span>
-          ))}
-        </div>
-        <span className="w-8 flex-shrink-0" />
-      </div>
-      <div className="flex items-center gap-3 pt-0.5">
-        <span className="w-36 flex-shrink-0" />
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400 dark:text-neutral-500">
-            <span className="w-3 h-3 bg-neutral-800 dark:bg-neutral-200 inline-block flex-shrink-0" />
-            8 provinsi tertinggi
-          </span>
-          <span className="flex items-center gap-1.5 text-[10px] text-neutral-400 dark:text-neutral-500">
-            <span className="w-px h-3 bg-neutral-400 dark:bg-neutral-500 inline-block flex-shrink-0" />
-            Rata-rata nasional ({NATIONAL_RATE}%)
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function Home() {
   const { dark, toggle }                  = useDarkMode();
@@ -227,36 +171,60 @@ export default function Home() {
 
       <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-        {/* Hero preview */}
+        {/* Landing page */}
         {!table && !loading && !error && (
-          <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
-            <div className="px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 flex items-start justify-between gap-6">
-              <div className="space-y-1 max-w-sm">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600">Contoh Output</p>
-                <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100 leading-snug">
-                  Tingkat Pengangguran Terbuka<br />Menurut Provinsi
-                </h2>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                  Tempelkan URL data BPS di bawah untuk menghasilkan tabel &amp; visualisasi serupa dalam hitungan detik.
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+          <div className="border border-neutral-200 dark:border-neutral-700 divide-y divide-neutral-100 dark:divide-neutral-800">
+
+            <div className="px-6 py-6 space-y-1">
+              <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100 leading-snug">
+                Visualisasi Data Statistik Indonesia
+              </h2>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                dari Badan Pusat Statistik (BPS)
+              </p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                Tempel URL data BPS, dapatkan tabel &amp; grafik siap analisis dalam hitungan detik.
+              </p>
+            </div>
+
+            <div className="px-6 py-5">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-4">
+                Cara Pakai
+              </p>
+              <div className="grid grid-cols-3 gap-6">
                 {[
-                  { label: "Periode",  value: "November 2025" },
-                  { label: "Cakupan",  value: "38 Provinsi" },
-                  { label: "Nasional", value: `${NATIONAL_RATE}%` },
-                  { label: "Sumber",   value: "Sakernas, BPS" },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex items-baseline gap-2">
-                    <span className="text-[10px] uppercase tracking-widest text-neutral-300 dark:text-neutral-600 font-semibold">{label}</span>
-                    <span className="text-xs font-mono text-neutral-600 dark:text-neutral-300">{value}</span>
+                  { num: "1", title: "Cari URL Data", desc: "Buka web BPS, salin link tabel statistik yang diinginkan." },
+                  { num: "2", title: "Tempel di sini", desc: "Masukkan URL BPS pada kolom input di bawah." },
+                  { num: "3", title: "Analisis &amp; Visual", desc: "Lihat tabel interaktif, buat grafik Datawrapper, &amp; tanya AI soal data." },
+                ].map((step) => (
+                  <div key={step.num} className="space-y-1.5">
+                    <span className="text-xs font-bold text-neutral-300 dark:text-neutral-600">{step.num}</span>
+                    <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{step.title}</h3>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{step.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
+
             <div className="px-6 py-5">
-              <PreviewChart />
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-300 dark:text-neutral-600 mb-4">
+                Fitur
+              </p>
+              <div className="grid grid-cols-3 gap-6">
+                {[
+                  { icon: BarChart3, title: "Tabel &amp; Grafik", desc: "Parsing otomatis data BPS ke tabel interaktif" },
+                  { icon: MessageCircle, title: "Tanya AI", desc: "Chat dengan model AI tentang data yang sedang dilihat" },
+                  { icon: ExternalLink, title: "Datawrapper", desc: "Ekspor chart ke Datawrapper dengan satu klik" },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <div key={title} className="space-y-1.5">
+                    <Icon className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                    <h3 className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{title}</h3>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed">{desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
+
           </div>
         )}
 
