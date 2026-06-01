@@ -98,7 +98,7 @@ export function ChatPanel({ table, columns }: Props) {
           <MessageCircle className="w-3.5 h-3.5" />
           Tanya Data dengan AI
           <span className="font-normal normal-case tracking-normal text-neutral-400 dark:text-neutral-500 text-[10px]">
-            Gemma 3 27B · {table.rows.length} baris
+            Gemma 3 12B · {table.rows.length} baris
           </span>
         </span>
         {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

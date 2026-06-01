@@ -19,7 +19,7 @@ Aplikasi web untuk mengambil data dari [BPS Web API](https://webapi.bps.go.id), 
    - Toggle transpose untuk memutar orientasi chart
    - Tambahkan deskripsi dan catatan/footnote
    - Generator deskripsi otomatis menggunakan AI
-- **Tanya data dengan AI** — chatbot berbasis Gemma 3 27B (NVIDIA) yang memahami isi tabel dan menjawab pertanyaan dalam bahasa Indonesia:
+- **Tanya data dengan AI** — chatbot berbasis Gemma 3 12B (NVIDIA) yang memahami isi tabel dan menjawab pertanyaan dalam bahasa Indonesia:
   - Analisis, ringkasan, dan perbandingan nilai
   - Tombol cepat untuk menghasilkan deskripsi grafik siap pakai untuk Datawrapper (juga tersedia langsung di form Datawrapper)
   - Respons di-render sebagai markdown (bold, list, tabel)
@@ -57,7 +57,7 @@ Untuk menemukan URL yang diinginkan, buka [dokumentasi BPS API](https://webapi.b
 
 ### 2. NVIDIA API Key
 
-NVIDIA menyediakan akses ke berbagai model AI besar, termasuk Gemma 3 27B, melalui platform NVIDIA API Catalog.
+NVIDIA menyediakan akses ke berbagai model AI besar, termasuk Gemma 3 12B, melalui platform NVIDIA API Catalog.
 
 1. Buka [https://integrate.api.nvidia.com](https://integrate.api.nvidia.com) dan buat akun NVIDIA (gratis).
 2. Setelah login, buka menu **API Keys** di dashboard.
@@ -178,7 +178,7 @@ Setelah data tampil, gulir ke bagian **Tanya Data dengan AI** (di bawah panel Da
 Atau ketik pertanyaan sendiri di kolom input. Tekan **Enter** untuk kirim, **Shift+Enter** untuk baris baru.
 
 **Catatan teknis:**
-- Model utama: `google/gemma-3-27b-it`. Jika model sedang tidak tersedia (DEGRADED), sistem otomatis mencoba `meta/llama-3.1-70b-instruct` lalu `meta/llama-3.1-8b-instruct`.
+- Model utama: `google/gemma-3-12b-it`. Jika model sedang tidak tersedia (DEGRADED), sistem otomatis mencoba `meta/llama-3.1-70b-instruct` lalu `meta/llama-3.1-8b-instruct`.
 - Maksimal 150 baris pertama dari tabel dikirim sebagai konteks ke model.
 - Klik ikon **×** di kiri input untuk menghapus seluruh percakapan.
 

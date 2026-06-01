@@ -3,7 +3,7 @@ import { Router } from "express";
 const router = Router();
 
 const MODELS = [
-  "google/gemma-3-27b-it",
+  "google/gemma-3-12b-it",
   "meta/llama-3.1-70b-instruct",
   "meta/llama-3.1-8b-instruct",
 ];
