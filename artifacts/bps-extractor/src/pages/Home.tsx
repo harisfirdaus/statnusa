@@ -207,7 +207,7 @@ export default function Home() {
                   ].map((step, i, arr) => (
                     <div key={step.num} className="relative flex gap-3">
                       {i < arr.length - 1 && (
-                        <div className="hidden sm:block absolute top-3 left-[1.125rem] w-full h-px bg-neutral-200 dark:bg-neutral-700 -z-10" style={{ width: "calc(100% + 1.5rem)" }} />
+                        <div className="hidden sm:block absolute top-3 left-[1.125rem] w-full h-px bg-border dark:bg-border -z-10" style={{ width: "calc(100% + 1.5rem)" }} />
                       )}
                       <div className="flex-shrink-0 w-7 h-7 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 flex items-center justify-center text-xs font-bold relative z-0">
                         {step.num}
@@ -234,8 +234,8 @@ export default function Home() {
                     { icon: MessageCircle, title: "Tanya AI", desc: "Chat dengan model AI tentang data yang sedang dilihat" },
                     { icon: ExternalLink, title: "Datawrapper", desc: "Ekspor chart ke Datawrapper dengan satu klik" },
                   ].map(({ icon: Icon, title, desc }) => (
-                    <div key={title} className="group p-5 rounded-lg border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all cursor-default">
-                      <div className="w-9 h-9 rounded-md bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-3 group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700 transition-colors">
+                    <div key={title} className="group p-5 rounded-lg border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-muted dark:hover:bg-muted transition-all cursor-default">
+                      <div className="w-9 h-9 rounded-md bg-secondary dark:bg-secondary flex items-center justify-center mb-3 group-hover:bg-muted dark:group-hover:bg-muted transition-colors">
                         <Icon className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                       </div>
                       <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1">{title}</h3>
@@ -260,7 +260,7 @@ export default function Home() {
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://webapi.bps.go.id/v1/api/list/model/data/..."
               rows={2}
-              className="w-full px-3 py-2.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 resize-none font-mono text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 transition-colors"
+              className="w-full px-3 py-2.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 resize-none font-mono text-neutral-700 dark:text-neutral-300 bg-card dark:bg-card transition-colors"
               disabled={loading}
             />
             <div className="flex items-center gap-3">
@@ -404,7 +404,7 @@ export default function Home() {
                       onChange={(e) => setAddYearUrl(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") handleAddYear(); }}
                       placeholder="URL data tahun lain…"
-                      className="flex-1 px-3 py-2 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 font-mono text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 transition-colors"
+                      className="flex-1 px-3 py-2 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 font-mono text-neutral-700 dark:text-neutral-300 bg-card dark:bg-card transition-colors"
                     />
                     <button
                       type="button"
@@ -462,7 +462,7 @@ export default function Home() {
               <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                 <button
                   onClick={() => setShowRaw((s) => !s)}
-                  className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-muted dark:hover:bg-muted transition-colors"
                 >
                   <span>Lihat Data Mentah (JSON)</span>
                   {showRaw ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

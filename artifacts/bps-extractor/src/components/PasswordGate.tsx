@@ -57,7 +57,7 @@ export function PasswordGate({ children }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4"
+    <div className="min-h-screen bg-background flex items-center justify-center px-4"
       style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <div className="w-full max-w-sm space-y-6">
         <div className="flex items-center gap-3">

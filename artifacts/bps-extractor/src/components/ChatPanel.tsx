@@ -92,7 +92,7 @@ export function ChatPanel({ table, columns }: Props) {
       {/* Header toggle */}
       <button
         onClick={() => setOpen((s) => !s)}
-        className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-muted dark:hover:bg-muted transition-colors"
       >
         <span className="flex items-center gap-2">
           <MessageCircle className="w-3.5 h-3.5" />
