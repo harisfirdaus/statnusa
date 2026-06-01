@@ -177,7 +177,7 @@ export default function Home() {
           <div className="space-y-4">
 
             {/* Hero */}
-            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/30 rounded-lg px-6 py-10 text-center space-y-4">
+            <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg px-6 py-10 text-center space-y-4">
               <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
                 Visualisasi Data Statistik Indonesia
               </h2>
