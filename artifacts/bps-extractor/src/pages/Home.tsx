@@ -480,7 +480,10 @@ export default function Home() {
 
       <footer className="max-w-5xl mx-auto px-6 py-6 border-t border-neutral-100 dark:border-neutral-800">
         <p className="text-xs text-neutral-400 dark:text-neutral-500">
-          Data bersumber dari{" "}
+          Data dari{" "}
+          <a href="https://www.bps.go.id/id" target="_blank" rel="noopener noreferrer"
+            className="hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2">BPS</a>
+          . Integrasi via{" "}
           <a href="https://webapi.bps.go.id" target="_blank" rel="noopener noreferrer"
             className="hover:text-neutral-700 dark:hover:text-neutral-300 underline underline-offset-2">BPS Web API</a>
           . Visualisasi via{" "}
