@@ -124,9 +124,9 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
   }
 
   return (
-    <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+    <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden bg-card dark:bg-card">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-card dark:bg-card">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3 px-5 py-3 border-b border-neutral-200 dark:border-neutral-700 bg-card dark:bg-card">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
           <input
@@ -137,6 +137,10 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
             className="w-full pl-8 pr-3 py-1.5 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:border-neutral-900 dark:focus:border-neutral-300 bg-card dark:bg-card text-neutral-700 dark:text-neutral-300 transition-colors"
           />
         </div>
+        <p className="text-xs text-neutral-400 dark:text-neutral-500 flex items-center gap-1.5">
+          <Pencil className="w-3 h-3" />
+          Hover header untuk rename
+        </p>
         <p className="text-xs text-neutral-400 dark:text-neutral-500 flex-shrink-0">
           {filtered.length} dari {table.rows.length} baris
         </p>
@@ -149,18 +153,18 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
         </button>
       </div>
 
-      <p className="px-5 py-2 text-xs text-neutral-400 dark:text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 flex items-center gap-1.5 bg-muted dark:bg-muted">
-        <Pencil className="w-3 h-3" />
-        Hover nama kolom lalu klik ikon pensil untuk mengganti nama
-      </p>
-
       {/* Table */}
       <div className="overflow-auto max-h-[520px]">
         <table className="w-full text-sm border-collapse min-w-max">
           <thead className="sticky top-0 z-10 bg-card dark:bg-card">
             <tr className="border-b border-neutral-200 dark:border-neutral-700">
               {columns.map((col, i) => (
-                <th key={i} className="text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 px-5 py-2.5 pr-8 last:pr-5">
+                <th
+                  key={i}
+                  className={`text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 px-5 py-2.5 pr-8 last:pr-5 bg-card dark:bg-card ${
+                    i === 0 ? "sticky left-0 z-20 min-w-44 border-r border-neutral-100 dark:border-neutral-800" : ""
+                  }`}
+                >
                   <EditableHeader
                     name={col} idx={i}
                     onRename={onColumnRename}
@@ -181,11 +185,13 @@ export function DataTable({ table, columns, onColumnRename }: DataTableProps) {
               </tr>
             ) : (
               filtered.map((row, ri) => (
-                <tr key={ri} className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-muted dark:hover:bg-muted transition-colors">
+                <tr key={ri} className="group border-b border-neutral-100 dark:border-neutral-800 hover:bg-muted dark:hover:bg-muted transition-colors">
                   {row.map((cell, ci) => (
                     <td
                       key={ci}
-                      className={`px-5 py-2 pr-8 last:pr-5 text-sm border-b border-neutral-100 dark:border-neutral-800 ${ci !== 0 ? "text-right font-mono" : ""} text-neutral-700 dark:text-neutral-300`}
+                      className={`px-5 py-2.5 pr-8 last:pr-5 text-sm border-b border-neutral-100 dark:border-neutral-800 ${
+                        ci !== 0 ? "text-right font-mono tabular-nums" : "sticky left-0 bg-card dark:bg-card group-hover:bg-muted dark:group-hover:bg-muted min-w-44 border-r border-neutral-100 dark:border-neutral-800"
+                      } text-neutral-700 dark:text-neutral-300`}
                     >
                       {cell === null ? (
                         <span className="text-neutral-300 dark:text-neutral-600">—</span>

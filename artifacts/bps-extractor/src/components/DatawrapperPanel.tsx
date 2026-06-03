@@ -206,10 +206,12 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
   }
 
   return (
-    <div className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4">
+    <div className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4 bg-card dark:bg-card">
       <div className="flex items-center gap-2">
-        <BarChart2 className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+        <span className="w-8 h-8 flex items-center justify-center bg-sky-50 dark:bg-neutral-800 text-sky-700 dark:text-sky-300 border border-sky-100 dark:border-neutral-700">
+          <BarChart2 className="w-4 h-4" />
+        </span>
+        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
           Buat Visualisasi di Datawrapper
         </h3>
       </div>
@@ -384,7 +386,7 @@ export function DatawrapperPanel({ table, columns }: DatawrapperPanelProps) {
           )}
 
           <button onClick={handleCreate} disabled={loading || rowsSelected === 0 || dataColsSelected === 0}
-            className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors tracking-wide disabled:opacity-50">
+            className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-sky-700 dark:bg-sky-300 text-white dark:text-neutral-950 hover:bg-sky-800 dark:hover:bg-sky-200 transition-colors tracking-wide disabled:opacity-50">
             {loading
               ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Membuat chart…</>
               : <><BarChart2 className="w-3.5 h-3.5" />BUAT VISUALISASI</>}

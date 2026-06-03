@@ -88,14 +88,16 @@ export function ChatPanel({ table, columns }: Props) {
   }
 
   return (
-    <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+    <div className="border border-neutral-200 dark:border-neutral-700 overflow-hidden bg-card dark:bg-card">
       {/* Header toggle */}
       <button
         onClick={() => setOpen((s) => !s)}
-        className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 hover:bg-muted dark:hover:bg-muted transition-colors"
+        className="w-full flex items-center justify-between px-5 py-3 text-sm font-semibold text-neutral-900 dark:text-neutral-100 hover:bg-muted dark:hover:bg-muted transition-colors"
       >
         <span className="flex items-center gap-2">
-          <MessageCircle className="w-3.5 h-3.5" />
+          <span className="w-8 h-8 flex items-center justify-center bg-sky-50 dark:bg-neutral-800 text-sky-700 dark:text-sky-300 border border-sky-100 dark:border-neutral-700">
+            <MessageCircle className="w-4 h-4" />
+          </span>
           Tanya Data dengan AI
           <span className="font-normal normal-case tracking-normal text-neutral-400 dark:text-neutral-500 text-[10px]">
             Gemma 3N E4B · {table.rows.length} baris

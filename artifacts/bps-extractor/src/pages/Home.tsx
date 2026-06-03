@@ -40,6 +40,95 @@ const EXAMPLE_URLS = [
   },
 ];
 
+const PREVIEW_BARS = [
+  { label: "Papua", value: 7.08 },
+  { label: "Jawa Barat", value: 6.66 },
+  { label: "Banten", value: 6.63 },
+  { label: "Papua Barat Daya", value: 6.56 },
+  { label: "Kep. Riau", value: 6.35 },
+  { label: "DKI Jakarta", value: 6.31 },
+];
+
+function LandingPreview() {
+  const nationalRate = 4.74;
+  const maxBar = 8;
+  const nationalPct = (nationalRate / maxBar) * 100;
+
+  return (
+    <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden bg-card dark:bg-card">
+      <div className="px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-sky-700 dark:text-sky-300">
+            Contoh Output
+          </p>
+          <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 leading-snug">
+            Tingkat Pengangguran Terbuka Menurut Provinsi
+          </h2>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-xl leading-relaxed">
+            Tempel URL data BPS, lalu ubah data menjadi tabel interaktif, ringkasan, dan chart Datawrapper.
+          </p>
+        </div>
+        <div className="grid grid-cols-3 sm:block gap-3 sm:space-y-1.5 text-left sm:text-right flex-shrink-0">
+          {[
+            { label: "Periode", value: "Nov 2025" },
+            { label: "Cakupan", value: "38 Provinsi" },
+            { label: "Sumber", value: "Sakernas" },
+          ].map(({ label, value }) => (
+            <div key={label}>
+              <div className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">{value}</div>
+              <div className="text-[10px] uppercase tracking-widest text-neutral-400 dark:text-neutral-500">{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="px-6 py-5 space-y-2.5">
+        {PREVIEW_BARS.map(({ label, value }) => {
+          const pct = (value / maxBar) * 100;
+          return (
+            <div key={label} className="grid grid-cols-[8.5rem_1fr_2.5rem] items-center gap-3">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 text-right truncate">{label}</span>
+              <div className="h-4 bg-sky-50 dark:bg-neutral-800 relative overflow-hidden rounded-sm">
+                <div className="absolute inset-y-0 left-0 bg-sky-700 dark:bg-sky-400" style={{ width: `${pct}%` }} />
+                <div className="absolute inset-y-0 w-px bg-neutral-500 dark:bg-neutral-300 opacity-70" style={{ left: `${nationalPct}%` }} />
+              </div>
+              <span className="text-xs font-mono tabular-nums text-neutral-600 dark:text-neutral-300">{value}</span>
+            </div>
+          );
+        })}
+        <div className="grid grid-cols-[8.5rem_1fr_2.5rem] items-center gap-3 pt-1">
+          <span />
+          <div className="flex items-center gap-4 text-[10px] text-neutral-400 dark:text-neutral-500">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-3 h-2 bg-sky-700 dark:bg-sky-400 inline-block" />
+              6 provinsi tertinggi
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-px h-3 bg-neutral-500 dark:bg-neutral-300 inline-block" />
+              Nasional {nationalRate}%
+            </span>
+          </div>
+          <span />
+        </div>
+      </div>
+
+      <div className="px-6 py-3 border-t border-neutral-100 dark:border-neutral-800 bg-sky-50/70 dark:bg-neutral-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <p className="text-xs text-sky-900 dark:text-sky-200">
+          Data resmi BPS API, siap dianalisis tanpa mengubah kontrak backend.
+        </p>
+        <button
+          type="button"
+          onClick={() => document.getElementById("url-input-panel")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-800 dark:text-sky-200 hover:text-sky-950 dark:hover:text-white transition-colors"
+        >
+          Coba sekarang
+          <ArrowDown className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const urlInputRef = useRef<HTMLDivElement>(null);
   const { dark, toggle }                  = useDarkMode();
@@ -170,28 +259,13 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+      <main className={`${table ? "max-w-7xl" : "max-w-5xl"} mx-auto px-6 py-8 space-y-6 transition-[max-width] duration-300`}>
 
         {/* Landing page */}
         {!table && !loading && !error && (
           <div className="space-y-4">
 
-            {/* Hero */}
-            <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg px-6 py-10 text-center space-y-4">
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
-                Visualisasi Data Statistik Indonesia
-              </h2>
-              <p className="text-base text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
-                Tempel URL data Badan Pusat Statistik, dapatkan tabel dan grafik siap analisis dalam hitungan detik.
-              </p>
-              <button
-                onClick={() => urlInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors rounded-md mt-2"
-              >
-                Mulai Sekarang
-                <ArrowDown className="w-4 h-4" />
-              </button>
-            </div>
+            <LandingPreview />
 
             {/* Cara Pakai */}
             <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
@@ -250,10 +324,20 @@ export default function Home() {
         )}
 
         {/* URL Input */}
-        <div ref={urlInputRef} className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
-            Masukkan URL Data JSON BPS
-          </h2>
+        <div id="url-input-panel" ref={urlInputRef} className="border border-neutral-200 dark:border-neutral-700 p-5 space-y-4 bg-card dark:bg-card">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+            <div>
+              <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                Masukkan URL Data JSON BPS
+              </h2>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                Salin URL BPS Web API, lalu StatNusa akan menyiapkan tabel dan alat visualisasi.
+              </p>
+            </div>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-sky-700 dark:text-sky-300">
+              BPS Web API
+            </span>
+          </div>
           <form onSubmit={handleFetch} className="space-y-3">
             <textarea
               value={url}
@@ -267,7 +351,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={loading || !url.trim()}
-                className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-white transition-colors tracking-wide disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2 text-xs font-semibold bg-sky-700 dark:bg-sky-300 text-white dark:text-neutral-950 hover:bg-sky-800 dark:hover:bg-sky-200 transition-colors tracking-wide disabled:opacity-50"
               >
                 {loading
                   ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Mengambil data…</>
@@ -353,17 +437,30 @@ export default function Home() {
               )}
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
-              {[
-                { l: "FORMAT", v: table.format },
-                { l: "KOLOM",  v: String(table.columns.length) },
-                { l: "BARIS",  v: String(table.rows.length) },
-              ].map(({ l, v }) => (
-                <span key={l} className="flex items-center gap-1.5 text-xs border border-neutral-200 dark:border-neutral-700 px-3 py-1">
-                  <span className="text-neutral-400 dark:text-neutral-500 uppercase tracking-widest font-semibold">{l}</span>
-                  <span className="text-neutral-700 dark:text-neutral-300 font-mono">{v}</span>
-                </span>
-              ))}
+            <div className="sticky top-0 z-20 -mx-6 px-6 py-3 border-y border-neutral-200 dark:border-neutral-700 bg-background/95 dark:bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-sky-700 dark:text-sky-300">
+                    Dataset Aktif
+                  </p>
+                  <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                    {table.title}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {[
+                    { l: "FORMAT", v: table.format },
+                    { l: "KOLOM",  v: String(table.columns.length) },
+                    { l: "BARIS",  v: String(table.rows.length) },
+                    ...(table.yearLabel ? [{ l: "TAHUN", v: table.yearLabel }] : []),
+                  ].map(({ l, v }) => (
+                    <span key={l} className="flex items-center gap-1.5 text-xs border border-neutral-200 dark:border-neutral-700 bg-card dark:bg-card px-3 py-1">
+                      <span className="text-neutral-400 dark:text-neutral-500 uppercase tracking-widest font-semibold">{l}</span>
+                      <span className="text-neutral-700 dark:text-neutral-300 font-mono tabular-nums">{v}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {yearTables.length > 0 && (
@@ -451,11 +548,10 @@ export default function Home() {
             )}
 
             {table.columns.length > 0 && table.rows.length > 0 && (
-              <DatawrapperPanel table={table} columns={editedColumns} />
-            )}
-
-            {table.columns.length > 0 && table.rows.length > 0 && (
-              <ChatPanel table={table} columns={editedColumns} />
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+                <DatawrapperPanel table={table} columns={editedColumns} />
+                <ChatPanel table={table} columns={editedColumns} />
+              </div>
             )}
 
             {rawData != null && (
