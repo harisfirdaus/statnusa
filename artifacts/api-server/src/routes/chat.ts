@@ -3,9 +3,9 @@ import { Router } from "express";
 const router = Router();
 
 const MODELS = [
+  "meta/llama-3.1-8b-instruct",
   "google/gemma-3n-e4b-it",
   "meta/llama-3.1-70b-instruct",
-  "meta/llama-3.1-8b-instruct",
 ];
 
 interface Message {

@@ -1,9 +1,9 @@
 export const config = { runtime: "edge", maxDuration: 300 };
 
 const MODELS = [
+  "meta/llama-3.1-8b-instruct",
   "google/gemma-3n-e4b-it",
   "meta/llama-3.1-70b-instruct",
-  "meta/llama-3.1-8b-instruct",
 ];
 
 interface Message {
@@ -34,7 +34,7 @@ async function callNvidia(
   }
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 22_000);
+  const timer = setTimeout(() => controller.abort(), 60_000);
 
   try {
     const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
@@ -122,7 +122,7 @@ export default async function handler(request: Request): Promise<Response> {
 
       return errorResponse(response.status, `Model AI mengembalikan status ${response.status}`, errText.slice(0, 300));
     } catch (err: any) {
-      if (err.name === "TimeoutError") {
+      if (err.name === "AbortError" || err.name === "TimeoutError") {
         lastError = "timeout";
         continue;
       }
